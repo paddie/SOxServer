@@ -1,0 +1,35 @@
+<h2>Hostname: {Hostname} ({Id})</h1>
+<h3>IP: {Ip}</h3>
+<h3>Users: {Users}</h3>
+{.section Issue}<h2>
+        <form action="/comment/os/{Id}" method="POST">
+        <div><textarea name="body" rows="20" cols="80"></textarea></div>
+        <div><input type="submit" value="Save"></div>
+    </form>
+{.end}
+</h2>
+<h3>Hardware:</h3>
+<h4>CPU: {Cpu}</h4>
+<h4>Memory: {Memory}</h4>
+<h3>Software:</h3>
+<h4>System: {Osx}</h4>
+<h4>Recon: {Recon}</h4>
+<h4>Firewall: {Firewall}</h4>
+<h3>Antivirus:</h3>
+<h4>Sophos Antivirus: v: {Virus_version} ({Virus_def})</h4>
+<h4>last run: {Virus_last_run}</h4>
+<h3>Apps:</h3>
+<table align="left" border="1">
+    <th>Path</th>
+    <th>Application</th>
+    <th>Version</th>
+    {.repeated section Apps}
+    <tr>
+    {.repeated section @}
+        <td>
+            {@}
+        </td>
+    {.end}
+    </tr>
+    {.end}
+</table>
