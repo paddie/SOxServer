@@ -20,16 +20,14 @@
 <h4>last run: {Virus_last_run}</h4>
 <h3>Apps:</h3>
 <table align="left" border="1">
-    <th>Path</th>
     <th>Application</th>
     <th>Version</th>
+    <th>Path</th>
     {.repeated section Apps}
-    <tr>
-    {.repeated section @}
-        <td>
-            {@}
-        </td>
-    {.end}
-    </tr>
+        <tr>
+            <td>{Name}</td>
+            <td>{Version}</td>
+            <td>{Path}</td>
+        </tr>
     {.end}
 </table>

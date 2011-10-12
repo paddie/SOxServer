@@ -12,33 +12,39 @@ import (
     "strings"
 )
 
-type apps [][]string
+// func (a apps) String() string {
+//     str := ""
+//     for _,app := range a {
+//         if len(app) < 3{
+//             continue
+//         }
+//         str += fmt.Sprintf("</h4>%s: %s (%s)</h4><br>", app[0], app[1], app[2])
+//     }
+//     return str
+// }
 
-func (a apps) String() string {
-    str := ""
-    for _,app := range a {
-        if len(app) < 3{
-            continue
-        }
-        str += fmt.Sprintf("</h4>%s: %s (%s)</h4><br>", app[0], app[1], app[2])
-    }
-    return str
+// type apps [][]App
+
+type app struct {
+    Path string "Path"
+    Version string "Version"
+    Name string "Name"
 }
 
 type machine struct {
-    Firewall string "Firewall"
+    Firewall bool "Firewall"
     Virus_version string "Virus_version"
     Memory string "Memory"
     Virus_last_run string "Virus_last_run"
     Hostname string "Hostname"
     Model_id string "Model_id"
-    Recon string "Recon"
+    Recon bool "Recon"
     Ip string "Ip"
     Virus_def string "Virus_def"
     Id string "_id"
     Cpu string "Cpu"
     Osx string "Osx"
-    Apps apps "Apps"
+    Apps []app "Apps"
     Date mongotime "Date"
     Users []string "Users"
     Issue bool
@@ -63,10 +69,10 @@ func (m *machine) IsOld() bool {
 
 // if the machine is a macbook and the firewall is "OFF", we return true
 func (m *machine) macbookFirewallCheck() bool {
-    if strings.HasPrefix(m.Model_id, "MacBook") && m.Firewall != "ON" {
-        return true
+    if strings.HasPrefix(m.Model_id, "MacBook") && !m.Firewall {
+        return false
     }
-    return false
+    return true
 }
 
 // returns a time.Time object, calculated from millisecond top seconds
@@ -94,10 +100,10 @@ func (m *machine) hasSoxIssues() bool {
     if m.IsOld() {
         return true
     }
-    if m.Recon != "Installed" {
+    if !m.Recon {
         return true
     }
-    if m.macbookFirewallCheck() {
+    if !m.macbookFirewallCheck() {
         return true    
     }
     return false
@@ -152,8 +158,8 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         SortKey = "Hostname"
     }
     m := new(machines)
-    // m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model"}
-    m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
+    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model"}
+    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
     var arr *machine
     i := 1    
     err := c.Find(nil).
@@ -186,7 +192,7 @@ func NewHandleFunc(pattern string,
                 panic(err)
             }
             defer session.Close()
-            c := session.DB("sox").C("test_script")
+            c := session.DB("sox").C("dict_scripts")
             fn(w, r, &c, len(pattern))
         })
 }

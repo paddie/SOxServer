@@ -6,11 +6,11 @@ from uuid import getnode as get_mac
 import platform
 import subprocess
 
-import logging
-logging.basicConfig(filename=os.path.join(sys.path[0], "sox.log"),
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s: %(message)s',
-    datefmt='%d/%m/%Y %I:%M:%S')
+# import logging
+# logging.basicConfig(filename=os.path.join(sys.path[0], "sox.log"),
+#     level=logging.DEBUG,
+#     format='%(asctime)s %(levelname)s: %(message)s',
+#     datefmt='%d/%m/%Y %I:%M:%S')
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -87,7 +87,7 @@ def visit(arg, dirname, names):
 				vs = plist_version(plist)
 			arg.append({
 			   "Path":dirname,
-			   "Name"dir,
+			   "Name":dir,
 			   "Version":vs
 			})
 			
@@ -212,14 +212,14 @@ def serial_number():
             stdout=subprocess.PIPE).communicate()[0].split("\n"):
         if "Serial Number" in l:
             return l.split(" ")[-1]
-    logging.error("failed to read serial number")
+    print "debug: failed to read serial number"
     # sys.exit(2)
 
 def mongo_conn(ip,db='sox'):
 	try:
 		return Database(Connection(ip), db)
 	except:
-	    logging.error("Could not connect to mongo database at ip %s" % ip)
+	    print "debug: Could not connect to mongo database at ip %s" % ip
         sys.exit(2)
 
 # Update/Insert db.collection with doc
@@ -231,7 +231,7 @@ def update_db(db, doc, coll="main"):
         id = doc['_id']
     except:
         # print "update_db: 'doc' has no '_id'", doc
-        logging.error("doc has no '_id'")
+        print "debug: doc has no '_id'"
     	sys.exit(2)
     	
     # if doc["Old_serial"] != "N/A" and doc["Old_serial"] != doc["_id"]:
@@ -249,14 +249,13 @@ def update_db(db, doc, coll="main"):
         try:
             col.insert(doc, safe=True)
         except:
-            logging.error("Failed to insert doc")
+            print "debug: Failed to insert doc"
             sys.exit(2)
     else:
         try:
             col.update({'_id':id},doc, safe=True)
         except:
         	print "Failed to update doc:", doc["Hostname"]
-        	logging.error("Failed to update doc")
         	sys.exit(2)
 
 def main():
@@ -264,7 +263,7 @@ def main():
     server_ip = "152.146.38.56"
     # sox database is _for now_ simply "sox"
     main_db = "sox"
-    collection = "test_script"
+    collection = "dict_scripts"
     db = mongo_conn(server_ip,db=main_db)
     # 
     date = datetime.today()
@@ -278,8 +277,8 @@ def main():
     installed_apps(doc)
     recon_dict(doc)
     update_db(db,doc, coll=collection)
-    logging.debug("Successfully registered machine data")
-    print "Successfully registered machine data for %s" % doc["Hostname"]
+    # print "debug: Successfully registered machine data"
+    print "%s: Successfully registered machine data for %s:\n%s" % (date.strftime("%d/%m/%Y %I:%M:%S"), doc["Hostname"], doc)
     # db.drop_collection('main')
 
 if __name__ == '__main__':
