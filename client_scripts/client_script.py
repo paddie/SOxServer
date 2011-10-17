@@ -50,12 +50,15 @@ def log_information(path='/Library/Logs/Sophos Anti-Virus.log'):
 
 def convertToXML(path):
     # convertPlist(plist_path, 'xml1')
-	tmp_path = os.path.join(sys.path[0], "com.application_walking_tmp.plist")
+	tmp_path = os.path.join("/var/tmp", "com.application_walking_tmp.plist")
     # tmp_path = "/Library/AdPeople/com.application_walking_tmp.plist"
 	subprocess.call(['cp', path, tmp_path])
 	if os.system('plutil -convert xml1 '+ tmp_path) != 0:
 		raise Exception("Could not convert binary plist to xml1")
-	return plistlib.readPlist(tmp_path)
+	
+	plist = plistlib.readPlist(tmp_path)
+	subprocess.call(['rm', tmp_path])
+	return plist
 
 
 def plist_version(path):
