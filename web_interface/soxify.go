@@ -8,7 +8,7 @@ import (
 	"launchpad.net/mgo"
     // "reflect"
     "time"
-    "template"
+    "old/template"
     "strings"
 )
 
@@ -30,6 +30,8 @@ type app struct {
     Version string "Version"
     Name string "Name"
 }
+
+
 
 type machine struct {
     Firewall bool "Firewall"
