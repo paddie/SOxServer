@@ -1,7 +1,10 @@
 package main
 
+
+
 import (
     "os"
+    "path"
 	"fmt"
 	"http"
     // "launchpad.net/gobson"
@@ -83,7 +86,6 @@ func (m *machine) TimeOfUpdate() *time.Time {
 }
 
 
-
 // TODO: temp url to the specific machine in our system
 func (m *machine) url() string {
     return fmt.Sprintf("/machine/%s", m.Id)
@@ -134,7 +136,12 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    t, err := template.ParseFile("templates/machine.html",nil)
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+
+    t, err := template.ParseFile(path.Join(wd, "/templates/machine.html"),nil)
     if err != nil {
         http.NotFound(w,r)
         return
@@ -151,6 +158,60 @@ type machines struct {
 type tableItem struct {
     header string
     value string
+}
+
+func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    machine_id := r.URL.Path[argPos:]
+    if len(machine_id) == 0 {
+        http.Redirect(w, r, "/", 302)
+    }
+    fmt.Println("Deleting machine: ", machine_id)
+    err := c.Remove(map[string]string{"_id": machine_id})
+    if err != nil {
+        fmt.Print(err)
+    }
+    http.Redirect(w,r, "/", 302)
+    return
+}
+
+// TODO: make table-view generic - map[string] string {header:value}
+func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    SortKey := r.URL.Path[argPos:]
+    if len(SortKey) == 0 {
+        SortKey = "Hostname"
+    }
+    m := new(machines)
+    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model"}
+    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
+    var arr *machine
+    i := 1    
+    err := c.Find(nil).
+        Sort(&map[string]int{SortKey:1}).
+        For(&arr, func() os.Error {
+            arr.updateStatus()
+            arr.Cnt = i
+            i++
+            m.Machines = append(m.Machines, *arr)
+            //t.Write(w,arr)
+            return nil
+        })
+    if err != nil {
+        http.NotFound(w,r)
+        return
+    }
+
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+
+    // fmt.Print("working dir: ", wd)
+
+    t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
+    if err != nil {
+        panic(err)
+    }
+    t.Execute(w,m)
 }
 
 // TODO: make table-view generic - map[string] string {header:value}
@@ -178,7 +239,15 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    t, err := template.ParseFile("templates/machinelist_new.html", nil)
+
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+
+    // fmt.Print("working dir: ", wd)
+
+    t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
     if err != nil {
         panic(err)
     }
@@ -223,8 +292,11 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     }
 }
 
+
+
 func main() {
 	NewHandleFunc("/", machineList)
 	NewHandleFunc("/machine/", machineView)
+    NewHandleFunc("/del/", deleteMachine)
 	http.ListenAndServe(":8080", nil)
 }
