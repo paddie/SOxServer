@@ -7,54 +7,13 @@ import (
     "path"
 	"fmt"
 	"http"
-    // "launchpad.net/gobson"
+    "launchpad.net/gobson/bson"
 	"launchpad.net/mgo"
     // "reflect"
     "time"
     "old/template"
     "strings"
 )
-
-// func (a apps) String() string {
-//     str := ""
-//     for _,app := range a {
-//         if len(app) < 3{
-//             continue
-//         }
-//         str += fmt.Sprintf("</h4>%s: %s (%s)</h4><br>", app[0], app[1], app[2])
-//     }
-//     return str
-// }
-
-// type apps [][]App
-
-type app struct {
-    Path string "Path"
-    Version string "Version"
-    Name string "Name"
-}
-
-
-
-type machine struct {
-    Firewall bool "Firewall"
-    Virus_version string "Virus_version"
-    Memory string "Memory"
-    Virus_last_run string "Virus_last_run"
-    Hostname string "Hostname"
-    Model_id string "Model_id"
-    Recon bool "Recon"
-    Ip string "Ip"
-    Virus_def string "Virus_def"
-    Id string "_id"
-    Cpu string "Cpu"
-    Osx string "Osx"
-    Apps []app "Apps"
-    Date mongotime "Date"
-    Users []string "Users"
-    Issue bool
-    Cnt int
-}
 
 // helper function to calculate the days since the last update
 // -    the only complicated bit here, is that mongo saves time in milliseconds
@@ -122,6 +81,34 @@ func (m mongotime) String() string {
     return fmt.Sprint(time.SecondsToUTC(int64(m)/1e3))
 }
 
+type app struct {
+    Path string "Path"
+    Version string "Version"
+    Name string "Name"
+}
+
+
+
+type machine struct {
+    Firewall bool "Firewall"
+    Virus_version string "Virus_version"
+    Memory string "Memory"
+    Virus_last_run string "Virus_last_run"
+    Hostname string "Hostname"
+    Model_id string "Model_id"
+    Recon bool "Recon"
+    Ip string "Ip"
+    Virus_def string "Virus_def"
+    Id string "_id"
+    Cpu string "Cpu"
+    Osx string "Osx"
+    Apps []app "Apps"
+    Date mongotime "Date"
+    Users []string "Users"
+    Issue bool
+    Cnt int
+}
+
 
 func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     key := r.URL.Path[argPos:]
@@ -150,16 +137,6 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     t.Execute(w,mach)
 }
 
-type machines struct {
-    Machines []machine
-    Headers []string
-}
-
-type tableItem struct {
-    header string
-    value string
-}
-
 func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     machine_id := r.URL.Path[argPos:]
     if len(machine_id) == 0 {
@@ -173,6 +150,59 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     http.Redirect(w,r, "/", 302)
     return
 }
+
+type appResult struct {
+    Hostname string "Hostname"
+    Apps []app "Apps"
+}
+
+type resultList struct {
+    Res []appResult
+}
+
+func findAppContains(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    app := r.URL.Path[argPos:]
+    fmt.Println("searching for substring in apps: ", app)
+
+    context := new(resultList)
+    var res *appResult
+
+    p := `^.*`+ app +`.*`
+    // o := "i"
+
+    fmt.Println("query: ", p)
+    // m := bson.M{}    
+    err := c.Find(bson.M{"Apps.Name" : &bson.RegEx{Pattern:p, Options:"i"}}).
+        Select(bson.M{
+            "Hostname":1,
+            "Apps":1}).
+        Sort(bson.M{"Hostname":1}).
+        For(&res, func() os.Error {
+            context.Res = append(context.Res, *res)
+            return nil
+        })
+    
+    if err != nil {
+        http.NotFound(w,r)
+        return
+    }
+
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
+    if err != nil {
+        panic(err)
+    }
+    t.Execute(w,context)
+}
+
+// func findAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+//     app := r.URL.Path[argPos:]
+
+
+// }
 
 // TODO: make table-view generic - map[string] string {header:value}
 func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
@@ -212,6 +242,16 @@ func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         panic(err)
     }
     t.Execute(w,m)
+}
+
+type machines struct {
+    Machines []machine
+    Headers []string
+}
+
+type tableItem struct {
+    header string
+    value string
 }
 
 // TODO: make table-view generic - map[string] string {header:value}
@@ -295,8 +335,9 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
 
 
 func main() {
-	NewHandleFunc("/", machineList)
-	NewHandleFunc("/machine/", machineView)
+	NewHandleFunc("/search/", findAppContains)
+    NewHandleFunc("/machine/", machineView)
     NewHandleFunc("/del/", deleteMachine)
+    NewHandleFunc("/", machineList)
 	http.ListenAndServe(":8080", nil)
 }
