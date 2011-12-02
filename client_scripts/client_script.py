@@ -281,7 +281,6 @@ def main():
     recon_dict(doc)
     update_db(db,doc, coll=collection)
     # print "debug: Successfully registered machine data"
-    print "%s: Successfully registered machine data for %s:\n%s" % (date.strftime("%d/%m/%Y %I:%M:%S"), doc["Hostname"], doc)
     # db.drop_collection('main')
 
 if __name__ == '__main__':

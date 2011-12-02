@@ -1,9 +1,10 @@
 <html>
+<h2><a href="/">Home</a></h2>
 {.repeated section Res}
-    <h2>{Hostname}</h2>
-    <table>
+    <h2><a href="/machine/{Id}">{Hostname}</a></h2>
+    <table border="0" cellspacing="4">
     {.repeated section Apps}
-        <tr bgcolor=#00FF00>
+        <tr>
         <td>{Name}</td>
         <td>{Version}</td>
        </tr>

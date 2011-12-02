@@ -1,6 +1,8 @@
 <html>
+<h2><a href="/">Home</a></h2>
 <h2>Hostname: {Hostname} ({Id})</h2>
-<h3>IP: {Ip}</h3>
+<h3>- IP: {Ip}</h3>
+<h3>- Date: {Date}</h3>
 <h3>Users: {Users}</h3>
 {.section Issue}
 <h2>
@@ -10,26 +12,22 @@
     </form>
 </h2>
 {.end}
-<h3>Hardware:</h3>
-<h4>CPU: {Cpu}</h4>
-<h4>Memory: {Memory}</h4>
-<h3>Software:</h3>
+<h3>Machine: {Cpu}, {Memory}</h3>
 <h4>System: {Osx}</h4>
+<h3>SOx</h3>
 <h4>Recon: {Recon}</h4>
 <h4>Firewall: {Firewall}</h4>
-<h3>Antivirus:</h3>
-<h4>Sophos Antivirus: v: {Virus_version} ({Virus_def})</h4>
-<h4>last run: {Virus_last_run}</h4>
+<h4>Antivirus: v.{Virus_version}-def.{Virus_def} ({Virus_last_run})</h4>
 <h3>Apps:</h3>
 <table align="left" border="1">
     <th>Application</th>
     <th>Version</th>
-    <th>Path</th>
+    <!-- <th>Path</th> -->
     {.repeated section Apps}
         <tr>
-            <td>{Name}</td>
+            <td><a href="/listapps/{Name}">{Name}</a></td>
             <td>{Version}</td>
-            <td>{Path}</td>
+            <!-- <td>{Path}</td> -->
         </tr>
     {.end}
 </table>

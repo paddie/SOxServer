@@ -25,7 +25,7 @@ func (m *machine) DaysSinceLastUpdate() int64 {
 
 // if it is more than 14 days since the machine called home, we return true
 func (m *machine) IsOld() bool {
-    if m.DaysSinceLastUpdate() > 14 { 
+    if m.DaysSinceLastUpdate() > 14 {
         return true
     }
     return false
@@ -43,7 +43,6 @@ func (m *machine) macbookFirewallCheck() bool {
 func (m *machine) TimeOfUpdate() *time.Time {
     return time.SecondsToUTC(int64(m.Date)/1e3)
 }
-
 
 // TODO: temp url to the specific machine in our system
 func (m *machine) url() string {
@@ -87,8 +86,6 @@ type app struct {
     Name string "Name"
 }
 
-
-
 type machine struct {
     Firewall bool "Firewall"
     Virus_version string "Virus_version"
@@ -108,7 +105,6 @@ type machine struct {
     Issue bool
     Cnt int
 }
-
 
 func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     key := r.URL.Path[argPos:]
@@ -153,6 +149,7 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
 
 type appResult struct {
     Hostname string "Hostname"
+    Id string "_id"
     Apps []app "Apps"
 }
 
@@ -160,24 +157,54 @@ type resultList struct {
     Res []appResult
 }
 
-func findAppContains(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    app := r.URL.Path[argPos:]
-    fmt.Println("searching for substring in apps: ", app)
+func filter_apps(substr string, apps []app) []app {
+    tmp := make([]app, 0, 10)
+    for _, v := range apps {
+        if strings.Contains(v.Name, substr) {
+            tmp = append(tmp, v)
+        }
+    }
+    return tmp
+}
+
+func fuzzyFilter_apps(substr string, apps []app) []app {
+    tmp := make([]app, 0, 10)
+    for _, v := range apps {
+        if strings.Contains(strings.ToLower(v.Name), substr) {
+            tmp = append(tmp, v)
+        }
+    }
+    return tmp
+}
+
+
+
+func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    app_str := r.FormValue("search")
+    // app_str2 := r.FormValue("test2")
+    fmt.Println("searching for substring in apps: ", r.Form)
 
     context := new(resultList)
     var res *appResult
 
-    p := `^.*`+ app +`.*`
-    // o := "i"
+    p := "^.*" + app_str + ".*"
 
     fmt.Println("query: ", p)
     // m := bson.M{}    
     err := c.Find(bson.M{"Apps.Name" : &bson.RegEx{Pattern:p, Options:"i"}}).
         Select(bson.M{
             "Hostname":1,
-            "Apps":1}).
+            "Apps":1,
+            "_id":1}).
         Sort(bson.M{"Hostname":1}).
         For(&res, func() os.Error {
+            // tmp := make([]app, 0, 10)
+            // for _, v := range res.Apps {
+            //     if strings.Contains(strings.ToLower(v.Name), app_str) {
+            //         tmp = append(tmp, v)
+            //     }
+            // }
+            res.Apps = fuzzyFilter_apps(app_str, res.Apps)
             context.Res = append(context.Res, *res)
             return nil
         })
@@ -198,20 +225,13 @@ func findAppContains(w http.ResponseWriter, r *http.Request, c *mgo.Collection, 
     t.Execute(w,context)
 }
 
-// func findAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-//     app := r.URL.Path[argPos:]
-
-
-// }
-
-// TODO: make table-view generic - map[string] string {header:value}
-func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     SortKey := r.URL.Path[argPos:]
     if len(SortKey) == 0 {
         SortKey = "Hostname"
     }
     m := new(machines)
-    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model"}
+    m.Headers = []string{"Hostname","System","Firewall", "Recon","Sophos Antivirus"}
     // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
     var arr *machine
     i := 1    
@@ -222,7 +242,6 @@ func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
             arr.Cnt = i
             i++
             m.Machines = append(m.Machines, *arr)
-            //t.Write(w,arr)
             return nil
         })
     if err != nil {
@@ -235,13 +254,59 @@ func machineInspect(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         panic(err)
     }
 
-    // fmt.Print("working dir: ", wd)
-
-    t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
+    t, err := template.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
     if err != nil {
         panic(err)
     }
     t.Execute(w,m)
+}
+
+
+func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    app_str := r.URL.Path[argPos:]
+    fmt.Println("searching for substring in apps: ", app_str)
+
+    context := new(resultList)
+    var res *appResult
+
+    p := `^`+ app_str
+    // o := "i"
+
+    fmt.Println("query: ", p)
+    // m := bson.M{}    
+    err := c.Find(bson.M{"Apps.Name" : &bson.RegEx{Pattern:p, Options:"i"}}).
+        Select(bson.M{
+            "Hostname":1,
+            "Apps":1,
+            "_id":1}).
+        Sort(bson.M{"Hostname":1}).
+        For(&res, func() os.Error {
+            // tmp := make([]app, 0, 10)
+            // for _, v := range res.Apps {
+            //     if v.Name == app_str {
+            //         tmp = append(tmp, v)
+            //     }
+            // }
+            res.Apps = filter_apps(app_str, res.Apps)
+            // res.Apps = tmp
+            context.Res = append(context.Res, *res)
+            return nil
+        })
+    
+    if err != nil {
+        http.NotFound(w,r)
+        return
+    }
+
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
+    if err != nil {
+        panic(err)
+    }
+    t.Execute(w,context)
 }
 
 type machines struct {
@@ -272,7 +337,6 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
             arr.Cnt = i
             i++
             m.Machines = append(m.Machines, *arr)
-            //t.Write(w,arr)
             return nil
         })
     if err != nil {
@@ -284,8 +348,6 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     if err != nil {
         panic(err)
     }
-
-    // fmt.Print("working dir: ", wd)
 
     t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
     if err != nil {
@@ -332,12 +394,13 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     }
 }
 
-
-
 func main() {
-	NewHandleFunc("/search/", findAppContains)
+    NewHandleFunc("/listapps/", searchAppExact)
+	NewHandleFunc("/search/", searchAppSubstring)
+    NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
     NewHandleFunc("/del/", deleteMachine)
     NewHandleFunc("/", machineList)
+
 	http.ListenAndServe(":8080", nil)
 }
