@@ -1,7 +1,7 @@
 <html>
 <h2><a href="/">Home</a></h2>
 {{range .}}
-    <h2><a href="/machine/{Id}">{{.Hostname}}</a></h2>
+    <h2><a href="/machine/{{.Id}}">{{.Hostname}}</a></h2>
     <table border="0" cellspacing="4">
     {{range .Apps}}
         <tr>
