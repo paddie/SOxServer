@@ -11,7 +11,8 @@ import (
 	"launchpad.net/mgo"
     // "reflect"
     "time"
-    "old/template"
+    old "old/template"
+    newTemplate "template"
     "strings"
 )
 
@@ -119,12 +120,8 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
 
-    t, err := template.ParseFile(path.Join(wd, "/templates/machine.html"),nil)
+    t := newTemplate.Must(newTemplate.New("machineview").ParseFile("templates/machine.html"))
     if err != nil {
         http.NotFound(w,r)
         return
@@ -218,7 +215,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     if err != nil {
         panic(err)
     }
-    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
+    t, err := old.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
     if err != nil {
         panic(err)
     }
@@ -254,7 +251,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos i
         panic(err)
     }
 
-    t, err := template.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
+    t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
     if err != nil {
         panic(err)
     }
@@ -302,7 +299,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
     if err != nil {
         panic(err)
     }
-    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
+    t, err := old.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
     if err != nil {
         panic(err)
     }
@@ -349,7 +346,7 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         panic(err)
     }
 
-    t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
+    t, err := old.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
     if err != nil {
         panic(err)
     }
