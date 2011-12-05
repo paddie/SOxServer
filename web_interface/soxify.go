@@ -52,14 +52,14 @@ func (m *machine) url() string {
 
 // status: if any of the sox parameters are not met, we return true
 func (m *machine) updateStatus() {
-    if m.hasSoxIssues() {
+    if m.SoxIssues() {
         m.Issue = true
         return
     }
     m.Issue = false
 }
 
-func (m *machine) hasSoxIssues() bool {
+func (m *machine) SoxIssues() bool {
     if m.IsOld() {
         return true
     }
@@ -317,16 +317,8 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-
-    t, err := old.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("machinelistt").ParseFile("templates/machinelist.html"))
+    // t, err := old.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
     t.Execute(w,m)
 }
 
