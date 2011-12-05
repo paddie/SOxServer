@@ -7,26 +7,26 @@
 
 <table align="center" border="1">
 
-{.repeated section Headers} <th><a href="/{@}">{@}</a></th>{.end}
-{.repeated section Machines}
-    <tr {.section Issue} bgcolor=#FF0000 {.or} bgcolor=#00FF00 {.end}>
-        <td>{Cnt}</td>
-        <td><a href="/machine/{Id}">{Hostname}</a></td>
-        <td>{Ip}</td>
-        <td>{Osx}
+{{range .Headers}} <th><a href="/{{.}}">{{.}}</a></th>{{end}}
+{{range .Machines}}
+    <tr {{if .Issue}} bgcolor=#FF0000 {{else}} bgcolor=#00FF00 {{end}} >
+        <td>{{.Cnt}}</td>
+        <td><a href="/machine/{{.Id}}">{{.Hostname}}</a></td>
+        <td>{{.Ip}}</td>
+        <td>{{.Osx}}
         <!-- <br>
             <form action="/comment/os/{Id}" method="POST">
                 <div><textarea name="body" rows="20" cols="80"></textarea></div>
                 <div><input type="submit" value="Save"></div>
             </form>          -->
         </td>
-        {.section Recon}<td>True</td>{.or}<td>False</td>{.end}
-        {.section Firewall}<td>On</td>{.or}<td>Off</td>{.end}
-        <td>{Virus_version} ({Virus_def})</td>
-        <td>{Date}</td>
-        <td>{Model_id}</td>
-        <td><a href="/del/{Id}">Delete</a></td>
+        {{if .Recon}}<td>True</td>{{else}}<td>False</td>{{end}}
+        {{if .Firewall}}<td>On</td>{{else}}<td>Off</td>{{end}}
+        <td>{{.Virus_version}} ({{.Virus_def}})</td>
+        <td>{{.Date}}</td>
+        <td>{{.Model_id}}</td>
+        <td><a href="/del/{{.Id}}">Delete</a></td>
     </tr>
-{.end}
+{{end}}
 </table>
 </html>

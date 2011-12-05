@@ -11,7 +11,8 @@ import (
 	"launchpad.net/mgo"
     // "reflect"
     "time"
-    "old/template"
+    old "old/template"
+    newTemplate "template"
     "strings"
 )
 
@@ -51,14 +52,14 @@ func (m *machine) url() string {
 
 // status: if any of the sox parameters are not met, we return true
 func (m *machine) updateStatus() {
-    if m.hasSoxIssues() {
+    if m.SoxIssues() {
         m.Issue = true
         return
     }
     m.Issue = false
 }
 
-func (m *machine) hasSoxIssues() bool {
+func (m *machine) SoxIssues() bool {
     if m.IsOld() {
         return true
     }
@@ -119,12 +120,8 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
 
-    t, err := template.ParseFile(path.Join(wd, "/templates/machine.html"),nil)
+    t := newTemplate.Must(newTemplate.New("machineview").ParseFile("templates/machine.html"))
     if err != nil {
         http.NotFound(w,r)
         return
@@ -184,7 +181,8 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     // app_str2 := r.FormValue("test2")
     fmt.Println("searching for substring in apps: ", r.Form)
 
-    context := new(resultList)
+    // context := new(resultList)
+    context := make([]appResult, 0, 10)
     var res *appResult
 
     p := "^.*" + app_str + ".*"
@@ -198,14 +196,8 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
             "_id":1}).
         Sort(bson.M{"Hostname":1}).
         For(&res, func() os.Error {
-            // tmp := make([]app, 0, 10)
-            // for _, v := range res.Apps {
-            //     if strings.Contains(strings.ToLower(v.Name), app_str) {
-            //         tmp = append(tmp, v)
-            //     }
-            // }
             res.Apps = fuzzyFilter_apps(app_str, res.Apps)
-            context.Res = append(context.Res, *res)
+            context = append(context, *res)
             return nil
         })
     
@@ -213,15 +205,10 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
         http.NotFound(w,r)
         return
     }
+    // t := newTemplate.Must(newTemplate.New("results").ParseFile("templates/machine.html"))
 
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
+
     t.Execute(w,context)
 }
 
@@ -254,7 +241,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos i
         panic(err)
     }
 
-    t, err := template.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
+    t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
     if err != nil {
         panic(err)
     }
@@ -266,7 +253,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
     app_str := r.URL.Path[argPos:]
     fmt.Println("searching for substring in apps: ", app_str)
 
-    context := new(resultList)
+    context := make([]appResult, 0, 10)
     var res *appResult
 
     p := `^`+ app_str
@@ -281,15 +268,9 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
             "_id":1}).
         Sort(bson.M{"Hostname":1}).
         For(&res, func() os.Error {
-            // tmp := make([]app, 0, 10)
-            // for _, v := range res.Apps {
-            //     if v.Name == app_str {
-            //         tmp = append(tmp, v)
-            //     }
-            // }
             res.Apps = filter_apps(app_str, res.Apps)
             // res.Apps = tmp
-            context.Res = append(context.Res, *res)
+            context = append(context, *res)
             return nil
         })
     
@@ -298,14 +279,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         return
     }
 
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-    t, err := template.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
     t.Execute(w,context)
 }
 
@@ -343,16 +317,8 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-
-    t, err := template.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("machinelistt").ParseFile("templates/machinelist.html"))
+    // t, err := old.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
     t.Execute(w,m)
 }
 
