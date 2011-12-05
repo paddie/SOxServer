@@ -253,7 +253,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
     app_str := r.URL.Path[argPos:]
     fmt.Println("searching for substring in apps: ", app_str)
 
-    context := new(resultList)
+    context := make([]appResult, 0, 10)
     var res *appResult
 
     p := `^`+ app_str
@@ -268,15 +268,9 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
             "_id":1}).
         Sort(bson.M{"Hostname":1}).
         For(&res, func() os.Error {
-            // tmp := make([]app, 0, 10)
-            // for _, v := range res.Apps {
-            //     if v.Name == app_str {
-            //         tmp = append(tmp, v)
-            //     }
-            // }
             res.Apps = filter_apps(app_str, res.Apps)
             // res.Apps = tmp
-            context.Res = append(context.Res, *res)
+            context = append(context, *res)
             return nil
         })
     
@@ -285,14 +279,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         return
     }
 
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-    t, err := old.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
     t.Execute(w,context)
 }
 
