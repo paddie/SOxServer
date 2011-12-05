@@ -181,7 +181,8 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     // app_str2 := r.FormValue("test2")
     fmt.Println("searching for substring in apps: ", r.Form)
 
-    context := new(resultList)
+    // context := new(resultList)
+    context := make([]appResult, 0, 10)
     var res *appResult
 
     p := "^.*" + app_str + ".*"
@@ -195,14 +196,8 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
             "_id":1}).
         Sort(bson.M{"Hostname":1}).
         For(&res, func() os.Error {
-            // tmp := make([]app, 0, 10)
-            // for _, v := range res.Apps {
-            //     if strings.Contains(strings.ToLower(v.Name), app_str) {
-            //         tmp = append(tmp, v)
-            //     }
-            // }
             res.Apps = fuzzyFilter_apps(app_str, res.Apps)
-            context.Res = append(context.Res, *res)
+            context = append(context, *res)
             return nil
         })
     
@@ -210,15 +205,10 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
         http.NotFound(w,r)
         return
     }
+    // t := newTemplate.Must(newTemplate.New("results").ParseFile("templates/machine.html"))
 
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-    t, err := old.ParseFile(path.Join(wd, "/templates/searchresults.html"), nil)
-    if err != nil {
-        panic(err)
-    }
+    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
+
     t.Execute(w,context)
 }
 
