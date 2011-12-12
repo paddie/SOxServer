@@ -1,7 +1,5 @@
 package main
 
-
-
 import (
     "os"
     "bytes"
@@ -16,19 +14,14 @@ import (
     newTemplate "template"
     "strings"
 )
-// private type to handle format conversion,, simple wrapper
+
+// private type to handle format conversion from mongo's milisecond time-format, 
 type mongotime int64
 
 // time is stored in milliseconds in mongo
 // - to get a *time.Time we need to convert milli -> seconds..
 func (m mongotime) String() string {
     return fmt.Sprint(time.SecondsToUTC(int64(m)/1e3))
-}
-
-type app struct {
-    Path string "Path"
-    Version string "Version"
-    Name string "Name"
 }
 
 type machine struct {
@@ -51,16 +44,26 @@ type machine struct {
     Cnt int
 }
 
+type app struct {
+    Path string "Path"
+    Version string "Version"
+    Name string "Name"
+}
+
 // helper function to calculate the days since the last update
-// -    the only complicated bit here, is that mongo saves time in milliseconds
-//      and everything else operates in seconds or nanoseconds.
-//      ´because of this, we devide m.date (int64) with 1000 to convert it into seconds
+// - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
+func (m *machine) TimeOfUpdate() *time.Time {
+    return time.SecondsToUTC( int64(m.Date) / 1e3 )
+}
+
+// calculates the number of days from the last update, to the current date.
 func (m *machine) DaysSinceLastUpdate() int64 {
+    // seconds in a day: 60^2 * 24 = 86400
     return (time.Seconds() - (int64(m.Date)/1e3)) / 86400
 }
 
-// if it is more than 14 days since the machine called home, we return true
-func (m *machine) IsOld() bool {
+// returns true if it is more than 14 days since the machine called home
+func (m *machine) isOld() bool {
     if m.DaysSinceLastUpdate() > 14 {
         return true
     }
@@ -75,17 +78,7 @@ func (m *machine) macbookFirewallCheck() bool {
     return true
 }
 
-// returns a time.Time object, calculated from millisecond top seconds
-func (m *machine) TimeOfUpdate() *time.Time {
-    return time.SecondsToUTC(int64(m.Date)/1e3)
-}
-
-// TODO: temp url to the specific machine in our system
-func (m *machine) url() string {
-    return fmt.Sprintf("/machine/%s", m.Id)
-}
-
-// status: if any of the sox parameters are not met, we return true
+// If any of the sox parameters definned in method 'SoxIssues()' are not met, the m.Issue field of the *machine is updated to true, if not it is set to false
 func (m *machine) updateStatus() {
     if m.SoxIssues() {
         m.Issue = true
@@ -94,8 +87,9 @@ func (m *machine) updateStatus() {
     m.Issue = false
 }
 
+// abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-    if m.IsOld() {
+    if m.isOld() {
         return true
     }
     if !m.Recon {
@@ -105,6 +99,11 @@ func (m *machine) SoxIssues() bool {
         return true    
     }
     return false
+}
+
+// temp url to the specific machine in our system
+func (m *machine) url() string {
+    return fmt.Sprintf("/machine/%s", m.Id)
 }
 
 func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
@@ -150,10 +149,6 @@ type appResult struct {
     Apps []app "Apps"
 }
 
-type resultList struct {
-    Res []appResult
-}
-
 func filter_apps(substr string, apps []app) []app {
     tmp := make([]app, 0, 10)
     for _, v := range apps {
@@ -173,8 +168,6 @@ func fuzzyFilter_apps(substr string, apps []app) []app {
     }
     return tmp
 }
-
-
 
 func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     app_str := r.FormValue("search")
