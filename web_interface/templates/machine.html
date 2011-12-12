@@ -1,5 +1,6 @@
 <html>
-<h2><a href="/">Home</a></h2>
+<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
+<!-- <h2><a href="/">Home</a></h2>
 <h2>Hostname: {{.Hostname}} ({.Id})</h2>
 <h3>- IP: {{.Ip}}</h3>
 <h3>- Date: {{.Date}}</h3>
@@ -12,16 +13,23 @@
 <h4>Firewall: {{.Firewall}}</h4>
 <h4>Antivirus: v.{{.Virus_version}}-def.{{.Virus_def}} ({{.Virus_last_run}})</h4>
 <h3>Apps:</h3>
-<table align="left" border="1">
-    <th>Application</th>
-    <th>Version</th>
-    <!-- <th>Path</th> -->
+ -->
+<table class="zebra-striped">
+    <thead>
+    <tr>
+        <th>Application</th>
+        <th>Version</th>
+    </tr>
+    </thead>
+    <tbody>
     {{range .Apps}}
         <tr>
             <td><a href="/listapps/{{.Name}}">{{.Name}}</a></td>
             <td>{{.Version}}</td>
-            <!-- <td>{Path}</td> -->
         </tr>
     {{end}}
+    </tbody>
 </table>
+
+
 </html>

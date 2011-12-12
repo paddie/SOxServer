@@ -4,6 +4,7 @@ package main
 
 import (
     "os"
+    "bytes"
     "path"
 	"fmt"
 	"http"
@@ -15,6 +16,40 @@ import (
     newTemplate "template"
     "strings"
 )
+// private type to handle format conversion,, simple wrapper
+type mongotime int64
+
+// time is stored in milliseconds in mongo
+// - to get a *time.Time we need to convert milli -> seconds..
+func (m mongotime) String() string {
+    return fmt.Sprint(time.SecondsToUTC(int64(m)/1e3))
+}
+
+type app struct {
+    Path string "Path"
+    Version string "Version"
+    Name string "Name"
+}
+
+type machine struct {
+    Firewall bool "Firewall"
+    Virus_version string "Virus_version"
+    Memory string "Memory"
+    Virus_last_run string "Virus_last_run"
+    Hostname string "Hostname"
+    Model_id string "Model_id"
+    Recon bool "Recon"
+    Ip string "Ip"
+    Virus_def string "Virus_def"
+    Id string "_id"
+    Cpu string "Cpu"
+    Osx string "Osx"
+    Apps []app "Apps"
+    Date mongotime "Date"
+    Users []string "Users"
+    Issue bool
+    Cnt int
+}
 
 // helper function to calculate the days since the last update
 // -    the only complicated bit here, is that mongo saves time in milliseconds
@@ -70,41 +105,6 @@ func (m *machine) SoxIssues() bool {
         return true    
     }
     return false
-}
-
-// private type to handle format conversion,, simple wrapper
-type mongotime int64
-
-// time is stored in milliseconds in mongo
-// - to get a *time.Time we need to convert milli -> seconds..
-func (m mongotime) String() string {
-    return fmt.Sprint(time.SecondsToUTC(int64(m)/1e3))
-}
-
-type app struct {
-    Path string "Path"
-    Version string "Version"
-    Name string "Name"
-}
-
-type machine struct {
-    Firewall bool "Firewall"
-    Virus_version string "Virus_version"
-    Memory string "Memory"
-    Virus_last_run string "Virus_last_run"
-    Hostname string "Hostname"
-    Model_id string "Model_id"
-    Recon bool "Recon"
-    Ip string "Ip"
-    Virus_def string "Virus_def"
-    Id string "_id"
-    Cpu string "Cpu"
-    Osx string "Osx"
-    Apps []app "Apps"
-    Date mongotime "Date"
-    Users []string "Users"
-    Issue bool
-    Cnt int
 }
 
 func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
@@ -300,7 +300,7 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         SortKey = "Hostname"
     }
     m := new(machines)
-    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model"}
+    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model", "Delete"}
     // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
     var arr *machine
     i := 1    
@@ -360,12 +360,44 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     }
 }
 
+func sourceHandler(w http.ResponseWriter, r *http.Request) { 
+        defer func() { 
+                if err := recover(); err != nil { 
+                        fmt.Fprintf(w, "%v", err) 
+                } 
+        }()
+        
+        fmt.Println("load source:", r.URL.Path[1:])
+        f, err := os.OpenFile(r.URL.Path[1:], os.O_RDONLY, 0644) 
+        if err != nil { panic(err) }
+        b := new(bytes.Buffer) 
+        b.ReadFrom(f) 
+        fmt.Fprintf(w, b.String())
+}
+
+// func sourceHandler(w http.ResponseWriter, r *http.Request) { 
+//         defer func() { 
+//                 if err := recover(); err != nil { 
+//                         fmt.Fprintf(w, "%v", err) 
+//                 } 
+//         }()
+//         css := r.URL.Path[5:]
+//         fmt.Println("load source:", "bootstrap/" + css)
+//         f, err := os.OpenFile("bootstrap/" + css, os.O_RDONLY, 0644) 
+//         if err != nil { panic(err) }
+//         b := new(bytes.Buffer) 
+//         b.ReadFrom(f) 
+//         fmt.Fprintf(w, b.String()) 
+// }
+
 func main() {
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
     NewHandleFunc("/del/", deleteMachine)
+    http.HandleFunc("/js/", sourceHandler)
+    http.HandleFunc("/bootstrap/", sourceHandler)
     NewHandleFunc("/", machineList)
 
 	http.ListenAndServe(":8080", nil)
