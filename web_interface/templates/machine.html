@@ -19,15 +19,17 @@
 
 
 <div class="container">
+<div class="hero-unit">
+        <h1>{{.Hostname}}</h1> </br></br>
 <div class="row">
-    <div class="span5">
+    <div class="span4">
         <h2>Machine</h2>
         <dl>
             <dt>IP</dt><dd>{{.Ip}}</dd>
             <dt>CPU</dt><dd>{{.Cpu}}</dd>
             <dt>RAM</dt><dd>{{.Memory}}</dd>
+            <dt>Model</dt><dd>{{.Model_id}}</dd>
         </dl>
-        <p>Updated: {{.Date}}</p>
     </div>
     <div class="span4">
         <h2>System</h2>
@@ -40,13 +42,16 @@
     <div class="span4">
         <h2>SOx</h2>
         <dl>
-            <dt>Recon</dt><dd>{{.Recon}}</dd>
-            <dt>Firewall</dt><dd>{{.Firewall}}</dd>
+            <dt>Recon</dt><dd><font {{if .Recon}}color="#00FF00"{{else}}color="#FF0000"{{end}}>{{.Recon}}</font></dd>
+            <dt>Firewall</dt><dd><font {{if .MacbookFirewallCheck}}color="#00FF00"{{else}}color="#FF0000"{{end}}>{{.Firewall}}</font></dd>
             <dt>Antivirus</dt><dd>v.{{.Virus_version}} (def: {{.Virus_def}})</dd>
         </dl>
     </div>
 </div>
-
+<div class="row" class="span10">
+    <p>Updated: <font {{if .IsOld}}color="#FF0000"{{else}}color="#00FF00"{{end}}>{{.Date}} </font></p>
+</div>
+</div> <!-- hero -->
 <div>
 <table class="zebra-striped">
     <thead>

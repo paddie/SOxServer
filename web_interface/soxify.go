@@ -63,7 +63,7 @@ func (m *machine) DaysSinceLastUpdate() int64 {
 }
 
 // returns true if it is more than 14 days since the machine called home
-func (m *machine) isOld() bool {
+func (m *machine) IsOld() bool {
     if m.DaysSinceLastUpdate() > 14 {
         return true
     }
@@ -71,7 +71,7 @@ func (m *machine) isOld() bool {
 }
 
 // if the machine is a macbook and the firewall is "OFF", we return true
-func (m *machine) macbookFirewallCheck() bool {
+func (m *machine) MacbookFirewallCheck() bool {
     if strings.HasPrefix(m.Model_id, "MacBook") && !m.Firewall {
         return false
     }
@@ -89,13 +89,13 @@ func (m *machine) updateStatus() {
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-    if m.isOld() {
+    if m.IsOld() {
         return true
     }
     if !m.Recon {
         return true
     }
-    if !m.macbookFirewallCheck() {
+    if !m.MacbookFirewallCheck() {
         return true    
     }
     return false
@@ -359,11 +359,11 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
 
 type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
 
-// creates a new handler which creates a session forwards 
+// creates a new handler which creates a session to mongodb
 func NewHandleFunc(pattern string,
     fn myhandler) {
     
-    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+        http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
             session, err := mgo.Mongo("152.146.38.56")
             if err != nil { 
                 panic(err)
@@ -371,7 +371,8 @@ func NewHandleFunc(pattern string,
             defer session.Close()
             c := session.DB("sox").C("dict_scripts")
             fn(w, r, &c, len(pattern))
-        })
+
+    })
 }
 
 
