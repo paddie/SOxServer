@@ -1,19 +1,45 @@
 <html>
-<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
-<!-- <h2><a href="/">Home</a></h2>
-<h2>Hostname: {{.Hostname}} ({.Id})</h2>
-<h3>- IP: {{.Ip}}</h3>
-<h3>- Date: {{.Date}}</h3>
-<h3>Users: {{.Users}}</h3>
+<link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
 
-<h3>Machine: {{.Cpu}}, {{.Memory}}</h3>
-<h4>System: {{.Osx}}</h4>
-<h3>SOx</h3>
-<h4>Recon: {{.Recon}}</h4>
-<h4>Firewall: {{.Firewall}}</h4>
-<h4>Antivirus: v.{{.Virus_version}}-def.{{.Virus_def}} ({{.Virus_last_run}})</h4>
-<h3>Apps:</h3>
- -->
+<body>
+    <div class="topbar" data-dropdown="dropdown">
+      <div class="topbar-inner">
+        <div class="container">
+          <h3><a href="#">AdPeople SOx</a></h3>
+          <ul class="nav">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+          <form class="pull-left" action="/search/" method="GET">
+            <input type="text" placeholder="Search For Apps.." name="search" size="60"/>
+            <input type="submit" value="search"/>
+          </form>
+        </div>
+      </div><!-- /topbar-inner -->
+    </div><!-- /topbar -->
+
+<div class="container">
+<div class="row">
+    <div class="span5">
+        <h2>Machine</h2>
+        <p>Hostname: {{.Hostname}}</p>
+        <p>ip: {{.Ip}}</p>
+        <p>Machine: {{.Cpu}}, {{.Memory}}</p>
+        <p>Updated: {{.Date}}</p>
+    </div>
+    <div class="span5">
+        <h2>System</h2>
+        <p>{{.Osx}}</p>
+        <p>Users: {{.Users}}</p>        
+    </div>
+    <div class="span5">
+        <h2>SOx</h2>
+        <p>Recon: {{.Recon}}</p>
+        <p>Firewall: {{.Firewall}}</p>
+        <p>Antivirus: v.{{.Virus_version}} (def: {{.Virus_def}})</p>
+    </div>
+</div>
+
+<div>
 <table class="zebra-striped">
     <thead>
     <tr>
@@ -30,6 +56,7 @@
     {{end}}
     </tbody>
 </table>
-
-
+</div>
+</div>
+</body>
 </html>

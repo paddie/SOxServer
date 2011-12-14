@@ -1,5 +1,14 @@
 <html>
-<h2><a href="/">Home</a></h2>
+<link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
+<div class="container">
+
+    <div class="row">
+        <div class="span16">
+            <h3><a href="/">Home</a></h3>
+        </div>
+    </div>
+
+
 {{range .}}
     <h2><a href="/machine/{{.Id}}">{{.Hostname}}</a></h2>
     <table border="0" cellspacing="4">
@@ -11,4 +20,5 @@
     {{end}}
     </table>
 {{end}}
+</div>
 </html>

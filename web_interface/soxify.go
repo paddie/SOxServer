@@ -362,6 +362,7 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
         
         fmt.Println("load source:", r.URL.Path[1:])
         f, err := os.OpenFile(r.URL.Path[1:], os.O_RDONLY, 0644) 
+        defer f.Close()
         if err != nil { panic(err) }
         b := new(bytes.Buffer) 
         b.ReadFrom(f) 
