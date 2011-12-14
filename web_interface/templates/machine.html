@@ -5,37 +5,45 @@
     <div class="topbar" data-dropdown="dropdown">
       <div class="topbar-inner">
         <div class="container">
-          <h3><a href="#">AdPeople SOx</a></h3>
+          <h3><a href="/">AdPeople SOx</a></h3>
           <ul class="nav">
             <li class="active"><a href="/">Home</a></li>
           </ul>
           <form class="pull-left" action="/search/" method="GET">
-            <input type="text" placeholder="Search For Apps.." name="search" size="60"/>
-            <input type="submit" value="search"/>
+           <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.5em;width:40em"/>
+            <!-- <input type="submit" value="search"/> -->
           </form>
         </div>
       </div><!-- /topbar-inner -->
     </div><!-- /topbar -->
 
+
 <div class="container">
 <div class="row">
     <div class="span5">
         <h2>Machine</h2>
-        <p>Hostname: {{.Hostname}}</p>
-        <p>ip: {{.Ip}}</p>
-        <p>Machine: {{.Cpu}}, {{.Memory}}</p>
+        <dl>
+            <dt>IP</dt><dd>{{.Ip}}</dd>
+            <dt>CPU</dt><dd>{{.Cpu}}</dd>
+            <dt>RAM</dt><dd>{{.Memory}}</dd>
+        </dl>
         <p>Updated: {{.Date}}</p>
     </div>
-    <div class="span5">
+    <div class="span4">
         <h2>System</h2>
-        <p>{{.Osx}}</p>
-        <p>Users: {{.Users}}</p>        
+        <dl>
+            <dt>OS</dt><dd>{{.Osx}}</dd>
+            <dt>Hostname</dt><dd>{{.Hostname}}</dd>
+            <dt>Users</dt><dd>{{.Users}}</dd>
+        </dl>
     </div>
-    <div class="span5">
+    <div class="span4">
         <h2>SOx</h2>
-        <p>Recon: {{.Recon}}</p>
-        <p>Firewall: {{.Firewall}}</p>
-        <p>Antivirus: v.{{.Virus_version}} (def: {{.Virus_def}})</p>
+        <dl>
+            <dt>Recon</dt><dd>{{.Recon}}</dd>
+            <dt>Firewall</dt><dd>{{.Firewall}}</dd>
+            <dt>Antivirus</dt><dd>v.{{.Virus_version}} (def: {{.Virus_def}})</dd>
+        </dl>
     </div>
 </div>
 
@@ -45,6 +53,7 @@
     <tr>
         <th>Application</th>
         <th>Version</th>
+        <!-- <th>Path</th> -->
     </tr>
     </thead>
     <tbody>

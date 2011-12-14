@@ -1,14 +1,23 @@
 <html>
 <link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
-<div class="container">
 
-    <div class="row">
-        <div class="span16">
-            <h3><a href="/">Home</a></h3>
+<body>
+    <div class="topbar" data-dropdown="dropdown">
+      <div class="topbar-inner">
+        <div class="container">
+          <h3><a href="/">AdPeople SOx</a></h3>
+          <ul class="nav">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+          <form class="pull-left" action="/search/" method="GET">
+            <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.5em;width:40em"/>
+            <!-- <input type="submit" value="search"/> -->
+          </form>
         </div>
-    </div>
+      </div><!-- /topbar-inner -->
+    </div><!-- /topbar -->
 
-
+<div class="container">
 {{range .}}
     <h2><a href="/machine/{{.Id}}">{{.Hostname}}</a></h2>
     <table border="0" cellspacing="4">
@@ -21,4 +30,6 @@
     </table>
 {{end}}
 </div>
+
+</body>
 </html>

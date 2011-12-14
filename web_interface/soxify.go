@@ -315,20 +315,7 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     t.Execute(w,m)
 }
 
-func NewHandleFunc(pattern string,
-    fn func(http.ResponseWriter, *http.Request, *mgo.Collection, int)) {
-    
-    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-            session, err := mgo.Mongo("152.146.38.56")
-            if err != nil { 
-                panic(err)
-            }
-            defer session.Close()
-            c := session.DB("sox").C("dict_scripts")
-            fn(w, r, &c, len(pattern))
-        })
-}
-
+// Backup - not fully implemented yet
 func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     SortKey := r.URL.Path[argPos:]
     if len(SortKey) == 0 {
@@ -353,6 +340,7 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     }
 }
 
+// Serve files for CSS and JS purposes
 func sourceHandler(w http.ResponseWriter, r *http.Request) { 
         defer func() { 
                 if err := recover(); err != nil { 
@@ -369,20 +357,23 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, b.String())
 }
 
-// func sourceHandler(w http.ResponseWriter, r *http.Request) { 
-//         defer func() { 
-//                 if err := recover(); err != nil { 
-//                         fmt.Fprintf(w, "%v", err) 
-//                 } 
-//         }()
-//         css := r.URL.Path[5:]
-//         fmt.Println("load source:", "bootstrap/" + css)
-//         f, err := os.OpenFile("bootstrap/" + css, os.O_RDONLY, 0644) 
-//         if err != nil { panic(err) }
-//         b := new(bytes.Buffer) 
-//         b.ReadFrom(f) 
-//         fmt.Fprintf(w, b.String()) 
-// }
+type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
+
+// creates a new handler which creates a session forwards 
+func NewHandleFunc(pattern string,
+    fn myhandler) {
+    
+    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+            session, err := mgo.Mongo("152.146.38.56")
+            if err != nil { 
+                panic(err)
+            }
+            defer session.Close()
+            c := session.DB("sox").C("dict_scripts")
+            fn(w, r, &c, len(pattern))
+        })
+}
+
 
 func main() {
     NewHandleFunc("/listapps/", searchAppExact)
