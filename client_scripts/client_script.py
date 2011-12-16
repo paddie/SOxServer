@@ -107,11 +107,11 @@ def plist_version(path):
 
 def installed_apps(doc):
 	# apps = walk()
-    tf = tempfile.TemporaryFile("w+b")
+    # tf = tempfile.TemporaryFile("w+b")
     apps = subprocess.Popen(["/usr/sbin/system_profiler","-xml","SPApplicationsDataType"],stdout=subprocess.PIPE).communicate()[0]
-    tf.write(apps)
-    tf.seek(0)
-    plist = plistlib.readPlist(tf)
+    # tf.write(apps)
+    # tf.seek(0)
+    plist = plistlib.readPlistFromString(apps)
     doc.update( {"apps":plist[0]["_items"]} )
 
 def sophos_dict(doc):

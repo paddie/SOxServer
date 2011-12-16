@@ -20,7 +20,7 @@
 
 <div class="container">
 <div class="hero-unit">
-        <h1>{{.Hostname}}</h1> </br></br>
+        <h1>{{.Hostname}}</h1><h6>{{.Id}}</h6></br>
 <div class="row">
     <div class="span4">
         <h2>Machine</h2>
@@ -36,21 +36,23 @@
         <dl>
             <dt>OS</dt><dd>{{.Osx}}</dd>
             <dt>Hostname</dt><dd>{{.Hostname}}</dd>
-            <dt>Users</dt><dd>{{.Users}}</dd>
+            <dt>Users</dt>
+                {{range .Users}}<dd>{{.}}</dd>{{end}}
         </dl>
     </div>
     <div class="span4">
         <h2>SOx</h2>
         <dl>
-            <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">{{.Recon}}</span>{{else}}<span class="label warning">{{.Recon}}</span>{{end}}</dd>
-            <dt>Firewall</dt><dd>{{if .Firewall}}<span class="label success">{{.Firewall}}</span>{{else}}<span class="label warning">{{.Firewall}}</span>{{end}}</dd>
+            <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
+            <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label success">{{.Firewall}} - no issue</span>{{else}}<span class="label warning">{{.Firewall}} - issue</span>{{end}}</dd>
             <dt>Antivirus</dt><dd>v.{{.Virus_version}} (def: {{.Virus_def}})</dd>
+            <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
         </dl>
     </div>
 </div>
 <div class="row" class="span10">
     
-    <h3>Updated: {{if .IsOld}}<h1><span class="label warning">{{.Date}}</span></h1>{{else}}<span class="label success">{{.Date}}</span>{{end}}</h3>
+    <h3>Updated: {{if .IsOld}}<h1><span class="danger btn disabled">{{.Date}}</span></h1>{{else}}<span class="success btn disabled">{{.Date}}</span>{{end}}</h3>
 </div>
 </div> <!-- hero -->
 </div>
