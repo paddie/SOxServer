@@ -25,29 +25,29 @@ func (m mongotime) String() string {
 }
 
 type machine struct {
-    Firewall bool "Firewall"
-    Virus_version string "Virus_version"
-    Memory string "Memory"
-    Virus_last_run string "Virus_last_run"
-    Hostname string "Hostname"
-    Model_id string "Model_id"
-    Recon bool "Recon"
-    Ip string "Ip"
-    Virus_def string "Virus_def"
+    Firewall bool //"firewall"
+    Virus_version string //"virus_version"
+    Memory string //"memory"
+    Virus_last_run string // "virus_last_run"
+    Hostname string //"hostname"
+    Model string // "model"
+    Recon bool //"recon"
+    Ip string //"ip"
+    Virus_def string  //"virus_def"
     Id string "_id"
-    Cpu string "Cpu"
-    Osx string "Osx"
-    Apps []app "Apps"
-    Date mongotime "Date"
-    Users []string "Users"
+    Cpu string //"cpu"
+    Osx string //"osx"
+    Apps []app //"apps"
+    Date mongotime //"date"
+    Users []string //"users"
     Issue bool
     Cnt int
 }
 
 type app struct {
-    Path string "Path"
-    Version string "Version"
-    Name string "Name"
+    Path string //"path"
+    Version string //"version"
+    Name string "_name"
 }
 
 // helper function to calculate the days since the last update
@@ -72,7 +72,7 @@ func (m *machine) IsOld() bool {
 
 // if the machine is a macbook and the firewall is "OFF", we return true
 func (m *machine) MacbookFirewallCheck() bool {
-    if strings.HasPrefix(m.Model_id, "MacBook") && !m.Firewall {
+    if strings.HasPrefix(m.Model, "MacBook") && !m.Firewall {
         return false
     }
     return true
@@ -102,7 +102,7 @@ func (m *machine) SoxIssues() bool {
 }
 
 // temp url to the specific machine in our system
-func (m *machine) url() string {
+func (m *machine) Url() string {
     return fmt.Sprintf("/machine/%s", m.Id)
 }
 
@@ -144,9 +144,9 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
 }
 
 type appResult struct {
-    Hostname string "Hostname"
+    Hostname string //"hostname"
     Id string "_id"
-    Apps []app "Apps"
+    Apps []app //"apps"
 }
 
 func filter_apps(substr string, apps []app) []app {
@@ -182,12 +182,12 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
 
     fmt.Println("query: ", p)
     // m := bson.M{}    
-    err := c.Find(bson.M{"Apps.Name" : &bson.RegEx{Pattern:p, Options:"i"}}).
+    err := c.Find(bson.M{"Apps._name" : &bson.RegEx{Pattern:p, Options:"i"}}).
         Select(bson.M{
-            "Hostname":1,
-            "Apps":1,
+            "hostname":1,
+            "apps":1,
             "_id":1}).
-        Sort(bson.M{"Hostname":1}).
+        Sort(bson.M{"hostname":1}).
         For(&res, func() os.Error {
             res.Apps = fuzzyFilter_apps(app_str, res.Apps)
             context = append(context, *res)
@@ -205,13 +205,22 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     t.Execute(w,context)
 }
 
+type header struct {
+    Name, Key string
+}
+
 func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     SortKey := r.URL.Path[argPos:]
     if len(SortKey) == 0 {
-        SortKey = "Hostname"
+        SortKey = "hostname"
     }
     m := new(machines)
-    m.Headers = []string{"Hostname","System","Firewall", "Recon","Sophos Antivirus"}
+    m.Headers = []header{{"#",""},
+        {"Hostname","hostname"},
+        {"System","system"},
+        {"Firewall","firewall"},
+        {"Recon","recon"},
+        {"Sophos Antivirus",""}}
     // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
     var arr *machine
     i := 1    
@@ -254,12 +263,12 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
 
     fmt.Println("query: ", p)
     // m := bson.M{}    
-    err := c.Find(bson.M{"Apps.Name" : &bson.RegEx{Pattern:p, Options:"i"}}).
+    err := c.Find(bson.M{"apps._name" : &bson.RegEx{Pattern:p, Options:"i"}}).
         Select(bson.M{
-            "Hostname":1,
-            "Apps":1,
+            "hostname":1,
+            "apps":1,
             "_id":1}).
-        Sort(bson.M{"Hostname":1}).
+        Sort(bson.M{"hostname":1}).
         For(&res, func() os.Error {
             res.Apps = filter_apps(app_str, res.Apps)
             // res.Apps = tmp
@@ -278,7 +287,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
 
 type machines struct {
     Machines []machine
-    Headers []string
+    Headers []header
 }
 
 type tableItem struct {
@@ -288,17 +297,22 @@ type tableItem struct {
 
 // TODO: make table-view generic - map[string] string {header:value}
 func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    SortKey := r.URL.Path[argPos:]
-    if len(SortKey) == 0 {
-        SortKey = "Hostname"
+    sortKey := r.URL.Path[argPos:]
+    fmt.Printf("SortKey: %v\n", sortKey)
+    if len(sortKey) == 0 {
+        sortKey = "hostname"
     }
+
+    // fmt.Printf("SortKey: %v", SortKey)
+
     m := new(machines)
-    m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model", "Delete"}
+    m.Headers = []header{{"#",""},{"Hostname","hostname"},{"IP","ip"},{"System","system"},{"Recon","recon"},{"Firewall","firewall"},{"Sophos Antivirus",""}, {"Date","date"}, {"Model","model"}, {"Delete",""}}
+    // m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model", "Delete"}
     // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
     var arr *machine
     i := 1    
     err := c.Find(nil).
-        Sort(&map[string]int{SortKey:1}).
+        Sort(&map[string]int{sortKey:1}).
         For(&arr, func() os.Error {
             arr.updateStatus()
             arr.Cnt = i
@@ -319,7 +333,7 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
 func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     SortKey := r.URL.Path[argPos:]
     if len(SortKey) == 0 {
-        SortKey = "Hostname"
+        SortKey = "hostname"
     }
     m := new(machines)
     var arr *machine
@@ -360,17 +374,16 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
 type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
 
 // creates a new handler which creates a session to mongodb
-func NewHandleFunc(pattern string,
-    fn myhandler) {
+func NewHandleFunc(pattern string, fn myhandler) {
     
-        http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-            session, err := mgo.Mongo("152.146.38.56")
-            if err != nil { 
-                panic(err)
-            }
-            defer session.Close()
-            c := session.DB("sox").C("dict_scripts")
-            fn(w, r, &c, len(pattern))
+    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+        session, err := mgo.Mongo("152.146.38.56")
+        if err != nil { 
+            panic(err)
+        }
+        defer session.Close()
+        c := session.DB("sox").C("machines")
+        fn(w, r, &c, len(pattern))
 
     })
 }

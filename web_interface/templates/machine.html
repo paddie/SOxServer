@@ -28,7 +28,7 @@
             <dt>IP</dt><dd>{{.Ip}}</dd>
             <dt>CPU</dt><dd>{{.Cpu}}</dd>
             <dt>RAM</dt><dd>{{.Memory}}</dd>
-            <dt>Model</dt><dd>{{.Model_id}}</dd>
+            <dt>Model</dt><dd>{{.Model}}</dd>
         </dl>
     </div>
     <div class="span4">
@@ -42,23 +42,25 @@
     <div class="span4">
         <h2>SOx</h2>
         <dl>
-            <dt>Recon</dt><dd><font {{if .Recon}}color="#00FF00"{{else}}color="#FF0000"{{end}}>{{.Recon}}</font></dd>
-            <dt>Firewall</dt><dd><font {{if .MacbookFirewallCheck}}color="#00FF00"{{else}}color="#FF0000"{{end}}>{{.Firewall}}</font></dd>
+            <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">{{.Recon}}</span>{{else}}<span class="label warning">{{.Recon}}</span>{{end}}</dd>
+            <dt>Firewall</dt><dd>{{if .Firewall}}<span class="label success">{{.Firewall}}</span>{{else}}<span class="label warning">{{.Firewall}}</span>{{end}}</dd>
             <dt>Antivirus</dt><dd>v.{{.Virus_version}} (def: {{.Virus_def}})</dd>
         </dl>
     </div>
 </div>
 <div class="row" class="span10">
-    <p>Updated: <font {{if .IsOld}}color="#FF0000"{{else}}color="#00FF00"{{end}}>{{.Date}} </font></p>
+    
+    <h3>Updated: {{if .IsOld}}<h1><span class="label warning">{{.Date}}</span></h1>{{else}}<span class="label success">{{.Date}}</span>{{end}}</h3>
 </div>
 </div> <!-- hero -->
+</div>
 <div>
 <table class="zebra-striped">
     <thead>
     <tr>
         <th>Application</th>
         <th>Version</th>
-        <!-- <th>Path</th> -->
+        <th>Path</th>
     </tr>
     </thead>
     <tbody>
@@ -66,11 +68,12 @@
         <tr>
             <td><a href="/listapps/{{.Name}}">{{.Name}}</a></td>
             <td>{{.Version}}</td>
+            <td>{{.Path}}</td>
         </tr>
     {{end}}
     </tbody>
 </table>
 </div>
-</div>
+
 </body>
 </html>

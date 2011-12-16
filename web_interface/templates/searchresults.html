@@ -17,7 +17,7 @@
       </div><!-- /topbar-inner -->
     </div><!-- /topbar -->
 
-<div class="container">
+<div class="container" style="padding-top:40px">
 {{range .}}
     <h2><a href="/machine/{{.Id}}">{{.Hostname}}</a></h2>
     <table border="0" cellspacing="4">
@@ -25,6 +25,7 @@
         <tr>
         <td>{{.Name}}</td>
         <td>{{.Version}}</td>
+        <td>{{.Path}}</td>
        </tr>
     {{end}}
     </table>

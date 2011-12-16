@@ -5,6 +5,7 @@ from pymongo.database import Database
 from uuid import getnode as get_mac
 import platform
 import subprocess
+import tempfile
 
 # import logging
 # logging.basicConfig(filename=os.path.join(sys.path[0], "sox.log"),
@@ -75,45 +76,50 @@ def plist_version(path):
 	except:
 		return "N/A"
 
-def visit(arg, dirname, names):
-	if len(names) == 0:
-		return
-	i = 0
-	# tmp = copy.deepcopy(names)
-	while i < len(names):
-		dir = names[i]
-		folder = "%s/%s" % (dirname,dir)
-		if len(dir) > 4 and dir[-4:] == ".app":
-			plist = folder + "/Contents/Info.plist"
-			vs = "N/A"
-			if os.path.isfile(plist):
-				vs = plist_version(plist)
-			arg.append({
-			   "Path":dirname,
-			   "Name":dir,
-			   "Version":vs
-			})
+# def visit(arg, dirname, names):
+# 	if len(names) == 0:
+# 		return
+# 	i = 0
+# 	# tmp = copy.deepcopy(names)
+# 	while i < len(names):
+# 		dir = names[i]
+# 		folder = "%s/%s" % (dirname,dir)
+# 		if len(dir) > 4 and dir[-4:] == ".app":
+# 			plist = folder + "/Contents/Info.plist"
+# 			vs = "N/A"
+# 			if os.path.isfile(plist):
+# 				vs = plist_version(plist)
+# 			arg.append({
+# 			   "Path":dirname,
+# 			   "Name":dir,
+# 			   "Version":vs
+# 			})
 			
-            # (dirname,dir,vs) 
-			del names[i]
-		else:
-			i += 1
+#             # (dirname,dir,vs) 
+# 			del names[i]
+# 		else:
+# 			i += 1
 
-def walk(root="/Applications"):	
-	args = []
-	os.path.walk(root, visit, args)
-	return args
+# def walk(root="/Applications"):	
+# 	args = []
+# 	os.path.walk(root, visit, args)
+# 	return args
 
 def installed_apps(doc):
-	apps = walk()
-	doc.update( {"Apps":apps} )
+	# apps = walk()
+    tf = tempfile.TemporaryFile("w+b")
+    apps = subprocess.Popen(["/usr/sbin/system_profiler","-xml","SPApplicationsDataType"],stdout=subprocess.PIPE).communicate()[0]
+    tf.write(apps)
+    tf.seek(0)
+    plist = plistlib.readPlist(tf)
+    doc.update( {"apps":plist[0]["_items"]} )
 
 def sophos_dict(doc):
     v_def, mtime = log_information()
     return doc.update({
-        'Virus_version':plist_version('/Applications/Sophos Anti-Virus.app/Contents/Info.plist'),
-        'Virus_def':v_def,
-        'Virus_last_run':mtime,
+        'virus_version':plist_version('/Applications/Sophos Anti-Virus.app/Contents/Info.plist'),
+        'virus_def':v_def,
+        'virus_last_run':mtime,
     })
 
 def firewall_state(path='/Library/Preferences/com.apple.alf.plist'):
@@ -139,7 +145,7 @@ def security_dict(doc):
     else:
         state = True
     doc.update({
-        'Firewall':state,
+        'firewall':state,
         # 'signed_apps':apps
     })
 
@@ -147,11 +153,11 @@ def security_dict(doc):
 def recon_dict(doc):
     if os.path.isfile("/Library/LaunchDaemons/com.wpp.recon.plist"):
         doc.update({
-        'Recon':True
+        'recon':True
         })
     else:
         doc.update({
-        'Recon':False
+        'recon':False
         })
 
 def machine_dict(doc):
@@ -181,17 +187,26 @@ def machine_dict(doc):
     if serial == "N/A":
         print "invalid serial!"
     
+    ips = socket.gethostbyname_ex(socket.gethostname())[2]
+    ip = ""
+    for i in ips:
+        if i.split(".")[2] in ['38', '210']:
+            ip = i
+    # if on home network, the ip might not be xx.xx.[38/210].xx
+    if ip == "":
+        ip = socket.gethostbyname(socket.gethostname())
+    
     doc.update({
         '_id':serial,
         # 'Old_serial':old_serial,
-        'Osx':str(osx_vers),
-        'Model_id':model_id,
-        'Hostname':subprocess.Popen(["/usr/sbin/scutil","--get", "ComputerName"],stdout=subprocess.PIPE).communicate()[0].split("\n")[0],
+        'osx':str(osx_vers),
+        'model':model_id,
+        'hostname':subprocess.Popen(["/usr/sbin/scutil","--get", "ComputerName"],stdout=subprocess.PIPE).communicate()[0].split("\n")[0],
         # 'os_version':platform.mac_ver()[0],
-        'Cpu':cpu_model + " " + mhz,
-        'Memory':memory,
+        'cpu':cpu_model + " " + mhz,
+        'memory':memory,
         # 'mac':hex(get_mac())[:-1],
-        'Ip':socket.gethostbyname(socket.gethostname())
+        'ip':ip
     })
 
 def users():
@@ -258,7 +273,7 @@ def update_db(db, doc, coll="main"):
         try:
             col.update({'_id':id},doc, safe=True)
         except:
-        	print "Failed to update doc:", doc["Hostname"]
+        	print "Failed to update doc:", doc["hostname"]
         	sys.exit(2)
 
 def main():
@@ -266,13 +281,13 @@ def main():
     server_ip = "152.146.38.56"
     # sox database is _for now_ simply "sox"
     main_db = "sox"
-    collection = "dict_scripts"
+    collection = "machines"
     db = mongo_conn(server_ip,db=main_db)
     # 
     date = datetime.today()
     doc = {
-        'Date': date,
-        'Users':users(),
+        'date': date,
+        'users':users(),
     }
     machine_dict(doc)
     sophos_dict(doc)
@@ -280,7 +295,9 @@ def main():
     installed_apps(doc)
     recon_dict(doc)
     update_db(db,doc, coll=collection)
-    # print "debug: Successfully registered machine data"
+    # print "debug: Successfully registered machine data",
+    # for l in doc["Apps"]:
+    #     print l
     # db.drop_collection('main')
 
 if __name__ == '__main__':

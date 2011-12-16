@@ -21,21 +21,21 @@
         <table class="bordered-table">
             <thead>
             <tr>
-               {{range .Headers}} <th>{{.}}</th>{{end}}
+               {{range .Headers}} <th>{{if .Key}}<a href="/{{.Key}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</th>{{end}}
             </tr>
             </thead>
             <tbody>
             {{range .Machines}}
                 <tr <!-- {{if .Issue}} bgcolor=#FF0000 {{else}} bgcolor=#00FF00 {{end}} -- >
                     <td>{{.Cnt}}</td>
-                    <td><a href="/machine/{{.Id}}">{{.Hostname}}</a></td>
+                    <td><a href="{{.Url}}">{{.Hostname}}</a></td>
                     <td>{{.Ip}}</td>
                     <td>{{.Osx}}</td>
                     {{if .Recon}}<td>True</td>{{else}}<td>False</td>{{end}}
                     {{if .Firewall}}<td>On</td>{{else}}<td>Off</td>{{end}}
                     <td>{{.Virus_version}} ({{.Virus_def}})</td>
                     <td>{{.Date}}</td>
-                    <td>{{.Model_id}}</td>
+                    <td>{{.Model}}</td>
                     <td><a href="/del/{{.Id}}">Delete</a></td>
                 </tr>
             {{end}}
@@ -51,4 +51,4 @@
 </script>
 -->
 </body>
-</html>
+</html> 
