@@ -293,7 +293,7 @@ type machines struct {
 // TODO: make table-view generic - map[string] string {header:value}
 func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     sortKey := r.URL.Path[argPos:]
-    fmt.Printf("SortKey: %v\n", sortKey)
+    // fmt.Printf("SortKey: %v\n", sortKey)
     if len(sortKey) == 0 {
         sortKey = "hostname"
     }
