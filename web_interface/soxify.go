@@ -290,11 +290,6 @@ type machines struct {
     Headers []header
 }
 
-type tableItem struct {
-    header string
-    value string
-}
-
 // TODO: make table-view generic - map[string] string {header:value}
 func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
     sortKey := r.URL.Path[argPos:]
