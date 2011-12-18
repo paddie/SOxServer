@@ -16,6 +16,30 @@ import (
     "net"
 )
 
+type app struct {
+    Path string //"path"
+    Version string //"version"
+    Name string "_name"
+    // Info string
+}
+
+
+type appResult struct {
+    Hostname string //"hostname"
+    Id string "_id"
+    Apps []app //"apps"
+}
+
+func (m *app) ShortVersion() string {
+    const max = 30
+    const split = max/2
+    if len(m.Version) > max {
+        diff := len(m.Version) - max
+        return m.Version[:split] + "..." + m.Version[split+diff:]
+    }
+    return m.Version
+}
+
 // private type to handle format conversion from mongo's milisecond time-format, 
 type mongotime int64
 
@@ -41,20 +65,18 @@ type machine struct {
     Apps []app //"apps"
     Date mongotime //"date"
     Users []string //"users"
-    Issue bool
     Cnt int
 }
 
-type app struct {
-    Path string //"path"
-    Version string //"version"
-    Name string "_name"
-}
 
 // helper function to calculate the days since the last update
 // - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
 func (m *machine) TimeOfUpdate() *time.Time {
     return time.SecondsToUTC( int64(m.Date) / 1e3 )
+}
+
+func (m *machine) Seconds() int64 {
+    return int64(m.Date) / 1e3
 }
 
 // calculates the number of days from the last update, to the current date.
@@ -77,15 +99,6 @@ func (m *machine) MacbookFirewallCheck() bool {
         return false
     }
     return true
-}
-
-// If any of the sox parameters definned in method 'SoxIssues()' are not met, the m.Issue field of the *machine is updated to true, if not it is set to false
-func (m *machine) updateStatus() {
-    if m.SoxIssues() {
-        m.Issue = true
-        return
-    }
-    m.Issue = false
 }
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
@@ -126,7 +139,7 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    mach.updateStatus()
+    // mach.updateStatus()
     t.Execute(w,mach)
 }
 
@@ -142,12 +155,6 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     }
     http.Redirect(w,r, "/", 302)
     return
-}
-
-type appResult struct {
-    Hostname string //"hostname"
-    Id string "_id"
-    Apps []app //"apps"
 }
 
 func filter_apps(substr string, apps []app) []app {
@@ -206,50 +213,6 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     t.Execute(w,context)
 }
 
-type header struct {
-    Name, Key string
-}
-
-func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    SortKey := r.URL.Path[argPos:]
-    if len(SortKey) == 0 {
-        SortKey = "hostname"
-    }
-    m := new(machines)
-    m.Headers = []header{{"#",""},
-        {"Hostname","hostname"},
-        {"System","system"},
-        {"Firewall","firewall"},
-        {"Recon","recon"},
-        {"Sophos Antivirus",""}}
-    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
-    var arr *machine
-    i := 1    
-    err := c.Find(nil).
-        Sort(&map[string]int{SortKey:1}).
-        For(&arr, func() os.Error {
-            arr.updateStatus()
-            arr.Cnt = i
-            i++
-            m.Machines = append(m.Machines, *arr)
-            return nil
-        })
-    if err != nil {
-        http.NotFound(w,r)
-        return
-    }
-
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
-
-    t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
-    if err != nil {
-        panic(err)
-    }
-    t.Execute(w,m)
-}
 
 
 func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
@@ -281,7 +244,6 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         http.NotFound(w,r)
         return
     }
-
     t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
     t.Execute(w,context)
 }
@@ -289,6 +251,10 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
 type machines struct {
     Machines []machine
     Headers []header
+}
+
+type header struct {
+    Name, Key string
 }
 
 // TODO: make table-view generic - map[string] string {header:value}
@@ -302,15 +268,23 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     // fmt.Printf("SortKey: %v", SortKey)
 
     m := new(machines)
-    m.Headers = []header{{"#",""},{"Hostname","hostname"},{"IP","ip"},{"System","system"},{"Recon","recon"},{"Firewall","firewall"},{"Sophos Antivirus",""}, {"Date","date"}, {"Model","model"}, {"Delete",""}}
-    // m.Headers = []string{"#","Hostname", "IP", "System", "Recon", "Firewall", "Sophos Antivirus", "Date", "Model", "Delete"}
-    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
+    m.Headers = []header{
+        {"#",""},
+        {"Hostname","hostname"},
+        {"IP","ip"},
+        {"System","system"},
+        {"Recon","recon"},
+        {"Firewall","firewall"},
+        {"Sophos Antivirus",""},
+        {"Date","date"},
+        {"Model","model"},
+        {"Delete",""}}
     var arr *machine
     i := 1    
     err := c.Find(nil).
         Sort(&map[string]int{sortKey:1}).
         For(&arr, func() os.Error {
-            arr.updateStatus()
+            // arr.updateStatus()
             arr.Cnt = i
             i++
             m.Machines = append(m.Machines, *arr)
@@ -322,6 +296,47 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     }
     t := newTemplate.Must(newTemplate.New("machinelistt").ParseFile("templates/machinelist.html"))
     // t, err := old.ParseFile(path.Join(wd, "/templates/machinelist.html"), nil)
+    t.Execute(w,m)
+}
+
+func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+    SortKey := r.URL.Path[argPos:]
+    if len(SortKey) == 0 {
+        SortKey = "hostname"
+    }
+    m := new(machines)
+    m.Headers = []header{{"#",""},
+        {"Hostname","hostname"},
+        {"System","system"},
+        {"Firewall","firewall"},
+        {"Recon","recon"},
+        {"Sophos Antivirus",""}}
+    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
+    var arr *machine
+    i := 1    
+    err := c.Find(nil).
+        Sort(&map[string]int{SortKey:1}).
+        For(&arr, func() os.Error {
+            // arr.updateStatus()
+            arr.Cnt = i
+            i++
+            m.Machines = append(m.Machines, *arr)
+            return nil
+        })
+    if err != nil {
+        http.NotFound(w,r)
+        return
+    }
+
+    wd, err := os.Getwd()
+    if err != nil {
+        panic(err)
+    }
+
+    t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
+    if err != nil {
+        panic(err)
+    }
     t.Execute(w,m)
 }
 
@@ -337,7 +352,7 @@ func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, ar
     err := c.Find(nil).
         Sort(&map[string]int{SortKey:1}).
         For(&arr, func() os.Error {
-            arr.updateStatus()
+            // arr.updateStatus()
             arr.Cnt = i
             i++
             m.Machines = append(m.Machines, *arr)
@@ -373,21 +388,16 @@ type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
 func NewHandleFunc(pattern string, fn myhandler) {
 
     http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-        var ip string
-        if isTestLocation() {
-            ip = "localhost"
-        } else {
-            ip = "152.146.38.56"   
-        }
-        // session, err := mgo.Mongo("152.146.38.56")
         session, err := mgo.Mongo(ip)
         if err != nil { 
             panic(err)
         }
         defer session.Close()
+
+        session.SetSyncTimeout(1e9)
+
         c := session.DB("sox").C("machines")
         fn(w, r, &c, len(pattern))
-
     })
 }
 
@@ -419,8 +429,18 @@ func isTestLocation() bool {
     return true
 }
 
+// var session *mgo.Session
+
+var ip string
+// var funcs = newTemplate.FuncMap{"short": Short}
 
 func main() {
+    if isTestLocation() {
+        ip = "localhost"
+    } else {
+        ip = "152.146.38.56"   
+    }
+
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)

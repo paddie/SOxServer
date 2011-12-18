@@ -45,7 +45,9 @@
         <dl>
             <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
             <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label success">{{.Firewall}} - no issue</span>{{else}}<span class="label warning">{{.Firewall}} - issue</span>{{end}}</dd>
-            <dt>Antivirus</dt><dd>v.{{.Virus_version}} (def: {{.Virus_def}})</dd>
+            <dt>Antivirus</dt>
+                <dd>Application: {{.Virus_version}}</dd>
+                <dd>Definitions: {{.Virus_def}}</dd>
             <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
         </dl>
     </div>
@@ -69,7 +71,7 @@
     {{range .Apps}}
         <tr>
             <td><a href="/listapps/{{.Name}}">{{.Name}}</a></td>
-            <td>{{.Version}}</td>
+            <td>{{.ShortVersion}}</td>
             <td>{{.Path}}</td>
         </tr>
     {{end}}
