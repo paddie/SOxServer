@@ -32,10 +32,10 @@ type appResult struct {
 
 func (m *app) ShortVersion() string {
     const max = 30
-    const split = max/2
+    // const split = max/2
     if len(m.Version) > max {
-        diff := len(m.Version) - max
-        return m.Version[:split] + "..." + m.Version[split+diff:]
+        // diff := len(m.Version) - max
+        return m.Version[:max] + "..."
     }
     return m.Version
 }
