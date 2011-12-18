@@ -13,6 +13,7 @@ import (
     old "old/template"
     newTemplate "template"
     "strings"
+    "net"
 )
 
 // private type to handle format conversion from mongo's milisecond time-format, 
@@ -182,7 +183,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
 
     fmt.Println("query: ", p)
     // m := bson.M{}    
-    err := c.Find(bson.M{"Apps._name" : &bson.RegEx{Pattern:p, Options:"i"}}).
+    err := c.Find(bson.M{"apps._name" : &bson.RegEx{Pattern:p, Options:"i"}}).
         Select(bson.M{
             "hostname":1,
             "apps":1,
@@ -370,9 +371,16 @@ type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
 
 // creates a new handler which creates a session to mongodb
 func NewHandleFunc(pattern string, fn myhandler) {
-    
+
     http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-        session, err := mgo.Mongo("152.146.38.56")
+        var ip string
+        if isTestLocation() {
+            ip = "localhost"
+        } else {
+            ip = "152.146.38.56"   
+        }
+        // session, err := mgo.Mongo("152.146.38.56")
+        session, err := mgo.Mongo(ip)
         if err != nil { 
             panic(err)
         }
@@ -381,6 +389,34 @@ func NewHandleFunc(pattern string, fn myhandler) {
         fn(w, r, &c, len(pattern))
 
     })
+}
+
+func isTestLocation() bool {
+    name, err := os.Hostname() 
+    if err != nil { 
+        fmt.Printf("Oops: %v\n", err)
+        return true
+    }
+    // fmt.Println(name)
+    addrs, _ := net.LookupHost(name) 
+    if err != nil {
+        fmt.Printf("Oops: %v\n", err) 
+        return true
+    }
+
+    for _,v := range addrs {
+        if strings.Contains(v, ".") {
+            third := strings.SplitN(v, ".", 4)[2]
+
+            if third == "38" || third == "210" {
+                fmt.Println("Work Network! Connecting to mongodb on ip: 152.146.38.56")
+                return false
+            }   
+        }
+    }
+    fmt.Println("Local Network! Connecting to localhost..")
+
+    return true
 }
 
 
