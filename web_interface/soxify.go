@@ -3,14 +3,14 @@ package main
 import (
     "os"
     "bytes"
-    "path"
+    // "path"
 	"fmt"
 	"http"
     "launchpad.net/gobson/bson"
 	"launchpad.net/mgo"
     // "reflect"
     "time"
-    old "old/template"
+    // old "old/template"
     newTemplate "template"
     "strings"
     "net"
@@ -259,7 +259,8 @@ type header struct {
 
 // TODO: make table-view generic - map[string] string {header:value}
 func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    sortKey := r.URL.Path[argPos:]
+    // sortKey := r.URL.Path[argPos:]
+    sortKey := "hostname"
     // fmt.Printf("SortKey: %v\n", sortKey)
     if len(sortKey) == 0 {
         sortKey = "hostname"
@@ -272,7 +273,7 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         {"#",""},
         {"Hostname","hostname"},
         {"IP","ip"},
-        {"System","system"},
+        {"System","osx"},
         {"Recon","recon"},
         {"Firewall","firewall"},
         {"Sophos Antivirus",""},
@@ -299,71 +300,71 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
     t.Execute(w,m)
 }
 
-func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    SortKey := r.URL.Path[argPos:]
-    if len(SortKey) == 0 {
-        SortKey = "hostname"
-    }
-    m := new(machines)
-    m.Headers = []header{{"#",""},
-        {"Hostname","hostname"},
-        {"System","system"},
-        {"Firewall","firewall"},
-        {"Recon","recon"},
-        {"Sophos Antivirus",""}}
-    // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
-    var arr *machine
-    i := 1    
-    err := c.Find(nil).
-        Sort(&map[string]int{SortKey:1}).
-        For(&arr, func() os.Error {
-            // arr.updateStatus()
-            arr.Cnt = i
-            i++
-            m.Machines = append(m.Machines, *arr)
-            return nil
-        })
-    if err != nil {
-        http.NotFound(w,r)
-        return
-    }
+// func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+//     SortKey := r.URL.Path[argPos:]
+//     if len(SortKey) == 0 {
+//         SortKey = "hostname"
+//     }
+//     m := new(machines)
+//     m.Headers = []header{{"#",""},
+//         {"Hostname","hostname"},
+//         {"System","system"},
+//         {"Firewall","firewall"},
+//         {"Recon","recon"},
+//         {"Sophos Antivirus",""}}
+//     // m.Headers = []string{"#","Hostname", "IP", "System", "Firewall", "Sophos Antivirus", "Date", "Model"}   
+//     var arr *machine
+//     i := 1    
+//     err := c.Find(nil).
+//         Sort(&map[string]int{SortKey:1}).
+//         For(&arr, func() os.Error {
+//             // arr.updateStatus()
+//             arr.Cnt = i
+//             i++
+//             m.Machines = append(m.Machines, *arr)
+//             return nil
+//         })
+//     if err != nil {
+//         http.NotFound(w,r)
+//         return
+//     }
 
-    wd, err := os.Getwd()
-    if err != nil {
-        panic(err)
-    }
+//     wd, err := os.Getwd()
+//     if err != nil {
+//         panic(err)
+//     }
 
-    t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
-    if err != nil {
-        panic(err)
-    }
-    t.Execute(w,m)
-}
+//     t, err := old.ParseFile(path.Join(wd, "/templates/soxlist.html"), nil)
+//     if err != nil {
+//         panic(err)
+//     }
+//     t.Execute(w,m)
+// }
 
 // Backup - not fully implemented yet
-func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    SortKey := r.URL.Path[argPos:]
-    if len(SortKey) == 0 {
-        SortKey = "hostname"
-    }
-    m := new(machines)
-    var arr *machine
-    i := 1    
-    err := c.Find(nil).
-        Sort(&map[string]int{SortKey:1}).
-        For(&arr, func() os.Error {
-            // arr.updateStatus()
-            arr.Cnt = i
-            i++
-            m.Machines = append(m.Machines, *arr)
-            //t.Write(w,arr)
-            return nil
-            })
-    if err != nil {
-        http.NotFound(w,r)
-        return
-    }
-}
+// func writeFixtures(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+//     SortKey := r.URL.Path[argPos:]
+//     if len(SortKey) == 0 {
+//         SortKey = "hostname"
+//     }
+//     m := new(machines)
+//     var arr *machine
+//     i := 1    
+//     err := c.Find(nil).
+//         Sort(&map[string]int{SortKey:1}).
+//         For(&arr, func() os.Error {
+//             // arr.updateStatus()
+//             arr.Cnt = i
+//             i++
+//             m.Machines = append(m.Machines, *arr)
+//             //t.Write(w,arr)
+//             return nil
+//             })
+//     if err != nil {
+//         http.NotFound(w,r)
+//         return
+//     }
+// }
 
 // Serve files for CSS and JS purposes
 func sourceHandler(w http.ResponseWriter, r *http.Request) { 
@@ -388,19 +389,20 @@ type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
 func NewHandleFunc(pattern string, fn myhandler) {
 
     http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-        session, err := mgo.Mongo(ip)
+        session, err := mgo.Mongo("152.146.38.56")
         if err != nil { 
             panic(err)
         }
         defer session.Close()
 
-        session.SetSyncTimeout(1e9)
+        session.SetSyncTimeout(5e9)
 
         c := session.DB("sox").C("machines")
         fn(w, r, &c, len(pattern))
     })
 }
 
+// check local IP to see if we're 
 func isTestLocation() bool {
     name, err := os.Hostname() 
     if err != nil { 
@@ -429,21 +431,20 @@ func isTestLocation() bool {
     return true
 }
 
-// var session *mgo.Session
-
-var ip string
+// var ip string
 // var funcs = newTemplate.FuncMap{"short": Short}
 
 func main() {
-    if isTestLocation() {
-        ip = "localhost"
-    } else {
-        ip = "152.146.38.56"   
-    }
-
+    // if isTestLocation() {
+    //     ip = "localhost"
+    // } else {
+    //     ip = "152.146.38.56"
+    // }
+    // ip ="152.146.38.56" 
+    // fmt.Println("Conecting to ip: ", ip)
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
-    NewHandleFunc("/sox/", soxlist)
+    // NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
     NewHandleFunc("/del/", deleteMachine)
     http.HandleFunc("/js/", sourceHandler)
