@@ -70,9 +70,16 @@
     <tbody>
     {{range .Apps}}
         <tr>
-            <td><a href="/listapps/{{.Name}}">{{.Name}}</a></td>
+            <td><a href="/listapps/?name={{.Name}}">{{.Name}}</a></td>
             <td>{{.ShortVersion}}</td>
-            <td>{{.Path}}</td>
+            <td>{{.ShortPath}}</td>
+            <td>
+                <form action="/newlicense/" method="POST">
+                    <input type="hidden" name="app" value="{{.Name}}"/>
+                    <input type="hidden" name="path" value="{{.Path}}"/>
+                    <input type="submit" value="license"/>
+                </form>
+            </td>
         </tr>
     {{end}}
     </tbody>
