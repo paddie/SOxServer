@@ -1,56 +1,30 @@
-<html>
-<link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
-
-<body>
-    <div class="topbar" data-dropdown="dropdown">
-      <div class="topbar-inner">
-        <div class="container">
-          <h3><a href="/">AdPeople SOx</a></h3>
-          <ul class="nav">
-            <li class="active"><a href="/">Home</a></li>
-            <li>
-              <form class="pull-left" action="/search/" method="GET">
-              <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.2em;width:40em"/>
-              </form>
-            </li>
-            <li><a href="/sox/">download SoxReport</a></li>
-          </ul>
-        </div>
-      </div><!-- /topbar-inner -->
-    </div><!-- /topbar -->
-
-    <div>
-        <table class="bordered-table">
-            <thead>
-            <tr>
-               {{range .Headers}} <th>{{if .Key}}<a href="/?sortkey={{.Key}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</th>{{end}}
-            </tr>
-            </thead>
-            <tbody>
-            {{range .Machines}}
-                <tr {{if .SoxIssues}} bgcolor=#FF0000 {{else}} bgcolor=#00FF00 {{end}} >
-                    <td>{{.Cnt}}</td>
-                    <td><a href="{{.Url}}">{{.Hostname}}</a></td>
-                    <td>{{.Ip}}</td>
-                    <td>{{.Osx}}</td>
-                    {{if .Recon}}<td>True</td>{{else}}<td>False</td>{{end}}
-                    {{if .Firewall}}<td>On</td>{{else}}<td>Off</td>{{end}}
-                    <td>{{.Virus_version}} ({{.Virus_def}})</td>
-                    <td>{{.Date}}</td>
-                    <td>{{.Model}}</td>
-                    <td><a href="/del/{{.Id}}">Delete</a></td>
-                </tr>
-            {{end}}
-            </tbody>
-        </table>
-    </div>
-<!-- </div> --> <!-- container -->
-<!-- <script src="/js/jquery.js" type="text/javascript"></script> 
-<script type="text/javascript">
-  $(document).ready(function() {
-    JQuery("table#sortTableExample").tablesorter({ sortList: [[1,0]] });
-  });
-</script>
--->
-</body>
-</html> 
+{{define "machinelist"}}
+{{template "base_top"}}
+{{template "topbar"}}
+  <div>
+      <table class="bordered-table">
+          <thead>
+          <tr>
+             {{range .Headers}} <th>{{if .Key}}<a href="/?sortkey={{.Key}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</th>{{end}}
+          </tr>
+          </thead>
+          <tbody>
+          {{range .Machines}}
+              <tr {{if .SoxIssues}} bgcolor=#FF0000 {{else}} bgcolor=#00FF00 {{end}} >
+                  <td>{{.Cnt}}</td>
+                  <td><a href="{{.Url}}">{{.Hostname}}</a></td>
+                  <td>{{.Ip}}</td>
+                  <td>{{.Osx}}</td>
+                  {{if .Recon}}<td>True</td>{{else}}<td>False</td>{{end}}
+                  {{if .Firewall}}<td>On</td>{{else}}<td>Off</td>{{end}}
+                  <td>{{.Virus_version}} ({{.Virus_def}})</td>
+                  <td>{{.Date}}</td>
+                  <td>{{.Model}}</td>
+                  <td><a href="/del/{{.Id}}">Delete</a></td>
+              </tr>
+          {{end}}
+          </tbody>
+      </table>
+  </div>
+{{template "base_bottom"}}
+{{end}}

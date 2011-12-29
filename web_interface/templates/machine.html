@@ -1,72 +1,56 @@
-<html>
-<link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
-
-<body>
-    <div class="topbar" data-dropdown="dropdown">
-      <div class="topbar-inner">
-        <div class="container">
-          <h3><a href="/">AdPeople SOx</a></h3>
-          <ul class="nav">
-            <li class="active"><a href="/">Home</a></li>
-          </ul>
-          <form class="pull-left" action="/search/" method="GET">
-           <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.5em;width:40em"/>
-            <!-- <input type="submit" value="search"/> -->
-          </form>
-        </div>
-      </div><!-- /topbar-inner -->
-    </div><!-- /topbar -->
-
-
+{{define "machine"}}
+{{template "base_top"}}
+{{template "topbar"}}
 <div class="container">
-<div class="hero-unit">
+    <div class="hero-unit">
         <h1>{{.Hostname}}</h1><h6>{{.Id}}</h6></br>
-<div class="row">
-    <div class="span4">
-        <h2>Machine</h2>
-        <dl>
-            <dt>IP</dt><dd>{{.Ip}}</dd>
-            <dt>CPU</dt><dd>{{.Cpu}}</dd>
-            <dt>RAM</dt><dd>{{.Memory}}</dd>
-            <dt>Model</dt><dd>{{.Model}}</dd>
-        </dl>
-    </div>
-    <div class="span4">
-        <h2>System</h2>
-        <dl>
-            <dt>OS</dt><dd>{{.Osx}}</dd>
-            <dt>Hostname</dt><dd>{{.Hostname}}</dd>
-            <dt>Users</dt>
-                {{range .Users}}<dd>{{.}}</dd>{{end}}
-        </dl>
-    </div>
-    <div class="span4">
-        <h2>SOx</h2>
-        <dl>
-            <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
-            <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label success">{{.Firewall}} - no issue</span>{{else}}<span class="label warning">{{.Firewall}} - issue</span>{{end}}</dd>
-            <dt>Antivirus</dt>
-                <dd>Application: {{.Virus_version}}</dd>
-                <dd>Definitions: {{.Virus_def}}</dd>
-            <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
-        </dl>
-    </div>
-</div>
-<div class="row" class="span10">
-    
-    <h3>Updated: {{if .IsOld}}<h1><span class="danger btn disabled">{{.Date}}</span></h1>{{else}}<span class="success btn disabled">{{.Date}}</span>{{end}}</h3>
-</div>
-</div> <!-- hero -->
-</div>
-<div>
-<table class="zebra-striped">
+        <div class="row">
+            <div class="span4">
+                <h2>Machine</h2>
+                <dl>
+                    <dt>IP</dt><dd>{{.Ip}}</dd>
+                    <dt>CPU</dt><dd>{{.Cpu}}</dd>
+                    <dt>RAM</dt><dd>{{.Memory}}</dd>
+                    <dt>Model</dt><dd>{{.Model}}</dd>
+                </dl>
+            </div>
+            <div class="span4">
+                <h2>System</h2>
+                <dl>
+                    <dt>OS</dt><dd>{{.Osx}}</dd>
+                    <dt>Hostname</dt><dd>{{.Hostname}}</dd>
+                    <dt>Users</dt>
+                        {{range .Users}}<dd>{{.}}</dd>{{end}}
+                </dl>
+            </div>
+            <div class="span4">
+                <h2>SOx</h2>
+                <dl>
+                    <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
+                    <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label success">{{.Firewall}} - no issue</span>{{else}}<span class="label warning">{{.Firewall}} - issue</span>{{end}}</dd>
+                    <dt>Antivirus</dt>
+                        <dd>Application: {{.Virus_version}}</dd>
+                        <dd>Definitions: {{.Virus_def}}</dd>
+                    <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row" class="span10">
+            
+            <h3>Updated: {{if .IsOld}}<h1><span class="danger btn disabled">{{.Date}}</span></h1>{{else}}<span class="success btn disabled">{{.Date}}</span>{{end}}</h3>
+        </div>
+    </div> <!-- hero -->
+</div> <!-- container -->
+
+<div> <table class="zebra-striped">
     <thead>
-    <tr>
-        <th>Application</th>
-        <th>Version</th>
-        <th>Path</th>
-    </tr>
-    </thead>
+        <tr>
+            <th>Application</th>
+            <th>Version</th>
+            <th>Path</th>
+        </tr>
+    </thead><!-- thead -->
+
     <tbody>
     {{range .Apps}}
         <tr>
@@ -82,9 +66,7 @@
             </td>
         </tr>
     {{end}}
-    </tbody>
-</table>
-</div>
-
-</body>
-</html>
+    </tbody> <!-- tbody -->
+</table> </div> <!-- table -->
+{{template "base_bottom"}}
+{{end}}

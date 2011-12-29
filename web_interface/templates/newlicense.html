@@ -1,29 +1,15 @@
-<html>
-<link rel="stylesheet" type="text/css" href="/bootstrap/bootstrap.css">
+{{define "newlicense"}}
+{{template "base_top"}}
+{{template "topbar"}}
 
-<body>
-    <div class="topbar" data-dropdown="dropdown">
-      <div class="topbar-inner">
-        <div class="container">
-          <h3><a href="/">AdPeople SOx</a></h3>
-          <ul class="nav">
-            <li class="active"><a href="/">Home</a></li>
-          </ul>
-          <form class="pull-left" action="/search/" method="GET">
-            <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.5em;width:40em"/>
-            <!-- <input type="submit" value="search"/> -->
-          </form>
-        </div>
-      </div><!-- /topbar-inner -->
-    </div><!-- /topbar -->
 <div class="container" style="padding-top:40px">
 <legend><h2>Add New License </h2></legend>
-For {{.Name}} </br>
-At path: {{.Path}}
+App: {{.Name}} </br>
+Path: {{.Path}}
 <section>
   <div class="row">
     <div class="span12">
-      <form action="/license/" method="POST">
+      <form action="/addlicense/" method="POST">
         <fieldset>
       
         <div class="clearfix">
@@ -37,14 +23,12 @@ At path: {{.Path}}
             <input class="xlarge" type="hidden" name="path" value="{{.Path}}" input>
           </div>
         </div>
-
         <div class="clearfix">
           <label for="number"/>Number of licenses:</label>
           <div class="input">
             <input class="xlarge" style="height:2em" type="text" placeholder="#" name="count" id="number" />
           </div>
         </div>
-        
         <div class="cleafix">
           <div class="input">
             <input type="submit" value="commit license"/>
@@ -58,5 +42,5 @@ At path: {{.Path}}
 
 </section>
 </div>
-</body>
-</html>
+{{template "base_bottom"}}
+{{end}}

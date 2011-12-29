@@ -11,7 +11,7 @@ import (
     // "reflect"
     "time"
     // old "old/template"
-    newTemplate "template"
+    "template"
     "strings"
     // "net"
     "strconv"
@@ -131,12 +131,15 @@ func (m *machine) Url() string {
 /***********************************
 view details for each machine
 ************************************/
-func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     key := r.URL.Path[argPos:]
     if len(key) < 11 {
         http.NotFound(w,r)
         return
     }
+
+    c := db.C("machines")
+
     var mach *machine
     err := c.Find(map[string]string{"_id" : key}).
         One(&mach)
@@ -144,25 +147,19 @@ func machineView(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-
-    t := newTemplate.Must(newTemplate.New("machineview").ParseFile("templates/machine.html"))
-    if err != nil {
-        http.NotFound(w,r)
-        return
-    }
-    // mach.updateStatus()
-    t.Execute(w,mach)
+    set.Execute(w,"machine",mach)
 }
 
 /***********************************
 delete a machine given machine_id
 ************************************/
-func deleteMachine(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     machine_id := r.URL.Path[argPos:]
     if len(machine_id) == 0 {
         http.Redirect(w, r, "/", 302)
     }
     fmt.Println("Deleting machine: ", machine_id)
+    c := db.C("machines")
     err := c.Remove(map[string]string{"_id": machine_id})
     if err != nil {
         fmt.Print(err)
@@ -201,10 +198,12 @@ func fuzzyFilter_apps(substr string, apps []app) []app {
 // queries a list of machines that contain the substring
 // - filters using fuzzyFilter_apps
 ********************************************************/
-func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     app_str := r.FormValue("search")
     // app_str2 := r.FormValue("test2")
     fmt.Println("searching for substring in apps: ", r.Form)
+
+    c := db.C("machines")
 
     context := make([]appResult, 0, 10)
     var res *appResult
@@ -231,7 +230,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
     }
     // t := newTemplate.Must(newTemplate.New("results").ParseFile("templates/machine.html"))
 
-    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
+    t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
 
     t.Execute(w,context)
 }
@@ -240,18 +239,15 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, c *mgo.Collectio
 // queries a list of machines that has exacly the machine
 // - filters using filter_apps
 *********************************************************/
-func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     app_str := r.FormValue("name")
     fmt.Println("searching for substring in apps: ", app_str)
 
     context := make([]appResult, 0, 10)
     var res *appResult
 
-    // p := `^`+ app_str
-    // o := "i"
+    c := db.C("machines")
 
-    // fmt.Println("query: ", p)
-    // m := bson.M{}    
     err := c.Find(bson.M{"apps._name" : app_str}).
         Select(bson.M{
             "hostname":1,
@@ -269,7 +265,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, c *mgo.Collection, a
         http.NotFound(w,r)
         return
     }
-    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
+    t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
     t.Execute(w,context)
 }
 
@@ -286,7 +282,7 @@ type header struct {
 }
 
 // TODO: define which fields are shown using the header-file
-func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func machineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     sortKey := r.FormValue("sortkey")
     if sortKey == "" {
         sortKey = "hostname"
@@ -303,6 +299,9 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         {"Date","date"},
         {"Model","model"},
         {"Delete",""}}
+    
+    c := db.C("machines")
+
     var arr *machine
     i := 1    
     err := c.Find(nil).
@@ -318,94 +317,98 @@ func machineList(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argP
         http.NotFound(w,r)
         return
     }
-    t := newTemplate.Must(newTemplate.New("machinelistt").ParseFile("templates/machinelist.html"))
-    t.Execute(w,m)
+    set.Execute(w,"machinelist", m)
 }
 
-type license struct {
-    Name, Path string
-    Count int
-    Serials []string
-}
-
-func newLicense(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func newLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     app := r.FormValue("app")
     path := r.FormValue("path")
 
     formData := &license{Name:app,
         Path:path}
-
-    t := newTemplate.Must(newTemplate.New("addlicense").ParseFile("templates/addlicense.html"))
-    t.Execute(w,formData)
+    
+    set.Execute(w,"newlicense", formData)
 }
 
-func addLicense(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func addLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     app := r.FormValue("app")
     path := r.FormValue("path")
-    count := r.FormValue("count")
+    val := r.FormValue("count")
 
-    val, err := strconv.Atoi(count)
+    fmt.Printf("app:%v, path:%v, count:%v", app,path,val)
+
+    count, err := strconv.Atoi(val)
     if err != nil {
-        formData := &license{Name:app,
-            Path:path}
+        formData := &license{Name:app,Path:path}
 
-        t := newTemplate.Must(newTemplate.New("addlicense").ParseFile("templates/addlicense.html"))
+        t := template.Must(template.New("addlicense").ParseFile("templates/addlicense.html"))
         t.Execute(w,formData)
         return
     }
+    c := db.C("machines")
+    actual, err := c.Find(bson.M{"apps.path":path}).Count()
 
-    formData := &license{
-        Name:app,
-        Path:path,
-        Count:val}
+    c = db.C("license")
 
-    t := newTemplate.Must(newTemplate.New("addlicense").ParseFile("templates/addlicense.html"))
-    t.Execute(w,formData)
+    c.Upsert(bson.M{"path":path}, 
+        bson.M{"name":app,
+            "path":path,
+            "max_count":count,
+            "actual_count":actual})
+    
+    http.Redirect(w,r, "/licenselist/", 302)
 }
 
-func listLicenses(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
-    app := r.FormValue("app")
+func removelicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     path := r.FormValue("path")
-    context := make([]appResult, 0, 10)
-    var res *appResult
+    fmt.Println("Delete", path)
+    c := db.C("license")
+    err := c.Remove(bson.M{"path":path})
+    
+    if err != nil {
+        fmt.Print(err)
+    }
 
-    fmt.Printf("app=%v\npath=%v", app, path)
+    http.Redirect(w,r, "/licenselist/", 302)
+    return
+}
 
-    // fmt.Println("query: ", p)
-    // m := bson.M{}    
-    err := c.Find(bson.M{
-            "apps._name" : app,
-            "apps.path":path}).
-        Select(bson.M{
-            "hostname":1,
-            "apps":1,
-            "_id":1}).
-        Sort(bson.M{"hostname":1}).
-        For(&res, func() os.Error {
-            res.Apps = filter_apps(app, res.Apps)
-            context = append(context, *res)
-            return nil
-        })
+type license struct {
+    Name, Path string
+    Max_count, Actual_count int
+    Serials []string
+}
+
+func (l *license) Valid() bool{
+    if l.Actual_count <= l.Max_count {
+        return true
+    }
+    return false
+}
+
+func licenselist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    var results []license
+
+    err := db.C("license").Find(nil).Sort(bson.M{"name":1}).All(&results)
     
     if err != nil {
         fmt.Println(err)
         http.NotFound(w,r)
         return
     }
-
-    fmt.Println(context)
-
-    t := newTemplate.Must(newTemplate.New("searchresults").ParseFile("templates/searchresults.html"))
-    t.Execute(w,context)
+    set.Execute(w,"licenselist",results)
 }
 
 // Returns a .CSV-file to be opened in Excel (or whatever) containing the important
 // SOx information.
-func soxlist(w http.ResponseWriter, r *http.Request, c *mgo.Collection, argPos int) {
+func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     SortKey := r.URL.Path[argPos:]
     if len(SortKey) == 0 {
         SortKey = "hostname"
     }
+
+    c := db.C("machines")
+
     // var results []map[string]interface{}
     var results []machine
     err := c.Find(nil).
@@ -449,8 +452,7 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
                 if err := recover(); err != nil { 
                         fmt.Fprintf(w, "%v", err) 
                 } 
-        }()
-        
+        }()        
         fmt.Println("load source:", r.URL.Path[1:])
         f, err := os.OpenFile(r.URL.Path[1:], os.O_RDONLY, 0644) 
         defer f.Close()
@@ -461,21 +463,7 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // type-alias to help with the rest
-type myhandler func(http.ResponseWriter, *http.Request, *mgo.Collection, int)
-
-// setup session with a new collection
-func MongoCollection(collection string) (mgo.Collection) {
-    session, err := mgo.Mongo("152.146.38.56")
-    if err != nil {
-        panic(err)
-    }
-    defer session.Close()
-    
-    // if not set, any connection will block until it connects..
-    session.SetSyncTimeout(5e9)
-
-    return session.DB("sox").C(collection)
-}
+type myhandler func(http.ResponseWriter, *http.Request, mgo.Database, int)
 
 // builds a new handler that creates a session to mongodb before passing on the function.
 func NewHandleFunc(pattern string, fn myhandler) {
@@ -488,34 +476,30 @@ func NewHandleFunc(pattern string, fn myhandler) {
 
         session.SetSyncTimeout(5e9)
 
-        c := session.DB("sox").C("machines")
-        fn(w, r, &c, len(pattern))
+        fn(w, r, session.DB("sox"), len(pattern))
     })
 }
 
-// builds a new handler that creates a session to mongodb before passing on the function.
-func NewLicenseHandleFunc(pattern string, fn myhandler) {
-    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-        session, err := mgo.Mongo("152.146.38.56")
-        if err != nil { 
-            panic(err)
-        }
-        defer session.Close()
+var set *template.Set
 
-        session.SetSyncTimeout(5e9)
+func main() {
+    // var err os.Error
+    set = template.SetMust(template.ParseSetFiles(
+        "templates/base.html",
+        "templates/licenselist.html",
+        "templates/newlicense.html",
+        "templates/machine.html",
+        // "templates/searchresults.html",
+        "templates/machinelist.html"))
 
-        c := session.DB("sox").C("license")
-        fn(w, r, &c, len(pattern))
-    })
-}
-
-func main()  {
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
-    NewLicenseHandleFunc("/newlicense/",newLicense)
-    NewLicenseHandleFunc("/addlicense/",addLicense)
+    NewHandleFunc("/newlicense/",newLicense)
+    NewHandleFunc("/licenselist/",licenselist)
+    NewHandleFunc("/addlicense/",addLicense)
+    NewHandleFunc("/removelicense/", removelicense)
     NewHandleFunc("/del/", deleteMachine)
     http.HandleFunc("/js/", sourceHandler)
     http.HandleFunc("/bootstrap/", sourceHandler)

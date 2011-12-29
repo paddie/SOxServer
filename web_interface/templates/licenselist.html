@@ -1,0 +1,26 @@
+{{define "licenselist"}}
+
+{{template "base_top"}}
+
+{{template "topbar"}}
+
+<div class="container" style="padding-top:40px">
+{{range .}}
+    <h2>{{.Name}}</h2>
+    <table border="0" cellspacing="4">
+        <tr>
+          <td>{{.Path}}</td>
+          <td>{{.Max_count}}</td>
+          <td>{{.Actual_count}}</td>
+          <td>{{.Valid}}</td>
+       </tr>
+    </table>
+    <form action="/removelicense/" method="POST">
+      <input type="hidden" name="path" value="{{.Path}}"/>
+      <input type="submit" value="remove"/>
+    </form>
+{{end}}
+</div>
+
+{{template "base_bottom"}}
+{{end}}
