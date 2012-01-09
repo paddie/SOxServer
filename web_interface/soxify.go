@@ -485,7 +485,7 @@ var set *template.Set
 func main() {
     // var err os.Error
     set = template.SetMust(template.ParseSetFiles(
-        "templates/base.html",
+        "templates/base.html", // topbar, top and bottom
         "templates/licenselist.html",
         "templates/newlicense.html",
         "templates/machine.html",
