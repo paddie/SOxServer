@@ -141,7 +141,7 @@ func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
     c := db.C("machines")
 
     var mach *machine
-    err := c.Find(map[string]string{"_id" : key}).
+    err := c.Find(bson.M{"_id" : key}).
         One(&mach)
     if err != nil {
         http.NotFound(w,r)
@@ -159,11 +159,27 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argP
         http.Redirect(w, r, "/", 302)
     }
     fmt.Println("Deleting machine: ", machine_id)
-    c := db.C("machines")
-    err := c.Remove(map[string]string{"_id": machine_id})
+    col_m := db.C("machines")
+    
+    var m *machine
+    err := col_m.Find(bson.M{"_id": machine_id}).One(&m)
+    
     if err != nil {
         fmt.Print(err)
     }
+
+    _, err = db.C("old_machines").Upsert(bson.M{"hostname":m.Hostname}, m)
+
+    if err != nil {
+        fmt.Print(err)
+    }
+    
+    err = col_m.Remove(bson.M{"_id": machine_id})
+
+    if err != nil {
+        fmt.Print(err)
+    }
+
     http.Redirect(w,r, "/", 302)
     return
 }
@@ -301,6 +317,44 @@ func machineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
         {"Delete",""}}
     
     c := db.C("machines")
+
+    var arr *machine
+    i := 1    
+    err := c.Find(nil).
+        Sort(&map[string]int{sortKey:1}).
+        For(&arr, func() os.Error {
+            arr.Cnt = i
+            i++
+            m.Machines = append(m.Machines, *arr)
+            return nil
+        })
+    if err != nil {
+        fmt.Println(err)
+        http.NotFound(w,r)
+        return
+    }
+    set.Execute(w,"machinelist", m)
+}
+
+func oldmachineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    sortKey := r.FormValue("sortkey")
+    if sortKey == "" {
+        sortKey = "hostname"
+    }
+    m := new(machines)
+    m.Headers = []header{
+        {"#",""},
+        {"Hostname","hostname"},
+        {"IP","ip"},
+        {"System","osx"},
+        {"Recon","recon"},
+        {"Firewall","firewall"},
+        {"Sophos Antivirus",""},
+        {"Date","date"},
+        {"Model","model"},
+        {"Delete",""}}
+    
+    c := db.C("old_machines")
 
     var arr *machine
     i := 1    
@@ -504,6 +558,7 @@ func main() {
     http.HandleFunc("/js/", sourceHandler)
     http.HandleFunc("/bootstrap/", sourceHandler)
     NewHandleFunc("/", machineList)
+    NewHandleFunc("/oldmachines/", oldmachineList)
 
 	http.ListenAndServe(":8080", nil)
 }
