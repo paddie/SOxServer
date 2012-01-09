@@ -128,62 +128,6 @@ func (m *machine) Url() string {
 }
 
 
-/***********************************
-view details for each machine
-************************************/
-func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
-    key := r.URL.Path[argPos:]
-    if len(key) < 11 {
-        http.NotFound(w,r)
-        return
-    }
-
-    c := db.C("machines")
-
-    var mach *machine
-    err := c.Find(bson.M{"_id" : key}).
-        One(&mach)
-    if err != nil {
-        http.NotFound(w,r)
-        return
-    }
-    set.Execute(w,"machine",mach)
-}
-
-/***********************************
-delete a machine given machine_id
-************************************/
-func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
-    machine_id := r.URL.Path[argPos:]
-    if len(machine_id) == 0 {
-        http.Redirect(w, r, "/", 302)
-    }
-    fmt.Println("Deleting machine: ", machine_id)
-    col_m := db.C("machines")
-    
-    var m *machine
-    err := col_m.Find(bson.M{"_id": machine_id}).One(&m)
-    
-    if err != nil {
-        fmt.Print(err)
-    }
-
-    _, err = db.C("old_machines").Upsert(bson.M{"hostname":m.Hostname}, m)
-
-    if err != nil {
-        fmt.Print(err)
-    }
-    
-    err = col_m.Remove(bson.M{"_id": machine_id})
-
-    if err != nil {
-        fmt.Print(err)
-    }
-
-    http.Redirect(w,r, "/", 302)
-    return
-}
-
 // Filters apps based on exact name of application
 // - includes case
 func filter_apps(name string, apps []app) []app {
@@ -284,6 +228,67 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
     t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
     t.Execute(w,context)
 }
+
+
+/***********************************
+view details for each machine
+************************************/
+func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    key := r.URL.Path[argPos:]
+    if len(key) < 11 {
+        http.NotFound(w,r)
+        return
+    }
+
+    c := db.C("machines")
+
+    var mach *machine
+    err := c.Find(bson.M{"_id" : key}).
+        One(&mach)
+
+    if err != nil {
+        fmt.Println(key, err)
+        http.NotFound(w,r)
+        return
+    }
+    set.Execute(w,"machine",mach)
+}
+
+/***********************************
+delete a machine given machine_id
+************************************/
+func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    machine_id := r.URL.Path[argPos:]
+    if len(machine_id) == 0 {
+        http.Redirect(w, r, "/", 302)
+    }
+    fmt.Println("Deleting machine: ", machine_id)
+    col_m := db.C("machines")
+    
+    var m *machine
+    err := col_m.Find(bson.M{"_id": machine_id}).One(&m)
+    
+    if err != nil {
+        fmt.Print(err)
+    }
+
+    _, err = db.C("old_machines").Upsert(bson.M{"hostname":m.Hostname}, m)
+
+    if err != nil {
+        fmt.Print(err)
+    }
+    
+    err = col_m.Remove(bson.M{"_id": machine_id})
+
+    if err != nil {
+        fmt.Print(err)
+    }
+
+    http.Redirect(w,r, "/", 302)
+    return
+}
+
+
 
 // helper struct for the machinelist-view
 type machines struct {
