@@ -57,13 +57,7 @@
             <td><a href="/listapps/?name={{.Name}}">{{.Name}}</a></td>
             <td>{{.ShortVersion}}</td>
             <td>{{.ShortPath}}</td>
-            <td>
-                <form action="/newlicense/" method="POST">
-                    <input type="hidden" name="app" value="{{.Name}}"/>
-                    <input type="hidden" name="path" value="{{.Path}}"/>
-                    <input type="submit" value="license"/>
-                </form>
-            </td>
+            <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >Add License</a></td>
         </tr>
     {{end}}
     </tbody> <!-- tbody -->

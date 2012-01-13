@@ -161,7 +161,7 @@ func fuzzyFilter_apps(substr string, apps []app) []app {
 func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     app_str := r.FormValue("search")
     // app_str2 := r.FormValue("test2")
-    fmt.Println("searching for substring in apps: ", r.Form)
+    fmt.Println("searching for substring in apps: ", app_str)
 
     c := db.C("machines")
 
@@ -189,10 +189,11 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
         return
     }
     // t := newTemplate.Must(newTemplate.New("results").ParseFile("templates/machine.html"))
+    set.Execute(w,"searchresults", context)
 
-    t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
+    // t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
 
-    t.Execute(w,context)
+    // t.Execute(w,context)
 }
 
 /********************************************************
@@ -225,8 +226,9 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
         http.NotFound(w,r)
         return
     }
-    t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
-    t.Execute(w,context)
+    set.Execute(w, "searchresults", context)
+    // t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
+    // t.Execute(w,context)
 }
 
 
@@ -504,6 +506,8 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
     }
 }
 
+
+
 // Serve files for CSS and JS purposes
 // TODO: use http.ServeFiles..
 func sourceHandler(w http.ResponseWriter, r *http.Request) { 
@@ -536,21 +540,24 @@ func NewHandleFunc(pattern string, fn myhandler) {
         session.SetSyncTimeout(5e9)
 
         fn(w, r, session.DB("sox"), len(pattern))
+
     })
 }
 
 var set *template.Set
 
 func main() {
-    // var err os.Error
+    // load template files, add new templates to this list
+    // - remember to {{define unique_template_name}} <html> {{end}}
     set = template.SetMust(template.ParseSetFiles(
         "templates/base.html", // topbar, top and bottom
         "templates/licenselist.html",
         "templates/newlicense.html",
         "templates/machine.html",
-        // "templates/searchresults.html",
+        "templates/searchresults.html",
         "templates/machinelist.html"))
 
+    
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)
@@ -565,5 +572,8 @@ func main() {
     NewHandleFunc("/", machineList)
     NewHandleFunc("/oldmachines/", oldmachineList)
 
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+    if err != nil {
+        fmt.Println(err)
+    }
 }
