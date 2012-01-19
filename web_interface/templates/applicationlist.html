@@ -1,0 +1,21 @@
+{{define "applicationlist"}}
+
+{{template "base_top"}}
+
+{{template "topbar"}}
+<div class="container" style="padding-top:40px">
+
+<h2>Results</h2>
+
+<table border="0" cellspacing="4">
+{{range .}}
+        <tr>
+          <td><a href="/listapps/?name={{.}}">{{.}}</a></td>
+       </tr>
+{{end}}
+</table>
+
+</div>
+
+{{template "base_bottom"}}
+{{end}}

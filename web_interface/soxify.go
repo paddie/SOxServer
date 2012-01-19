@@ -15,6 +15,7 @@ import (
     "strings"
     // "net"
     "strconv"
+    "sort"
 )
 
 
@@ -127,7 +128,6 @@ func (m *machine) Url() string {
     return fmt.Sprintf("/machine/%s", m.Id)
 }
 
-
 // Filters apps based on exact name of application
 // - includes case
 func filter_apps(name string, apps []app) []app {
@@ -152,7 +152,6 @@ func fuzzyFilter_apps(substr string, apps []app) []app {
     }
     return tmp
 }
-
 
 /*******************************************************
 // queries a list of machines that contain the substring
@@ -188,12 +187,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
         http.NotFound(w,r)
         return
     }
-    // t := newTemplate.Must(newTemplate.New("results").ParseFile("templates/machine.html"))
     set.Execute(w,"searchresults", context)
-
-    // t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
-
-    // t.Execute(w,context)
 }
 
 /********************************************************
@@ -227,10 +221,28 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
         return
     }
     set.Execute(w, "searchresults", context)
-    // t := template.Must(template.New("searchresults").ParseFile("templates/searchresults.html"))
-    // t.Execute(w,context)
 }
 
+func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    var context []string
+    // var res *appResult
+
+    c := db.C("machines")
+
+    err := c.Find(nil).Distinct("apps._name", &context)
+
+    fmt.Println(context)
+
+    if err != nil {
+        fmt.Println(err)
+        http.NotFound(w,r)
+        return
+    }
+
+    sort.Strings(context)
+
+    set.Execute(w, "applicationlist", &context)
+}
 
 /***********************************
 view details for each machine
@@ -289,8 +301,6 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argP
     http.Redirect(w,r, "/", 302)
     return
 }
-
-
 
 // helper struct for the machinelist-view
 type machines struct {
@@ -548,15 +558,15 @@ var set *template.Set
 
 func main() {
     // load template files, add new templates to this list
-    // - remember to {{define unique_template_name}} <html> {{end}}
+    // - remember to {{define "unique_template_name"}} <html> {{end}}
     set = template.SetMust(template.ParseSetFiles(
         "templates/base.html", // topbar, top and bottom
         "templates/licenselist.html",
         "templates/newlicense.html",
         "templates/machine.html",
         "templates/searchresults.html",
+        "templates/applicationlist.html",
         "templates/machinelist.html"))
-
     
     NewHandleFunc("/listapps/", searchAppExact)
 	NewHandleFunc("/search/", searchAppSubstring)
@@ -570,6 +580,7 @@ func main() {
     http.HandleFunc("/js/", sourceHandler)
     http.HandleFunc("/bootstrap/", sourceHandler)
     NewHandleFunc("/", machineList)
+    NewHandleFunc("/allapps", applications)
     NewHandleFunc("/oldmachines/", oldmachineList)
 
 	err := http.ListenAndServe(":8080", nil)

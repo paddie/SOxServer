@@ -37,7 +37,8 @@
         </div>
         <div class="row" class="span10">
             
-            <h3>Updated: {{if .IsOld}}<h1><span class="danger btn disabled">{{.Date}}</span></h1>{{else}}<span class="success btn disabled">{{.Date}}</span>{{end}}</h3>
+            <h3>Updated: <span {{if .IsOld}} class="danger btn disabled" {{else}} class="success btn disabled" {{end}}>{{.Date}}</span>
+            </h3>
         </div>
     </div> <!-- hero -->
 </div> <!-- container -->
