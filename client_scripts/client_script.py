@@ -219,7 +219,7 @@ def update_db(db, doc, coll="main"):
     	sys.exit(2)
                 
     try:
-        col.insert(spec={"_id":id}, document=doc, safe=True, upsert=True)
+        col.update({"_id":id}, doc, safe=True, upsert=True)
     except:
         print "debug: Failed to insert doc"
         sys.exit(2)
