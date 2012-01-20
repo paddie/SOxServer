@@ -33,22 +33,6 @@ def plistFromPath(plist_path):
     		print 'failed to read plist'
     		sys.exit(5)
 
-def log_information(path='/Library/Logs/Sophos Anti-Virus.log'):
-	if os.path.isfile(path):
-		log = open(path, 'r')
-		for lines in log:
-			if 'com.sophos.intercheck: Version' in lines:
-				vers = lines
-		mtime = time.strftime("%d/%m/%y",time.localtime(os.path.getmtime(path)))
-		log.close()
-		
-		return vers.split(": ")[1].split(",")[0], mtime
-		# return vers[31:-15], mtime
-	else:
-	    # if no log is at this position
-		return "N/A", "N/A"
-
-
 def convertToXML(path):
     # convertPlist(plist_path, 'xml1')
 	tmp_path = os.path.join("/var/tmp", "com.application_walking_tmp.plist")
@@ -76,35 +60,6 @@ def plist_version(path):
 	except:
 		return "N/A"
 
-# def visit(arg, dirname, names):
-# 	if len(names) == 0:
-# 		return
-# 	i = 0
-# 	# tmp = copy.deepcopy(names)
-# 	while i < len(names):
-# 		dir = names[i]
-# 		folder = "%s/%s" % (dirname,dir)
-# 		if len(dir) > 4 and dir[-4:] == ".app":
-# 			plist = folder + "/Contents/Info.plist"
-# 			vs = "N/A"
-# 			if os.path.isfile(plist):
-# 				vs = plist_version(plist)
-# 			arg.append({
-# 			   "Path":dirname,
-# 			   "Name":dir,
-# 			   "Version":vs
-# 			})
-			
-#             # (dirname,dir,vs) 
-# 			del names[i]
-# 		else:
-# 			i += 1
-
-# def walk(root="/Applications"):	
-# 	args = []
-# 	os.path.walk(root, visit, args)
-# 	return args
-
 def installed_apps(doc):
 	# apps = walk()
     # tf = tempfile.TemporaryFile("w+b")
@@ -115,12 +70,34 @@ def installed_apps(doc):
     doc.update( {"apps":plist[0]["_items"]} )
 
 def sophos_dict(doc):
+    if not os.path.isfile('/Applications/Sophos Anti-Virus.app/Contents/Info.plist'):
+        return doc.update({
+            'virus_version':"N/A",
+            'virus_def':"N/A",
+            'virus_last_run':"N/A"})    
+
+    version = plist_version('/Applications/Sophos Anti-Virus.app/Contents/Info.plist')
     v_def, mtime = log_information()
     return doc.update({
-        'virus_version':plist_version('/Applications/Sophos Anti-Virus.app/Contents/Info.plist'),
+        'virus_version':version,
         'virus_def':v_def,
         'virus_last_run':mtime,
     })
+
+def log_information(path='/Library/Logs/Sophos Anti-Virus.log'):
+    if os.path.isfile(path):
+        log = open(path, 'r')
+        for lines in log:
+            if 'com.sophos.intercheck: Version' in lines:
+                vers = lines
+        mtime = time.strftime("%d/%m/%y",time.localtime(os.path.getmtime(path)))
+        log.close()
+        
+        return vers.split(": ")[1].split(",")[0], mtime
+        # return vers[31:-15], mtime
+    else:
+        # if no log is at this position
+        return "N/A", "N/A"
 
 def firewall_state(path='/Library/Preferences/com.apple.alf.plist'):
 	plist = convertToXML(path)
@@ -162,54 +139,52 @@ def recon_dict(doc):
 
 def machine_dict(doc):
     # machine specific info
-    # old_serial = "N/A"
-    serial = "N/A"
-    for l in subprocess.Popen(["/usr/sbin/system_profiler","SPHardwareDataType"],
-            stdout=subprocess.PIPE).communicate()[0].split("\n")[4:]:
-        # if debug: print l
-        if "Serial Number (system)" in l:
-            serial = l.split(": ")[-1]
-        # if "Serial Number (system)" in l:
-        #     serial = l.split(": ")[-1]
-        if "Model Identifier:" in l:
-            model_id = l.split(": ")[-1]
-        if "Processor Name:" in l:
-            cpu_model = l.split(": ")[-1]
-        if "Memory:" in l:
-            memory = l.split(": ")[-1]
-        if "Processor Speed" in l:
-            mhz = l.split(': ')[-1]
+    profile = subprocess.Popen(["/usr/sbin/system_profiler","-xml","SPHardwareDataType"], stdout=subprocess.PIPE).communicate()[0]
+    # read xml into plit-file, and ignore irrelevant data..
+    machine = plistlib.readPlistFromString(profile)[0]["_items"][0]
+
+    # *******************
+    # OSX version and build
+    # *******************
     l = subprocess.Popen(["sw_vers"],
         stdout=subprocess.PIPE).communicate()[0].split("\n")
-    
     osx_vers = "OSX %s (%s)" % (l[1].split(":\t")[-1],l[2].split(":\t")[-1])
     
-    if serial == "N/A":
-        print "invalid serial!"
-    
+    # *******************************
+    # IP - more complicated than it sounds..
+    # *******************************
     ips = socket.gethostbyname_ex(socket.gethostname())[2]
     ip = ""
     for i in ips:
-        if i.split(".")[2] in ['38', '210']:
+        # if on the work network, the third IP value is either 38 or 210 or 113
+        if i.split(".")[2] in ['38', '210', '113']:
             ip = i
-    # if on home network, the ip might not be xx.xx.[38/210].xx
+            break
     if ip == "":
+        # if on home network, the ip might not be xx.xx.[38/210].xx
+        # - simply go with the first of the ip's
         ip = socket.gethostbyname(socket.gethostname())
     
+    # *****************************
+    # HOSTNAME - also a bit stupid
+    # *****************************
+    hostname = subprocess.Popen(["/usr/sbin/scutil","--get", "ComputerName"],stdout=subprocess.PIPE).communicate()[0].split("\n")[0]
+
     doc.update({
-        '_id':serial,
+        '_id':machine["serial_number"],
         # 'Old_serial':old_serial,
         'osx':str(osx_vers),
-        'model':model_id,
-        'hostname':subprocess.Popen(["/usr/sbin/scutil","--get", "ComputerName"],stdout=subprocess.PIPE).communicate()[0].split("\n")[0],
-        # 'os_version':platform.mac_ver()[0],
-        'cpu':cpu_model + " " + mhz,
-        'memory':memory,
-        # 'mac':hex(get_mac())[:-1],
+        'model':machine["machine_model"],
+        'hostname':hostname,
+        'cpu':"%s %s" % (machine["cpu_type"], machine["current_processor_speed"]),
+        'cores':machine["number_processors"],
+        'memory':machine["physical_memory"],
         'ip':ip
     })
 
 def users():
+    # lists all folders '/Users'
+    # - discards: Shared and any files in that folder
     users = []
     for folder in os.listdir('/Users'):
         # ignore files
@@ -220,18 +195,8 @@ def users():
             # ignore files
     		if os.path.isdir('/Domain/PeopleGroup.Internal/Users/'+folder):
     		    users.append(folder)
-    if not users:
-        users.append['xadmin']
-    return users
 
-def serial_number():
-    # hardware = os.popen("/usr/sbin/system_profiler SPHardwareDataType | grep \"Serial Number\" | awk '{print $4}'").read()[:-1]
-    for l in subprocess.Popen(["/usr/sbin/system_profiler","SPHardwareDataType"],
-            stdout=subprocess.PIPE).communicate()[0].split("\n"):
-        if "Serial Number" in l:
-            return l.split(" ")[-1]
-    print "debug: failed to read serial number"
-    # sys.exit(2)
+    return users
 
 def mongo_conn(ip,db='sox'):
 	try:
@@ -240,10 +205,11 @@ def mongo_conn(ip,db='sox'):
 	    print "debug: Could not connect to mongo database at ip %s" % ip
         sys.exit(2)
 
-# Update/Insert db.collection with doc
+# upsert document into db.collection
 def update_db(db, doc, coll="main"):
-    if not coll:
-        return
+    if coll == "":
+        print "debug: no collection specified"
+        sys.exit(2)
     col = db[coll]
     try:
         id = doc['_id']
@@ -251,42 +217,22 @@ def update_db(db, doc, coll="main"):
         # print "update_db: 'doc' has no '_id'", doc
         print "debug: doc has no '_id'"
     	sys.exit(2)
-    	
-    # if doc["Old_serial"] != "N/A" and doc["Old_serial"] != doc["_id"]:
-    #     print doc["Old_serial"], doc["_id"]
-    #     try:
-    #         dups = col.remove({"_id": doc["Old_serial"]}, safe=True)
-    #     except:
-    #         print "No duplicates"
-    #         logging.debug("No duplicates")
-    #     logging.debug("removed duplicate _id = %s" % doc["_id"] )
-    #     print "test_removed duplicate doc for %s" % doc["Hostname"]
                 
-    old_doc = col.find_one({"_id":id})
-    if not old_doc:
-        try:
-            col.insert(doc, safe=True)
-        except:
-            print "debug: Failed to insert doc"
-            sys.exit(2)
-    else:
-        try:
-            col.update({'_id':id},doc, safe=True)
-        except:
-        	print "Failed to update doc:", doc["hostname"]
-        	sys.exit(2)
+    try:
+        col.insert(spec={"_id":id}, document=doc, safe=True, upsert=True)
+    except:
+        print "debug: Failed to insert doc"
+        sys.exit(2)
 
 def main():
-    # static IP for the mini-server 
-    server_ip = "152.146.38.56"
-    # sox database is _for now_ simply "sox"
-    main_db = "sox"
-    collection = "machines"
-    db = mongo_conn(server_ip,db=main_db)
-    # 
-    date = datetime.today()
+    server_ip = "152.146.38.56" # static IP for the mini-server 
+    main_db = "sox" # db name
+    collection = "machines" # collection name
+    
+    # db = mongo_conn(server_ip,db=main_db)
+    
     doc = {
-        'date': date,
+        'date': datetime.today(),
         'users':users(),
     }
     machine_dict(doc)
@@ -295,7 +241,8 @@ def main():
     installed_apps(doc)
     recon_dict(doc)
     update_db(db,doc, coll=collection)
-    # print "debug: Successfully registered machine data",
+    # print "debug: Successfully registered machine data"
+    # pp.pprint(doc)
     # for l in doc["Apps"]:
     #     print l
     # db.drop_collection('main')
