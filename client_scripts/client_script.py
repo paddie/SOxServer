@@ -229,7 +229,7 @@ def main():
     main_db = "sox" # db name
     collection = "machines" # collection name
     
-    # db = mongo_conn(server_ip,db=main_db)
+    db = mongo_conn(server_ip,db=main_db)
     
     doc = {
         'date': datetime.today(),
