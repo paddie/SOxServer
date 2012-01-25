@@ -195,15 +195,15 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
 // - filters using filter_apps
 *********************************************************/
 func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
-    app_str := r.FormValue("name")
-    fmt.Println("searching for substring in apps: ", app_str)
+    key := r.FormValue("key")
+    val := r.FormValue("val")
 
     context := make([]appResult, 0, 10)
     var res *appResult
 
     c := db.C("machines")
 
-    err := c.Find(bson.M{"apps._name" : app_str}).
+    err := c.Find(bson.M{key : val}).
         Select(bson.M{
             "hostname":1,
             "apps":1,
@@ -229,7 +229,7 @@ func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
 
     c := db.C("machines")
 
-    err := c.Find(nil).Distinct("apps._name", &context)
+    err := c.Find(nil).Distinct("apps.path", &context)
 
     fmt.Println(context)
 
@@ -389,6 +389,50 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
         return
     }
     set.Execute(w,"machinelist", m)
+}
+
+type black struct {
+    Path, Name, Key, Val string
+    Count int
+}
+
+// BLACKLISTING APPLICATIONS
+func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    // name example: key="apps._name", val="Dropbox"
+    // path example: key="apps.path", val="/Applications/Xinet Software/Uploader Manager.app"
+    path := r.FormValue("path")
+    name := r.FormValue("name")
+
+    app := &black{
+        Path: path,
+        Name: name
+    }
+    if strings.Split(val, "/")[1] != "Users" {
+        // if application is located in a users folder..
+        // we must match on name instead of complete path
+        app.Key = "apps._name"
+        app.Val = name
+    } else {
+        app.Key = "apps.path"
+        app.Val = path
+    }
+
+    db.C("blacklisted").Upsert(bson.M{"key":app.key, "val":app.val}, app)
+    
+    http.Redirect(w,r, "/blacklisted/", 302)
+}
+
+func blacklistView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    
+    var bl black[]
+    err := db.C("blacklisted").Find(nil).All(&bl)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    set.Execute(w, )
+
 }
 
 func newLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
