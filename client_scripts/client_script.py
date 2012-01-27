@@ -164,8 +164,7 @@ def machine_dict(doc):
     # machine specific info
     # old_serial = "N/A"
     serial = "N/A"
-    for l in subprocess.Popen(["/usr/sbin/system_profiler","SPHardwareDataType"],
-            stdout=subprocess.PIPE).communicate()[0].split("\n")[4:]:
+    for l in subprocess.Popen(["/usr/sbin/system_profiler","SPHardwareDataType"], stdout=subprocess.PIPE).communicate()[0].split("\n")[4:]:
         # if debug: print l
         if "Serial Number (system)" in l:
             serial = l.split(": ")[-1]
