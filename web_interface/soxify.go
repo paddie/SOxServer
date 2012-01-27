@@ -130,10 +130,19 @@ func (m *machine) Url() string {
 
 // Filters apps based on exact name of application
 // - includes case
-func filter_apps(name string, apps []app) []app {
+func filter_apps(value string, apps []app, usePath bool) []app {
     tmp := make([]app, 0, 10)
+    if usePath {
+        for _, v := range apps {
+            if v.Path == value {
+                tmp = append(tmp, v)
+            }
+        }
+        return tmp
+    }
+
     for _, v := range apps {
-        if v.Name == name {
+        if v.Name == value {
             tmp = append(tmp, v)
         }
     }
@@ -194,7 +203,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
 // queries a list of machines that has exacly the machine
 // - filters using filter_apps
 *********************************************************/
-func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func searchExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     key := r.FormValue("key")
     val := r.FormValue("val")
 
@@ -202,6 +211,8 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
     var res *appResult
 
     c := db.C("machines")
+    var usePath bool
+    if key == "apps.path" { usePath = true }
 
     err := c.Find(bson.M{key : val}).
         Select(bson.M{
@@ -210,7 +221,7 @@ func searchAppExact(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
             "_id":1}).
         Sort(bson.M{"hostname":1}).
         For(&res, func() os.Error {
-            res.Apps = filter_apps(app_str, res.Apps)
+            res.Apps = filter_apps(val, res.Apps, usePath)
             context = append(context, *res)
             return nil
         })
@@ -231,7 +242,7 @@ func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
 
     err := c.Find(nil).Distinct("apps.path", &context)
 
-    fmt.Println(context)
+    // fmt.Println(context)
 
     if err != nil {
         fmt.Println(err)
@@ -396,8 +407,10 @@ type black struct {
     Count int
 }
 
+// *****************************************
 // BLACKLISTING APPLICATIONS
-func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+// *****************************************
+func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     // name example: key="apps._name", val="Dropbox"
     // path example: key="apps.path", val="/Applications/Xinet Software/Uploader Manager.app"
     path := r.FormValue("path")
@@ -405,10 +418,11 @@ func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos i
 
     app := &black{
         Path: path,
-        Name: name
-    }
-    if strings.Split(val, "/")[1] != "Users" {
-        // if application is located in a users folder..
+        Name: name}
+
+    if strings.Split(path, "/")[1] == "Users" {
+        fmt.Println(path)
+        // if application is located in a users folder
         // we must match on name instead of complete path
         app.Key = "apps._name"
         app.Val = name
@@ -416,23 +430,50 @@ func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos i
         app.Key = "apps.path"
         app.Val = path
     }
-
-    db.C("blacklisted").Upsert(bson.M{"key":app.key, "val":app.val}, app)
+    // doesn't nessesarily need to match on both key AND val..
+    db.C("blacklist").Upsert(bson.M{"key":app.Key, "val":app.Val}, app)
     
-    http.Redirect(w,r, "/blacklisted/", 302)
+    http.Redirect(w,r, "/blacklist/", 302)
 }
 
-func blacklistView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+// func resolveFromPath(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+
+//     path := r.FormValue("path")
+
+//     if strings.Split(path, "/")[1] == "Users" {
+//         err := db.C("machines").Find(bson.M{"apps.path":path}).Select(bson.M{}).One()
+//     } else {
+        
+//     }
+
+//     err := db.C("blacklist").Remove(bson.M{"key":key, "val":val})    
+// }
+
+func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    key := r.FormValue("key")
+    val := r.FormValue("val")
+
+    err := db.C("blacklist").Remove(bson.M{"key":key, "val":val})
     
-    var bl black[]
-    err := db.C("blacklisted").Find(nil).All(&bl)
+    if err != nil {
+        fmt.Print(err)
+    }
+
+    http.Redirect(w,r, "/licenselist/", 302)
+    return
+}
+
+func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    
+    var bl []black    
+    err := db.C("blacklist").Find(nil).All(&bl)
+
     if err != nil {
         fmt.Println(err)
         return
     }
 
-    set.Execute(w, )
-
+    set.Execute(w, "blacklist", bl)
 }
 
 func newLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
@@ -535,28 +576,24 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
     }
     w.Header().Set("Content-Type","text/csv; charset=utf-8")
         
-    fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v\n ",
-        "#",
-        "Hostname",
-        "Ip",
-        "OS (Build)",
-        "Recon",
-        "Firewall",
-        "Date",
-        "Model",
-        "Virus (Definitions)")
+    fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,Virus (Definitions),Outdated,FW Issue,SOxIssues\n")
 
     for i,doc := range results {
-        fmt.Fprintf(w, "%v,%v (%v),%v,%v,%v,%v,%v,%v,%v (%v)\n",
+        fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,%v,%v\n",
             i+1,
-            doc.Hostname, doc.Id,// doc["hostname"], 
+            doc.Hostname, 
+            doc.Id,// doc["hostname"], 
             doc.Ip,//doc["ip"],
             doc.Osx,
             doc.Recon, 
             doc.Firewall, //["firewall"],
             doc.Date, // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
             strings.Replace(doc.Model, ",", ".", -1),
-            doc.Virus_version, doc.Virus_def)
+            doc.Virus_version,
+            doc.Virus_def,
+            doc.IsOld(),
+            doc.MacbookFirewallCheck(),
+            doc.SoxIssues())
     }
 }
 
@@ -610,10 +647,11 @@ func main() {
         "templates/machine.html",
         "templates/searchresults.html",
         "templates/applicationlist.html",
+        "templates/blacklist.html",
         "templates/machinelist.html"))
     
-    NewHandleFunc("/listapps/", searchAppExact)
-	NewHandleFunc("/search/", searchAppSubstring)
+    NewHandleFunc("/searchexact/", searchExact)
+	NewHandleFunc("/searchfuzzy/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
     NewHandleFunc("/newlicense/",newLicense)
@@ -626,7 +664,9 @@ func main() {
     NewHandleFunc("/", machineList)
     NewHandleFunc("/allapps", applications)
     NewHandleFunc("/oldmachines/", oldmachineList)
-
+    NewHandleFunc("/blacklist/", blacklist)
+    NewHandleFunc("/addblacklist/", addBlacklist)
+    NewHandleFunc("/removeblacklist/", removeBlacklist)
 	err := http.ListenAndServe(":8080", nil)
     if err != nil {
         fmt.Println(err)

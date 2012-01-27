@@ -55,10 +55,11 @@
     <tbody>
     {{range .Apps}}
         <tr>
-            <td><a href="/listapps/?name={{.Name}}">{{.Name}}</a></td>
+            <td><a href="/searchexact/?key=apps.path&val={{.Path}}">{{.Name}}</a></td>
             <td>{{.ShortVersion}}</td>
             <td>{{.ShortPath}}</td>
-            <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >Add License</a></td>
+            <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >License</a></td>
+            <td><a class="label" href="/addblacklist/?name={{.Name}}&path={{.Path}}" >blacklist</a></td>
         </tr>
     {{end}}
     </tbody> <!-- tbody -->
