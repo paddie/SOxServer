@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>WaitForDebugger</key>
+	<false/>
+	<key>StandardOutPath</key>
+	<string>/Library/AdPeople/launchd.out.log</string>
+	<key>Label</key>
+	<string>com.adpeople.sox</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Library/AdPeople/sox_sophos.py</string>
+	</array>
+	<key>LowPriorityIO</key>
+	<false/>
+	<key>StartInterval</key>
+	<integer>7200</integer>
+</dict>
+</plist>
