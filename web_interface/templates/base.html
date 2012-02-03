@@ -7,14 +7,14 @@
 {{define "topbar"}}
 <div class="topbar" data-dropdown="dropdown">
       <div class="topbar-inner">
-        <div class="container">
+        <div class="container-fluid">
           <h3><a href="/">AdPeople SOx</a></h3>
           <ul class="nav">
             <li class="active"><a href="/">Home</a></li>
             <li class="active"><a href="/allapps">Apps</a></li>
             <li class="active"><a href="/blacklist">Blacklist</a></li>
             <li> <!-- search form -->
-              <form class="pull-left" action="/searchfuzzy/" method="GET">
+              <form class="form-search" action="/searchfuzzy/" method="GET">
               <input type="text" placeholder="Search clients for apps.." name="search" style="height:2.2em;width:30em"/>
               </form>
             </li>
@@ -27,5 +27,5 @@
 
 {{define "base_bottom"}}
 </body>
-</html> 
+</html>
 {{end}}

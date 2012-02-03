@@ -416,17 +416,24 @@ func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
     path := r.FormValue("path")
     name := r.FormValue("name")
 
+
     app := &black{
         Path: path,
         Name: name}
+    
+    if app.Name == "" {
+        tmp := strings.Split(path, "/") 
+        app.Name = strings.Split(tmp[len(tmp)-1], ".")[0]
+    }
 
     if strings.Split(path, "/")[1] == "Users" {
-        fmt.Println(path)
+        fmt.Println("blacklisting by name: ",path, "\n\tname: ", name)
         // if application is located in a users folder
         // we must match on name instead of complete path
         app.Key = "apps._name"
-        app.Val = name
+        app.Val = app.Name
     } else {
+        fmt.Println("blacklisting by path: ", path)
         app.Key = "apps.path"
         app.Val = path
     }
@@ -459,7 +466,7 @@ func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, ar
         fmt.Print(err)
     }
 
-    http.Redirect(w,r, "/licenselist/", 302)
+    http.Redirect(w,r, "/blacklist/", 302)
     return
 }
 
@@ -585,7 +592,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
             doc.Id,// doc["hostname"], 
             doc.Ip,//doc["ip"],
             doc.Osx,
-            doc.Recon, 
+            doc.Recon,
             doc.Firewall, //["firewall"],
             doc.Date, // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
             strings.Replace(doc.Model, ",", ".", -1),

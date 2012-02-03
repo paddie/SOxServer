@@ -6,17 +6,17 @@
 
 <div class="container" style="padding-top:40px">
 <h3>Blacklist</h3>
-{{range .}}
-    <table border="0" cellspacing="4">
+<table border="0" cellspacing="4">
+{{range .}}    
         <tr>
           <td>{{.Name}}</td>
           <td>{{.Path}}</td>
-          <td>{{.Count}}</td>
+          <!-- <td>{{.Count}}</td> -->
           <td><a href="/searchexact/?key={{.Key}}&val={{.Val}}&title=Blacklisted" class="label notice">machines</a></td>
           <td><a href="/removeblacklist/?key={{.Key}}&val={{.Val}}" class="label">remove</a></td>
        </tr>
-    </table>
 {{end}}
+</table>
 </div>
 
 {{template "base_bottom"}}
