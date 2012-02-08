@@ -443,19 +443,6 @@ func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
     http.Redirect(w,r, "/blacklist/", 302)
 }
 
-// func resolveFromPath(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
-
-//     path := r.FormValue("path")
-
-//     if strings.Split(path, "/")[1] == "Users" {
-//         err := db.C("machines").Find(bson.M{"apps.path":path}).Select(bson.M{}).One()
-//     } else {
-        
-//     }
-
-//     err := db.C("blacklist").Remove(bson.M{"key":key, "val":val})    
-// }
-
 func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     key := r.FormValue("key")
     val := r.FormValue("val")

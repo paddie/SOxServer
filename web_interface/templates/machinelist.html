@@ -1,8 +1,11 @@
 {{define "machinelist"}}
 {{template "base_top"}}
 {{template "topbar"}}
-  <div>
-      <table class="bordered-table">
+<section id="tables">
+<!-- <div class="container"> -->
+  <div class="row">
+    <div class="span20">
+      <table class="table table-bordered">
           <thead>
           <tr>
              {{range .Headers}} <th>{{if .Key}}<a href="/?sortkey={{.Key}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</th>{{end}}
@@ -10,7 +13,7 @@
           </thead>
           <tbody>
           {{range .Machines}}
-              <tr {{if .SoxIssues}} bgcolor=#FF0000 {{else}} bgcolor=#00FF00 {{end}} >
+              <tr {{if .SoxIssues}} bgcolor=#FF0000 {{end}} >
                   <td>{{.Cnt}}</td>
                   <td><a href="{{.Url}}">{{.Hostname}}</a></td>
                   <td>{{.Ip}}</td>
@@ -25,6 +28,9 @@
           {{end}}
           </tbody>
       </table>
-  </div>
+    </div>  <!-- span12 -->
+  </div> <!-- row -->
+</div>
+<section id="tables">
 {{template "base_bottom"}}
 {{end}}

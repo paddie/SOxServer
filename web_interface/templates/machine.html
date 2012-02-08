@@ -3,9 +3,9 @@
 {{template "topbar"}}
 <div class="container">
     <div class="hero-unit">
-        <h1>{{.Hostname}}</h1><h6>{{.Id}}</h6></br>
+        <h1>{{.Hostname}}</h1><h6>{{.Id}}</h6> </br>
         <div class="row">
-            <div class="span4">
+            <div class="span2">
                 <h2>Machine</h2>
                 <dl>
                     <dt>IP</dt><dd>{{.Ip}}</dd>
@@ -14,7 +14,7 @@
                     <dt>Model</dt><dd>{{.Model}}</dd>
                 </dl>
             </div>
-            <div class="span4">
+            <div class="span2">
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
@@ -23,11 +23,11 @@
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>
             </div>
-            <div class="span4">
+            <div class="span2">
                 <h2>SOx</h2>
                 <dl>
                     <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
-                    <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label success">{{.Firewall}} - no issue</span>{{else}}<span class="label warning">{{.Firewall}} - issue</span>{{end}}</dd>
+                    <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label label-success">{{.Firewall}} - no issue</span>{{else}}<span class="label label-warning">{{.Firewall}} - issue</span>{{end}}</dd>
                     <dt>Antivirus</dt>
                         <dd>Application: {{.Virus_version}}</dd>
                         <dd>Definitions: {{.Virus_def}}</dd>
@@ -35,15 +35,18 @@
                 </dl>
             </div>
         </div>
-        <div class="row" class="span10">
-            
-            <h3>Updated: <span {{if .IsOld}} class="danger btn disabled" {{else}} class="success btn disabled" {{end}}>{{.Date}}</span>
-            </h3>
+        <div class="row">
+        <div class="span4">
+            <div {{if .IsOld}} class="alert alert-warning" {{else}} class="alert alert-success" {{end}}>
+            <h3 class="alert-heading" >Last Updated</h3>
+            {{.Date}}
+            </div>
+        </div>
         </div>
     </div> <!-- hero -->
 </div> <!-- container -->
 
-<div> <table class="zebra-striped">
+<div> <table class="table table-bordered">
     <thead>
         <tr>
             <th>Application</th>
@@ -51,7 +54,6 @@
             <th>Path</th>
         </tr>
     </thead><!-- thead -->
-
     <tbody>
     {{range .Apps}}
         <tr>
