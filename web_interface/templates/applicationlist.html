@@ -3,19 +3,19 @@
 {{template "base_top"}}
 
 {{template "topbar"}}
-<div class="container" style="padding-top:40px">
-
-<h2>Results</h2>
-
-<table border="0" cellspacing="4">
+<div class="container-fluid">
+<section id="applications">
+<!-- <div class="rowspan"> -->
+<h2>Applications</h2>
+<table class="table">
 {{range .}}
         <tr>
-          <td><a href="/searchexact/?key=apps.path&val={{.}}">{{.}}</a></td>
+          <td><a href="/searchexact/?key=apps.path&val={{.}}"><font size="2">{{.}}</font></a></td>
           <td><a class="label" href="/addblacklist/?path={{.}}">blacklist</a></td>
        </tr>
 {{end}}
 </table>
-
+</section>
 </div>
 
 {{template "base_bottom"}}

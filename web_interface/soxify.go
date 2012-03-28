@@ -18,7 +18,6 @@ import (
     "sort"
 )
 
-
 type appResult struct {
     Hostname string //"hostname"
     Id string "_id"
@@ -69,6 +68,7 @@ type machine struct {
     Date mongotime //"date"
     Users []string //"users"
     Cnt int
+    Ignore_firewall bool
 }
 
 type app struct {
@@ -180,17 +180,21 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
 
     fmt.Println("query: ", p)
     // m := bson.M{}    
+    if len(app_str) == 0 {
+        http.NotFound(w,r)
+        return
+    }
     err := c.Find(bson.M{"apps._name" : &bson.RegEx{Pattern:p, Options:"i"}}).
-        Select(bson.M{
-            "hostname":1,
-            "apps":1,
-            "_id":1}).
-        Sort(bson.M{"hostname":1}).
-        For(&res, func() os.Error {
-            res.Apps = fuzzyFilter_apps(app_str, res.Apps)
-            context = append(context, *res)
-            return nil
-        })
+            Select(bson.M{
+                "hostname":1,
+                "apps":1,
+                "_id":1}).
+            Sort(bson.M{"hostname":1}).
+            For(&res, func() os.Error {
+                res.Apps = fuzzyFilter_apps(app_str, res.Apps)
+                context = append(context, *res)
+                return nil
+            })    
     
     if err != nil {
         http.NotFound(w,r)
@@ -232,6 +236,21 @@ func searchExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
         return
     }
     set.Execute(w, "searchresults", context)
+}
+
+func ignorefw(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+    id := r.FormValue("id")
+    if id == "" {
+        fmt.Println("ignorefw: no 'id' argument")
+        return
+    }
+    fmt.Println("ignorefw: ignoring firewall for id: ", id)
+    err := db.C("machines").Update(bson.M{"_id" : id}, bson.M{"$set" : bson.M{"ignore_firewall": true}})
+    if err != nil {
+        fmt.Println(err)
+        http.NotFound(w,r)
+        return
+    }
 }
 
 func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
@@ -309,9 +328,11 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argP
         fmt.Print(err)
     }
 
-    http.Redirect(w,r, "/", 302)
+    http.Redirect(w,r, fmt.Sprintf("/machine/%v", machine_id), 302)
     return
 }
+
+
 
 // helper struct for the machinelist-view
 type machines struct {
@@ -331,6 +352,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
     if sortKey == "" {
         sortKey = "hostname"
     }
+
     m := new(machines)
     m.Headers = []header{
         {"#",""},
@@ -592,7 +614,6 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
 }
 
 
-
 // Serve files for CSS and JS purposes
 // TODO: use http.ServeFiles..
 func sourceHandler(w http.ResponseWriter, r *http.Request) { 
@@ -600,7 +621,7 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
                 if err := recover(); err != nil { 
                         fmt.Fprintf(w, "%v", err) 
                 } 
-        }()        
+        }()
         fmt.Println("load source:", r.URL.Path[1:])
         f, err := os.OpenFile(r.URL.Path[1:], os.O_RDONLY, 0644) 
         defer f.Close()
@@ -645,6 +666,7 @@ func main() {
         "templates/machinelist.html"))
     
     NewHandleFunc("/searchexact/", searchExact)
+    NewHandleFunc("/ignorefw/", ignorefw)
 	NewHandleFunc("/searchfuzzy/", searchAppSubstring)
     NewHandleFunc("/sox/", soxlist)
     NewHandleFunc("/machine/", machineView)
@@ -665,4 +687,6 @@ func main() {
     if err != nil {
         fmt.Println(err)
     }
+
+    
 }

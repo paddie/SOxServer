@@ -3,10 +3,10 @@
 {{template "base_top"}}
 
 {{template "topbar"}}
-<div class="container" style="padding-top:40px">
+<div class="container-fluid">
 {{range .}}
     <h2><a href="/machine/{{.Id}}">{{.Hostname}}</a></h2>
-    <table border="0" cellspacing="4">
+    <table class="table">
     {{range .Apps}}
         <tr>
           <td>{{.Name}}</td>

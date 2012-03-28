@@ -1,11 +1,14 @@
 {{define "machine"}}
 {{template "base_top"}}
 {{template "topbar"}}
-<div class="container">
+<form name="fwform" method="POST" action="/ignorefw/">
+                            <input type="hidden" name="id" value="{{.Id}}">
+                            </form>
+<div class="container-fluid">
     <div class="hero-unit">
         <h1>{{.Hostname}}</h1><h6>{{.Id}}</h6> </br>
         <div class="row">
-            <div class="span2">
+            <div class="span3">
                 <h2>Machine</h2>
                 <dl>
                     <dt>IP</dt><dd>{{.Ip}}</dd>
@@ -14,7 +17,7 @@
                     <dt>Model</dt><dd>{{.Model}}</dd>
                 </dl>
             </div>
-            <div class="span2">
+            <div class="span3">
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
@@ -23,17 +26,27 @@
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>
             </div>
-            <div class="span2">
+            <div class="span3">
                 <h2>SOx</h2>
                 <dl>
-                    <dt>Recon</dt><dd>{{if .Recon}}<span class="label success">Installed</span>{{else}}<span class="label warning">Missing</span>{{end}}</dd>
-                    <dt>Firewall</dt><dd>{{if .MacbookFirewallCheck}}<span class="label label-success">{{.Firewall}} - no issue</span>{{else}}<span class="label label-warning">{{.Firewall}} - issue</span>{{end}}</dd>
+                    <dt>Recon</dt>
+                        <dd>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-warning">Missing</span>{{end}}
+                        </dd>
+                    <dt>Firewall</dt>
+                        <dd>{{if .MacbookFirewallCheck}}<span class="label label-success">{{.Firewall}} - no issue</span>
+                            {{else}}<span class="label label-warning">{{.Firewall}} - issue</span>
+                            <a href="javascript:document.fwform.submit();"><i class="icon-ok"></i></a>
+                            {{end}}
+
+                            {{if .Ignore_firewall}}true{{end}}
+                        </dd>
                     <dt>Antivirus</dt>
                         <dd>Application: {{.Virus_version}}</dd>
                         <dd>Definitions: {{.Virus_def}}</dd>
                     <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
                 </dl>
             </div>
+
         </div>
         <div class="row">
         <div class="span4">
@@ -44,27 +57,33 @@
         </div>
         </div>
     </div> <!-- hero -->
-</div> <!-- container -->
 
-<div> <table class="table table-bordered">
+<section id="tables">
+<!-- <div class="row"> -->
+<!-- <div class="colspan"> -->
+    <table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Application</th>
-            <th>Version</th>
-            <th>Path</th>
+            <th><h3>Application</h3></th>
+            <th><h3>Version</h3></th>
+            <th><h3>Path</h3></th>
         </tr>
     </thead><!-- thead -->
     <tbody>
-    {{range .Apps}}
+        {{range .Apps}}
         <tr>
-            <td><a href="/searchexact/?key=apps.path&val={{.Path}}">{{.Name}}</a></td>
-            <td>{{.ShortVersion}}</td>
-            <td>{{.ShortPath}}</td>
+            <td><a href="/searchexact/?key=apps.path&val={{.Path}}"><font size="2">{{.Name}}</font></a></td>
+            <td><font size="2">{{.ShortVersion}}</font></td>
+            <td><font size="2">{{.ShortPath}}</font></td>
             <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >License</a></td>
             <td><a class="label" href="/addblacklist/?name={{.Name}}&path={{.Path}}" >blacklist</a></td>
         </tr>
     {{end}}
     </tbody> <!-- tbody -->
-</table> </div> <!-- table -->
+    </table>
+<!-- </div> --> <!-- span -->
+<!-- </div> --> <!-- row -->
+</section> <!-- table -->
+</div> <!-- container -->
 {{template "base_bottom"}}
 {{end}}

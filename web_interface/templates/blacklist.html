@@ -4,9 +4,10 @@
 
 {{template "topbar"}}
 
-<div class="container" style="padding-top:40px">
-<h3>Blacklist</h3>
-<table border="0" cellspacing="4">
+<div class="container-fluid">
+<section id="blacklist">
+<h2>Blacklist</h2>
+<table class="table">
 {{range .}}
         <tr>
           <td>{{.Name}}</td>
@@ -17,6 +18,7 @@
        </tr>
 {{end}}
 </table>
+</section>
 </div>
 
 {{template "base_bottom"}}
