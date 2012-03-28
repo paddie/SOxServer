@@ -31,15 +31,13 @@ def main():
 
 	path = os.path.join(sys.path[0], "script.py") # script path
 	id = os.path.join(sys.path[0], "script_id") # version path
-	
-	# print path
-	# print id
+
 	try:
 		new_script = fs.get_last_version("script")
 	except:
 		print "error: Cold not connect to mongodb or no script in DB"
-		sys.exit(2)	
-	
+
+
 	# read old script id
 	if os.path.isfile(id):
 		tmp = open(id, "r")
@@ -48,7 +46,8 @@ def main():
 		if str(new_script._id) == old_id:
 			if os.path.isfile(path):
 				try:
-					os.execl(sys.executable, "python", path)
+					err = os.execl(sys.executable, "python", path)
+					print "Success!", err
 				except:
 					print "error: Script not executed properly, aborting.."
 					sys.exit(2)
@@ -73,20 +72,14 @@ def main():
 				sys.exit(2)
 				
 	script.write(s)
-
-    # os.chown(path,0,0)
-    # os.chmod(path, 755)
-	
-    # os.chown(id, 0,0)
-    # os.chmod(id,644)
 	
 	id_file.write(str(new_script._id))
 	
 	script.close()
 	id_file.close()
 	print "debug: Script downloaded, resetting machine data in db.."
-	col = Connection("152.146.38.56").sox["main"]
-	col.remove({"_id":serial_number()})
+	# col = Connection("152.146.38.56").sox["main"]
+	# col.remove({"_id":serial_number()})
 	print "debug: running script"
 	
 	try:

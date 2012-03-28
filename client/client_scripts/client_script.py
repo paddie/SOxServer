@@ -209,20 +209,28 @@ def mongo_conn(ip,db='sox'):
 def update_db(db, doc, coll="main"):
     if coll == "":
         print "debug: no collection specified"
-        sys.exit(2)
+        return
+
     col = db[coll]
     try:
         id = doc['_id']
     except:
-        # print "update_db: 'doc' has no '_id'", doc
         print "debug: doc has no '_id'"
-    	sys.exit(2)
-                
-    try:
-        col.update({"_id":id}, doc, safe=True, upsert=True)
-    except:
-        print "debug: Failed to insert doc"
-        sys.exit(2)
+    	return
+
+    tmp = col.find_one({"_id" : id})
+
+    if tmp:
+        try:
+            col.update({"_id":id}, doc, upsert=True)
+            print "Updated coll in db"
+        except:
+            print "debug: Failed to insert doc"    
+        return
+
+    print "debug: document does not exist - inserting.."
+    doc.update({"ignore_firewall": False})
+    col.insert(doc)
 
 def main():
     server_ip = "152.146.38.56" # static IP for the mini-server 
@@ -240,7 +248,7 @@ def main():
     security_dict(doc)
     installed_apps(doc)
     recon_dict(doc)
-    update_db(db,doc, coll=collection)
+    update_db(db, doc, coll=collection)
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
     # for l in doc["Apps"]:

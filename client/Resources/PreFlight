@@ -3,11 +3,8 @@
 easy_install -U setuptools
 python -m easy_install pymongo
 
-launchctl stop com.adpeople.sox
-launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
-sudo rm -R /Library/AdPeople
 # launchctl stop com.adpeople.sox
-# sudo launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
+# launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
 
 
 # cd `dirname $0` && pwd
