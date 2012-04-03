@@ -18,7 +18,6 @@ import (
     "sort"
 )
 
-
 func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     var context []string
     // var res *appResult

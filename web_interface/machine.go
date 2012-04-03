@@ -18,6 +18,117 @@ import (
     // "sort"
 )
 
+type app struct {
+    Path string //"path"
+    Version string //"version"
+    Name string "_name"
+    // Info string
+}
+
+func (m *app) ShortPath() string {
+    const max = 80
+    const split = max/2
+    if len(m.Path) > max {
+        diff := len(m.Path) - max
+        return m.Path[:split] + "..." + m.Path[split+diff:]
+    }
+    return m.Path
+}
+
+func (m *app) ShortVersion() string {
+    const max = 30
+    if len(m.Version) > max {
+        return m.Version[:max] + "..."
+    }
+    return m.Version
+}
+
+// private type to handle format conversion from mongo's milisecond time-format, 
+type mongotime int64
+
+// time is stored in milliseconds in mongo
+// - to get a *time.Time we need to convert milli -> seconds..
+func (m mongotime) String() string {
+    return fmt.Sprint(time.SecondsToUTC(int64(m)/1e3))
+}
+
+// helper struct for the machinelist-view
+type machines struct {
+    Machines []machine
+    Headers []header
+}
+
+type machine struct {
+    Firewall bool //"firewall"
+    Virus_version string //"virus_version"
+    Memory string //"memory"
+    Virus_last_run string // "virus_last_run"
+    Hostname string //"hostname"
+    Model string // "model"
+    Recon bool //"recon"
+    Ip string //"ip"
+    Virus_def string  //"virus_def"
+    Id string "_id"
+    Cpu string //"cpu"
+    Osx string //"osx"
+    Apps []app //"apps"
+    Date mongotime //"date"
+    Users []string //"users"
+    Cnt int
+    // Ignore_firewall bool
+}
+
+// helper function to calculate the days since the last update
+// - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
+func (m *machine) TimeOfUpdate() *time.Time {
+    return time.SecondsToUTC( int64(m.Date) / 1e3 )
+}
+
+func (m *machine) Seconds() int64 {
+    return int64(m.Date) / 1e3
+}
+
+// calculates the number of days from the last update, to the current date.
+func (m *machine) DaysSinceLastUpdate() int64 {
+    // seconds in a day: 60^2 * 24 = 86400
+    return (time.Seconds() - (int64(m.Date)/1e3)) / 86400
+}
+
+// returns true if it is more than 14 days since the machine called home
+func (m *machine) IsOld() bool {
+    if m.DaysSinceLastUpdate() > 14 {
+        return true
+    }
+    return false
+}
+
+// if the machine is a macbook and the firewall is "OFF", we return true
+func (m *machine) MacbookFirewallCheck() bool {
+    if strings.HasPrefix(m.Model, "MacBook") && !m.Firewall {
+        return false
+    }
+    return true
+}
+
+// abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
+func (m *machine) SoxIssues() bool {
+    if m.IsOld() {
+        return true
+    }
+    if !m.Recon {
+        return true
+    }
+    if !m.MacbookFirewallCheck() {
+        return true    
+    }
+    return false
+}
+
+// temp url to the specific machine in our system
+func (m *machine) Url() string {
+    return fmt.Sprintf("/machine/%s", m.Id)
+}
+
 /***********************************
 view details for each machine
 ************************************/
@@ -74,6 +185,12 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argP
 
     http.Redirect(w,r, fmt.Sprintf("/machine/%v", machine_id), 302)
     return
+}
+
+// The 'name' to be shown in machinelist
+// The 'key' to be used when sorting
+type header struct {
+    Name, Key string
 }
 
 

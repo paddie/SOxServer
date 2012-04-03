@@ -18,6 +18,46 @@ import (
     // "sort"
 )
 
+// Filters apps based on exact name of application
+// - includes case
+func filter_apps(value string, apps []app, usePath bool) []app {
+    tmp := make([]app, 0, 10)
+    if usePath {
+        for _, v := range apps {
+            if v.Path == value {
+                tmp = append(tmp, v)
+            }
+        }
+        return tmp
+    }
+
+    for _, v := range apps {
+        if v.Name == value {
+            tmp = append(tmp, v)
+        }
+    }
+    return tmp
+}
+
+// returns the subset of applications whose name contains the substring
+// - ignores case
+func fuzzyFilter_apps(substr string, apps []app) []app {
+    tmp := make([]app, 0, 10)
+    name := strings.ToLower(substr)
+    for _, v := range apps {
+        if strings.Contains(strings.ToLower(v.Name), name) {
+            tmp = append(tmp, v)
+        }
+    }
+    return tmp
+}
+
+type appResult struct {
+    Hostname string //"hostname"
+    Id string "_id"
+    Apps []app //"apps"
+}
+
 /*******************************************************
 // queries a list of machines that contain the substring
 // - filters using fuzzyFilter_apps
