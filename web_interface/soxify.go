@@ -68,7 +68,7 @@ type machine struct {
     Date mongotime //"date"
     Users []string //"users"
     Cnt int
-    Ignore_firewall bool
+    // Ignore_firewall bool
 }
 
 type app struct {
@@ -592,10 +592,10 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
     }
     w.Header().Set("Content-Type","text/csv; charset=utf-8")
         
-    fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,Virus (Definitions),Outdated,FW Issue,SOxIssues\n")
+    fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,Virus (Definitions),Last Virus Scan,Sophos Issue,Outdated,SOxIssues,Comment\n")
 
     for i,doc := range results {
-        fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,%v,%v\n",
+        fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,,%v,%v\n",
             i+1,
             doc.Hostname, 
             doc.Id,// doc["hostname"], 
@@ -607,8 +607,8 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
             strings.Replace(doc.Model, ",", ".", -1),
             doc.Virus_version,
             doc.Virus_def,
+            doc.Virus_last_run,
             doc.IsOld(),
-            doc.MacbookFirewallCheck(),
             doc.SoxIssues())
     }
 }

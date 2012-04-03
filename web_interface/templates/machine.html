@@ -37,8 +37,6 @@
                             {{else}}<span class="label label-warning">{{.Firewall}} - issue</span>
                             <a href="javascript:document.fwform.submit();"><i class="icon-ok"></i></a>
                             {{end}}
-
-                            {{if .Ignore_firewall}}true{{end}}
                         </dd>
                     <dt>Antivirus</dt>
                         <dd>Application: {{.Virus_version}}</dd>
