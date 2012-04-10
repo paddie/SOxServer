@@ -39,10 +39,10 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
     }
     w.Header().Set("Content-Type","text/csv; charset=utf-8")
         
-    fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,Virus (Definitions),Last Virus Scan,Sophos Issue,Outdated,SOxIssues,Comment\n")
+    fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,MHz,Ram,Virus (Definitions),Last Virus Scan,Sophos Issue,Outdated,SOxIssues,Comment\n")
 
     for i,doc := range results {
-        fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,,%v,%v\n",
+        fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,,%v,%v\n",
             i+1,
             doc.Hostname, 
             doc.Id,// doc["hostname"], 
@@ -52,6 +52,8 @@ func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int
             doc.Firewall, //["firewall"],
             doc.Date, // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
             strings.Replace(doc.Model, ",", ".", -1),
+            doc.Cpu,
+            doc.Memory,
             doc.Virus_version,
             doc.Virus_def,
             doc.Virus_last_run,

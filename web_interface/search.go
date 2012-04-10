@@ -12,7 +12,7 @@ import (
     // "time"
     // old "old/template"
     // "template"
-    // "strings"
+    "strings"
     // "net"
     // "strconv"
     // "sort"
@@ -30,7 +30,6 @@ func filter_apps(value string, apps []app, usePath bool) []app {
         }
         return tmp
     }
-
     for _, v := range apps {
         if v.Name == value {
             tmp = append(tmp, v)

@@ -21,21 +21,15 @@ import (
 func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
     var context []string
     // var res *appResult
-
     c := db.C("machines")
-
     err := c.Find(nil).Distinct("apps.path", &context)
-
-    // fmt.Println(context)
 
     if err != nil {
         fmt.Println(err)
         http.NotFound(w,r)
         return
     }
-
     sort.Strings(context)
-
     set.Execute(w, "applicationlist", &context)
 }
 
@@ -52,8 +46,6 @@ func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
     // path example: key="apps.path", val="/Applications/Xinet Software/Uploader Manager.app"
     path := r.FormValue("path")
     name := r.FormValue("name")
-
-
     app := &black{
         Path: path,
         Name: name}
@@ -95,7 +87,6 @@ func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, ar
 }
 
 func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
-    
     var bl []black    
     err := db.C("blacklist").Find(nil).All(&bl)
 
@@ -103,6 +94,5 @@ func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos i
         fmt.Println(err)
         return
     }
-
     set.Execute(w, "blacklist", bl)
 }
