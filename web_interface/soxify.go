@@ -11,8 +11,8 @@ import (
 	// "reflect"
 	// "time"
 	// old "old/template"
+	"html/template"
 	"path/filepath"
-	"text/template"
 	// "strings"
 	// "net"
 	// "strconv"
@@ -73,10 +73,15 @@ var session *mgo.Session
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
-	pattern := filepath.Join("templates", "*.html")
+	wd, err := os.Getwd()
+	pattern := filepath.Join(wd, "templates", "*.html")
+	fmt.Println(pattern)
 	set = template.Must(template.ParseGlob(pattern))
-	var err error
+
+	template.ParseGlob(pattern)
+	// var err error
 	session, err = mgo.Dial("152.146.38.56")
+	// session, err = mgo.Dial("127.0.0.1")
 	// set = template.SetMust(template.ParseSetFiles(
 	// 	"templates/base.html", // topbar, top and bottom
 	// 	"templates/licenselist.html",
@@ -105,7 +110,7 @@ func main() {
 	NewHandleFunc("/blacklist/", blacklist)
 	NewHandleFunc("/addblacklist/", addBlacklist)
 	NewHandleFunc("/removeblacklist/", removeBlacklist)
-	err = http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":6060", nil)
 	if err != nil {
 		fmt.Println(err)
 	}
