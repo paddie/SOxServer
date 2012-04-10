@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo/bson"
 	"launchpad.net/mgo"
+	"launchpad.net/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
@@ -18,17 +18,17 @@ import (
 	// "sort"
 )
 
-func newLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func newLicense(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	app := r.FormValue("app")
 	path := r.FormValue("path")
 
 	formData := &license{Name: app,
 		Path: path}
 
-	set.Execute(w, "newlicense", formData)
+	set.ExecuteTemplate(w, "newlicense", formData)
 }
 
-func addLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func addLicense(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	app := r.FormValue("app")
 	path := r.FormValue("path")
 	val := r.FormValue("count")
@@ -57,7 +57,7 @@ func addLicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos 
 	http.Redirect(w, r, "/licenselist/", 302)
 }
 
-func removelicense(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func removelicense(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	path := r.FormValue("path")
 	fmt.Println("Delete", path)
 	c := db.C("license")
@@ -84,7 +84,7 @@ func (l *license) Valid() bool {
 	return false
 }
 
-func licenselist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func licenselist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	var results []license
 
 	err := db.C("license").Find(nil).Sort(bson.M{"name": 1}).All(&results)
@@ -94,5 +94,5 @@ func licenselist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "licenselist", results)
+	set.ExecuteTemplate(w, "licenselist", results)
 }

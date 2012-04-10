@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo/bson"
 	"launchpad.net/mgo"
+	"launchpad.net/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
@@ -61,7 +61,7 @@ type appResult struct {
 // queries a list of machines that contain the substring
 // - filters using fuzzyFilter_apps
 ********************************************************/
-func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func searchAppSubstring(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	app_str := r.FormValue("search")
 	// app_str2 := r.FormValue("test2")
 	fmt.Println("searching for substring in apps: ", app_str)
@@ -95,14 +95,14 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db mgo.Database,
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "searchresults", context)
+	set.ExecuteTemplate(w, "searchresults", context)
 }
 
 /********************************************************
 // queries a list of machines that has exacly the machine
 // - filters using filter_apps
 *********************************************************/
-func searchExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func searchExact(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	key := r.FormValue("key")
 	val := r.FormValue("val")
 
@@ -132,5 +132,5 @@ func searchExact(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "searchresults", context)
+	set.ExecuteTemplate(w, "searchresults", context)
 }

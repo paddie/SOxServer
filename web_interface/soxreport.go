@@ -20,7 +20,7 @@ import (
 
 // Returns a .CSV-file to be opened in Excel (or whatever) containing the important
 // SOx information.
-func soxlist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	SortKey := r.URL.Path[argPos:]
 	if len(SortKey) == 0 {
 		SortKey = "hostname"

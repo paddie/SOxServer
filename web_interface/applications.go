@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo/bson"
 	"launchpad.net/mgo"
+	"launchpad.net/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
@@ -18,7 +18,7 @@ import (
 	"sort"
 )
 
-func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func applications(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	var context []string
 	// var res *appResult
 	c := db.C("machines")
@@ -30,7 +30,7 @@ func applications(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
 		return
 	}
 	sort.Strings(context)
-	set.Execute(w, "applicationlist", &context)
+	set.ExecuteTemplate(w, "applicationlist", &context)
 }
 
 type black struct {
@@ -41,7 +41,7 @@ type black struct {
 // *****************************************
 // BLACKLISTING APPLICATIONS
 // *****************************************
-func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func addBlacklist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	// name example: key="apps._name", val="Dropbox"
 	// path example: key="apps.path", val="/Applications/Xinet Software/Uploader Manager.app"
 	path := r.FormValue("path")
@@ -72,7 +72,7 @@ func addBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPo
 	http.Redirect(w, r, "/blacklist/", 302)
 }
 
-func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func removeBlacklist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	key := r.FormValue("key")
 	val := r.FormValue("val")
 
@@ -86,7 +86,7 @@ func removeBlacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, ar
 	return
 }
 
-func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func blacklist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	var bl []black
 	err := db.C("blacklist").Find(nil).All(&bl)
 
@@ -94,5 +94,5 @@ func blacklist(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos i
 		fmt.Println(err)
 		return
 	}
-	set.Execute(w, "blacklist", bl)
+	set.ExecuteTemplate(w, "blacklist", bl)
 }

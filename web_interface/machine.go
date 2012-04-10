@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo/bson"
 	"launchpad.net/mgo"
+	"launchpad.net/mgo/bson"
 	"net/http"
 	// "reflect"
 	"time"
@@ -72,7 +72,7 @@ type machine struct {
 	Cpu            string    //"cpu"
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
-	Date           mongotime //"date"
+	Date           time.Time //"date"
 	Users          []string  //"users"
 	Cnt            int
 	// Ignore_firewall bool
@@ -81,17 +81,17 @@ type machine struct {
 // helper function to calculate the days since the last update
 // - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
 func (m *machine) TimeOfUpdate() time.Time {
-	return time.Unix(int64(m.Date)/1e3, 0).UTC()
+	return m.Date
 }
 
-func (m *machine) Seconds() int64 {
-	return int64(m.Date) / 1e3
+func (m *machine) Seconds() int {
+	return m.Date.Second()
 }
 
 // calculates the number of days from the last update, to the current date.
-func (m *machine) DaysSinceLastUpdate() int64 {
+func (m *machine) DaysSinceLastUpdate() int {
 	// seconds in a day: 60^2 * 24 = 86400
-	return (time.Now().Sub((int64(m.Date) / 1e3))) / 86400
+	return int(time.Now().Sub(m.Date).Seconds())
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -132,7 +132,7 @@ func (m *machine) Url() string {
 /***********************************
 view details for each machine
 ************************************/
-func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func machineView(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	key := r.URL.Path[argPos:]
 	if len(key) < 11 {
 		http.NotFound(w, r)
@@ -150,13 +150,13 @@ func machineView(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "machine", mach)
+	set.ExecuteTemplate(w, "machine", mach)
 }
 
 /***********************************
 delete a machine given machine_id
 ************************************/
-func deleteMachine(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func deleteMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	machine_id := r.URL.Path[argPos:]
 	if len(machine_id) == 0 {
 		http.Redirect(w, r, "/", 302)
@@ -194,7 +194,7 @@ type header struct {
 }
 
 // TODO: define which fields are shown using the header-file
-func machineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	sortKey := r.FormValue("sortkey")
 	if sortKey == "" {
 		sortKey = "hostname"
@@ -230,10 +230,10 @@ func machineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "machinelist", m)
+	set.ExecuteTemplate(w, "machinelist", m)
 }
 
-func oldmachineList(w http.ResponseWriter, r *http.Request, db mgo.Database, argPos int) {
+func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	sortKey := r.FormValue("sortkey")
 	if sortKey == "" {
 		sortKey = "hostname"
@@ -268,5 +268,5 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db mgo.Database, arg
 		http.NotFound(w, r)
 		return
 	}
-	set.Execute(w, "machinelist", m)
+	set.ExecuteTemplate(w, "machinelist", m)
 }

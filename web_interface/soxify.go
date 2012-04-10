@@ -5,13 +5,13 @@ import (
 	"os"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo/bson"
 	"launchpad.net/mgo"
+	"launchpad.net/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
 	// old "old/template"
-    "path/filepath"
+	"path/filepath"
 	"text/template"
 	// "strings"
 	// "net"
@@ -73,10 +73,10 @@ var session *mgo.Session
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
-    pattern := filepath.Join("templates", "*.html")
-    set = template.Must(template.ParseGlob(pattern))
-    var err error
-    session, err = mgo.Dial("152.146.38.56")
+	pattern := filepath.Join("templates", "*.html")
+	set = template.Must(template.ParseGlob(pattern))
+	var err error
+	session, err = mgo.Dial("152.146.38.56")
 	// set = template.SetMust(template.ParseSetFiles(
 	// 	"templates/base.html", // topbar, top and bottom
 	// 	"templates/licenselist.html",
