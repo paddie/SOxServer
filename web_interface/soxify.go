@@ -59,7 +59,7 @@ type myhandler func(http.ResponseWriter, *http.Request, *mgo.Database, int)
 // builds a new handler that creates a session to mongodb before passing on the function.
 func NewHandleFunc(pattern string, fn myhandler) {
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		s := session.Clone()
+		s := session.Copy()
 		defer s.Close()
 
 		fn(w, r, s.DB("sox"), len(pattern))
@@ -75,22 +75,11 @@ func main() {
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
 	wd, err := os.Getwd()
 	pattern := filepath.Join(wd, "templates", "*.html")
-	fmt.Println(pattern)
+	fmt.Println("loading templates matching regex: ", pattern)
 	set = template.Must(template.ParseGlob(pattern))
 
-	template.ParseGlob(pattern)
-	// var err error
 	session, err = mgo.Dial("152.146.38.56")
 	// session, err = mgo.Dial("127.0.0.1")
-	// set = template.SetMust(template.ParseSetFiles(
-	// 	"templates/base.html", // topbar, top and bottom
-	// 	"templates/licenselist.html",
-	// 	"templates/newlicense.html",
-	// 	"templates/machine.html",
-	// 	"templates/searchresults.html",
-	// 	"templates/applicationlist.html",
-	// 	"templates/blacklist.html",
-	// 	"templates/machinelist.html"))
 
 	NewHandleFunc("/searchexact/", searchExact)
 	NewHandleFunc("/ignorefw/", ignorefw)
@@ -114,5 +103,4 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
