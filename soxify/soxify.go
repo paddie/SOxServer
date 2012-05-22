@@ -13,10 +13,6 @@ import (
 	// old "old/template"
 	"html/template"
 	"path/filepath"
-	// "strings"
-	// "net"
-	// "strconv"
-	// "sort"
 )
 
 func ignorefw(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -73,12 +69,20 @@ var session *mgo.Session
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
+
 	wd, err := os.Getwd()
 	pattern := filepath.Join(wd, "templates", "*.html")
 	fmt.Println("loading templates matching regex: ", pattern)
 	set = template.Must(template.ParseGlob(pattern))
-
 	session, err = mgo.Dial("152.146.38.56")
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Trying to connect to localhost")
+		session, err = mgo.Dial("localhost")
+		if err != nil {
+			panic(err)
+		}
+	}
 	// session, err = mgo.Dial("127.0.0.1")
 
 	NewHandleFunc("/searchexact/", searchExact)
@@ -99,8 +103,10 @@ func main() {
 	NewHandleFunc("/blacklist/", blacklist)
 	NewHandleFunc("/addblacklist/", addBlacklist)
 	NewHandleFunc("/removeblacklist/", removeBlacklist)
+
 	err = http.ListenAndServe(":6060", nil)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 }

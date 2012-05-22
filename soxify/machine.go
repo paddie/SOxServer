@@ -44,13 +44,13 @@ func (m *app) ShortVersion() string {
 }
 
 // private type to handle format conversion from mongo's milisecond time-format, 
-type mongotime int64
+// type mongotime int64
 
 // time is stored in milliseconds in mongo
 // - to get a *time.Time we need to convert milli -> seconds..
-func (m mongotime) String() string {
-	return fmt.Sprint(time.Unix(int64(m)/1e3, 0).UTC())
-}
+// func (m mongotime) String() string {
+// 	return fmt.Sprint(time.Unix(int64(m)/1e3, 0).UTC())
+// }
 
 // helper struct for the machinelist-view
 type machines struct {
@@ -112,9 +112,9 @@ func (m *machine) MacbookFirewallCheck() bool {
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-	if m.IsOld() {
-		return true
-	}
+	// if m.IsOld() {
+	// 	return true
+	// }
 	if !m.Recon {
 		return true
 	}

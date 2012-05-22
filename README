@@ -4,11 +4,11 @@ Configure MongoDB to start when Mac OSX system boots.
 
 Mongo Installation
 ---
-This guide assumes you've installed mongo using MacPorts like so:
+This guide assumes you've installed mongo using MacPorts (link: http://www.macports.org/install.php) like so:
 
     sudo port install mongo
 
-Mongo daemon location is assumed to be **`/opt/local/bin/mongod`**
+Mongo daemon location is assumed to be **`/opt/local/bin/mongod`** as per MacPorts install
 
 If you [download mongo](http://www.mongodb.org/display/DOCS/Downloads) directly, you need to copy all files inside the bin directory to /opt/local/bin as root. Once you do that, the rest of this guide will apply to you.
 
