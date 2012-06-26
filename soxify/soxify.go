@@ -1,16 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"os"
-	// "path"
 	"fmt"
 	"launchpad.net/mgo"
 	"launchpad.net/mgo/bson"
 	"net/http"
-	// "reflect"
-	// "time"
-	// old "old/template"
 	"html/template"
 	"path/filepath"
 )
@@ -28,25 +23,6 @@ func ignorefw(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos i
 		http.NotFound(w, r)
 		return
 	}
-}
-
-// Serve files for CSS and JS purposes
-// TODO: use http.ServeFiles..
-func sourceHandler(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Fprintf(w, "%v", err)
-		}
-	}()
-	fmt.Println("load source:", r.URL.Path[1:])
-	f, err := os.OpenFile(r.URL.Path[1:], os.O_RDONLY, 0644)
-	defer f.Close()
-	if err != nil {
-		panic(err)
-	}
-	b := new(bytes.Buffer)
-	b.ReadFrom(f)
-	fmt.Fprintf(w, b.String())
 }
 
 // type-alias to help with the rest
@@ -69,10 +45,9 @@ var session *mgo.Session
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
-
 	wd, err := os.Getwd()
+	source := filepath.Join(wd, "bootstrap/")
 	pattern := filepath.Join(wd, "templates", "*.html")
-	fmt.Println("loading templates matching regex: ", pattern)
 	set = template.Must(template.ParseGlob(pattern))
 	session, err = mgo.Dial("152.146.38.56")
 	if err != nil {
@@ -83,7 +58,6 @@ func main() {
 			panic(err)
 		}
 	}
-	// session, err = mgo.Dial("127.0.0.1")
 
 	NewHandleFunc("/searchexact/", searchExact)
 	NewHandleFunc("/ignorefw/", ignorefw)
@@ -95,14 +69,13 @@ func main() {
 	NewHandleFunc("/addlicense/", addLicense)
 	NewHandleFunc("/removelicense/", removelicense)
 	NewHandleFunc("/del/", deleteMachine)
-	http.HandleFunc("/js/", sourceHandler)
-	http.HandleFunc("/bootstrap/", sourceHandler)
 	NewHandleFunc("/", machineList)
 	NewHandleFunc("/allapps", applications)
 	NewHandleFunc("/oldmachines/", oldmachineList)
 	NewHandleFunc("/blacklist/", blacklist)
 	NewHandleFunc("/addblacklist/", addBlacklist)
 	NewHandleFunc("/removeblacklist/", removeBlacklist)
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(source))))
 
 	err = http.ListenAndServe(":6060", nil)
 	if err != nil {

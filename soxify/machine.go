@@ -1,28 +1,18 @@
 package main
 
 import (
-
-	// "bytes"
-	// "path"
 	"fmt"
 	"launchpad.net/mgo"
 	"launchpad.net/mgo/bson"
 	"net/http"
-	// "reflect"
 	"time"
-	// old "old/template"
-	// "template"
 	"strings"
-	// "net"
-	// "strconv"
-	// "sort"
 )
 
 type app struct {
 	Path    string //"path"
 	Version string //"version"
 	Name    string "_name"
-	// Info string
 }
 
 func (m *app) ShortPath() string {
@@ -42,15 +32,6 @@ func (m *app) ShortVersion() string {
 	}
 	return m.Version
 }
-
-// private type to handle format conversion from mongo's milisecond time-format, 
-// type mongotime int64
-
-// time is stored in milliseconds in mongo
-// - to get a *time.Time we need to convert milli -> seconds..
-// func (m mongotime) String() string {
-// 	return fmt.Sprint(time.Unix(int64(m)/1e3, 0).UTC())
-// }
 
 // helper struct for the machinelist-view
 type machines struct {
@@ -211,6 +192,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 		{"Sophos Antivirus", ""},
 		{"Date", "date"},
 		{"Model", "model"},
+		{"Memory", "memory"},
 		{"Delete", ""}}
 
 	c := db.C("machines")
