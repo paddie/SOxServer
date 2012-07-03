@@ -46,7 +46,7 @@ func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
 	wd, err := os.Getwd()
-	source := filepath.Join(wd, "bootstrap/")
+	source := filepath.Join(wd, "bootstrap")
 	pattern := filepath.Join(wd, "templates", "*.html")
 	set = template.Must(template.ParseGlob(pattern))
 	session, err = mgo.Dial("152.146.38.56")

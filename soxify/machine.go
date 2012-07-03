@@ -164,7 +164,7 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 		fmt.Print(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/machine/%v", machine_id), 302)
+	http.Redirect(w, r, "/", 302)
 	return
 }
 
