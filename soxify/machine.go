@@ -110,6 +110,10 @@ func (m *machine) Url() string {
 	return fmt.Sprintf("/machine/%s", m.Id)
 }
 
+func (m *machine) OldUrl() string {
+	return fmt.Sprintf("/oldmachine/%s", m.Id)
+}
+
 /***********************************
 view details for each machine
 ************************************/
@@ -121,6 +125,26 @@ func machineView(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 	}
 
 	c := db.C("machines")
+
+	var mach *machine
+	err := c.Find(bson.M{"_id": key}).
+		One(&mach)
+
+	if err != nil {
+		fmt.Println(key, err)
+		http.NotFound(w, r)
+		return
+	}
+	set.ExecuteTemplate(w, "machine", mach)
+}
+func oldMachineView(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
+	key := r.URL.Path[argPos:]
+	if len(key) < 11 {
+		http.NotFound(w, r)
+		return
+	}
+
+	c := db.C("old_machines")
 
 	var mach *machine
 	err := c.Find(bson.M{"_id": key}).
@@ -231,7 +255,7 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		{"Sophos Antivirus", ""},
 		{"Date", "date"},
 		{"Model", "model"},
-		{"Delete", ""}}
+		{"Memory", "memory"}}
 
 	c := db.C("old_machines")
 
@@ -250,5 +274,5 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		http.NotFound(w, r)
 		return
 	}
-	set.ExecuteTemplate(w, "machinelist", m)
+	set.ExecuteTemplate(w, "machinelist_old", m)
 }

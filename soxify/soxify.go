@@ -72,6 +72,7 @@ func main() {
 	NewHandleFunc("/", machineList)
 	NewHandleFunc("/allapps", applications)
 	NewHandleFunc("/oldmachines/", oldmachineList)
+	NewHandleFunc("/oldmachine/", oldMachineView)
 	NewHandleFunc("/blacklist/", blacklist)
 	NewHandleFunc("/addblacklist/", addBlacklist)
 	NewHandleFunc("/removeblacklist/", removeBlacklist)

@@ -1,0 +1,35 @@
+{{define "machinelist_old"}}
+{{template "base_top"}}
+{{template "topbar"}}
+
+<div class="container-fluid"><div class="page-header">
+  <h1>Deleted machines <small>Contains decomissioned machines or machines with new owners</small></h1>
+</div>
+  <section id="tables">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          {{range .Headers}} <th>{{if .Key}}<a href="/?sortkey={{.Key}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</th>{{end}}
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Machines}}
+          <tr {{if .SoxIssues}} bgcolor=#FF0000 {{end}}>
+            <td><font size="2">{{.Cnt}}</font></td>
+            <td><a href="{{.OldUrl}}"><font size="2">{{.Hostname}}</font></a></td>
+            <td><font size="2">{{.Ip}}</font></td>
+            <td><font size="2">{{.Osx}}</font></td>
+            {{if .Recon}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
+            {{if .Firewall}}<td><font size="2">On</font></td>{{else}}<td><font size="2">Off</font></td>{{end}}
+            <td><font size="2">{{.Virus_version}} ({{.Virus_def}})</font></td>
+            <td><font size="2">{{.Date}}</font></td>
+            <td><font size="2">{{.Model}}</font></td>
+            <td><font size="2">{{.Memory}}</font></td>
+          </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </section><!-- tables -->
+</div> <!-- container -->
+{{template "base_bottom"}}
+{{end}}
