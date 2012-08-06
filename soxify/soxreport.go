@@ -30,8 +30,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 
 	// var results []map[string]interface{}
 	var results []machine
-	err := c.Find(nil).
-		Sort(&map[string]int{SortKey: 1}).
+	err := c.Find(nil). //Sort(&map[string]int{SortKey: 1}).
 		All(&results)
 	if err != nil {
 		http.NotFound(w, r)

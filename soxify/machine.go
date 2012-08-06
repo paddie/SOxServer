@@ -223,8 +223,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 
 	var arr *machine
 	i := 1
-	err := c.Find(nil).
-		Sort(&map[string]int{sortKey: 1}).
+	err := c.Find(nil). //Sort(&map[string]int{sortKey: 1}).
 		For(&arr, func() error {
 		arr.Cnt = i
 		i++

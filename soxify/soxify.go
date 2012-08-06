@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"html/template"
 	"path/filepath"
+	"flag"
 )
 
 func ignorefw(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -42,6 +43,8 @@ func NewHandleFunc(pattern string, fn myhandler) {
 var set *template.Template
 var session *mgo.Session
 
+// var port = flag.String("port", "", "Port on the mongodb server")
+
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
@@ -49,7 +52,10 @@ func main() {
 	source := filepath.Join(wd, "bootstrap")
 	pattern := filepath.Join(wd, "templates", "*.html")
 	set = template.Must(template.ParseGlob(pattern))
-	session, err = mgo.Dial("152.146.38.56")
+	// server: 152.146.38.56
+	// var ip string
+	var ip = *flag.String("ip", "localhost", "IP for the MongoDB database eg. '127.0.0.1'")
+	session, err = mgo.Dial(ip)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Trying to connect to localhost")
