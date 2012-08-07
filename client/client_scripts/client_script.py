@@ -6,6 +6,8 @@ from uuid import getnode as get_mac
 import platform
 import subprocess
 import tempfile
+import httplib
+import json
 
 # import logging
 # logging.basicConfig(filename=os.path.join(sys.path[0], "sox.log"),
@@ -67,7 +69,15 @@ def installed_apps(doc):
     # tf.write(apps)
     # tf.seek(0)
     plist = plistlib.readPlistFromString(apps)
-    doc.update( {"apps":plist[0]["_items"]} )
+    apps = plist[0]["_items"]
+    for i in xrange(0,len(apps)):
+        date = apps[i].get('lastModified', None)
+        if date is not None:
+            apps[i]['lastModified'] = date.isoformat()
+        else:
+            apps[i]['lastModified'] = None
+
+    doc.update( {"apps":apps} )
 
 def sophos_dict(doc):
     if not os.path.isfile('/Applications/Sophos Anti-Virus.app/Contents/Info.plist'):
@@ -128,14 +138,7 @@ def security_dict(doc):
 
 # Simple check for the Recon LaunchAgent
 def recon_dict(doc):
-    if os.path.isfile("/Library/LaunchDaemons/com.wpp.recon.plist"):
-        doc.update({
-        'recon':True
-        })
-    else:
-        doc.update({
-        'recon':False
-        })
+    doc.update({'recon':os.path.isfile("/Library/LaunchDaemons/com.wpp.recon.plist")})
 
 def machine_dict(doc):
     # machine specific info
@@ -171,7 +174,7 @@ def machine_dict(doc):
     hostname = subprocess.Popen(["/usr/sbin/scutil","--get", "ComputerName"],stdout=subprocess.PIPE).communicate()[0].split("\n")[0]
 
     doc.update({
-        '_id':machine["serial_number"],
+        'serial':machine["serial_number"],
         # 'Old_serial':old_serial,
         'osx':str(osx_vers),
         'model':machine["machine_model"],
@@ -205,42 +208,24 @@ def mongo_conn(ip,db='sox'):
 	    print "debug: Could not connect to mongo database at ip %s" % ip
         sys.exit(2)
 
-# upsert document into db.collection
-def update_db(db, doc, coll="main"):
-    if coll == "":
-        print "debug: no collection specified"
-        return
-
-    col = db[coll]
-    try:
-        id = doc['_id']
-    except:
-        print "debug: doc has no '_id'"
-    	return
-
-    tmp = col.find_one({"_id" : id})
-
-    if tmp:
-        try:
-            col.update({"_id":id}, doc, upsert=True)
-            print "Updated coll in db"
-        except:
-            print "debug: Failed to insert doc"    
-        return
-
-    print "debug: document does not exist - inserting.."
-    doc.update({"ignore_firewall": False})
-    col.insert(doc)
+def postMachineSpecs(ip, doc):
+    params = json.dumps(doc)
+    headers = {"Content-type": "application/x-www-form-urlencoded",
+            "Accept": "text/plain"}
+    conn = httplib.HTTPConnection(ip)
+    conn.request("POST", "/updateMachine/", params, headers)
+    # urllib2.urlopen("localhost:6060/updateMachine", jdata)
 
 def main():
-    server_ip = "152.146.38.56" # static IP for the mini-server 
-    main_db = "sox" # db name
-    collection = "machines" # collection name
+    server_ip = "152.146.38.56:6060" # static IP for the mini-server 
+    # server_ip = "localhost:6060"
+    # main_db = "sox" # db name
+    # collection = "machines" # collection name
     
-    db = mongo_conn(server_ip,db=main_db)
-    
+    # db = mongo_conn(server_ip,db=main_db)
+    today = datetime.today()
     doc = {
-        'date': datetime.today(),
+        'date': datetime.now().isoformat(),
         'users':users(),
     }
     machine_dict(doc)
@@ -248,12 +233,10 @@ def main():
     security_dict(doc)
     installed_apps(doc)
     recon_dict(doc)
-    update_db(db, doc, coll=collection)
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
-    # for l in doc["Apps"]:
-    #     print l
-    # db.drop_collection('main')
+    postMachineSpecs(server_ip, doc)
+    print "SOX script: Done!"
 
 if __name__ == '__main__':
 	main()
