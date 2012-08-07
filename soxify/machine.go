@@ -2,17 +2,19 @@ package main
 
 import (
 	"fmt"
-	"launchpad.net/mgo"
-	"launchpad.net/mgo/bson"
+	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
 	"net/http"
-	"time"
+	// "time"
 	"strings"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type app struct {
 	Path    string //"path"
 	Version string //"version"
-	Name    string "_name"
+	Name    string `json:"_name"`
 }
 
 func (m *app) ShortPath() string {
@@ -53,26 +55,27 @@ type machine struct {
 	Cpu            string    //"cpu"
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
-	Date           time.Time //"date"
+	Date           string //"date"
 	Users          []string  //"users"
 	Cnt            int
+	Serial			string
 	// Ignore_firewall bool
 }
 
 // helper function to calculate the days since the last update
 // - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
-func (m *machine) TimeOfUpdate() time.Time {
+func (m *machine) TimeOfUpdate() string {
 	return m.Date
 }
 
 func (m *machine) Seconds() int {
-	return m.Date.Second()
+	return 2
 }
 
 // calculates the number of days from the last update, to the current date.
 func (m *machine) DaysSinceLastUpdate() int {
 	// seconds in a day: 60^2 * 24 = 86400
-	return int(time.Now().Sub(m.Date).Seconds())
+	return 2
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -107,11 +110,11 @@ func (m *machine) SoxIssues() bool {
 
 // temp url to the specific machine in our system
 func (m *machine) Url() string {
-	return fmt.Sprintf("/machine/%s", m.Id)
+	return fmt.Sprintf("/machine/%s", m.Serial)
 }
 
 func (m *machine) OldUrl() string {
-	return fmt.Sprintf("/oldmachine/%s", m.Id)
+	return fmt.Sprintf("/oldmachine/%s", m.Serial)
 }
 
 /***********************************
@@ -261,7 +264,7 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 	var arr *machine
 	i := 1
 	err := c.Find(nil).
-		Sort(&map[string]int{sortKey: 1}).
+		Sort(sortKey).
 		For(&arr, func() error {
 		arr.Cnt = i
 		i++
@@ -274,4 +277,23 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		return
 	}
 	set.ExecuteTemplate(w, "machinelist_old", m)
+}
+
+func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
+	if r.Method != "POST" {
+		http.Error(w, "onle accepts POST requests", 405)
+	}
+	body, err := ioutil.ReadAll(r.Body)	
+	var m machine
+	err = json.Unmarshal(body, &m)
+	if err != nil {
+		fmt.Println(err)
+	}
+	m.Id = m.Serial
+	_, err = db.C("machines").UpsertId(m.Id, m)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return
 }

@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo"
-	"launchpad.net/mgo/bson"
+	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
@@ -84,7 +84,7 @@ func searchAppSubstring(w http.ResponseWriter, r *http.Request, db *mgo.Database
 		"hostname": 1,
 		"apps":     1,
 		"_id":      1}).
-		Sort(bson.M{"hostname": 1}).
+		Sort("hostname").
 		For(&res, func() error {
 		res.Apps = fuzzyFilter_apps(app_str, res.Apps)
 		context = append(context, *res)
@@ -120,7 +120,7 @@ func searchExact(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 		"hostname": 1,
 		"apps":     1,
 		"_id":      1}).
-		Sort(bson.M{"hostname": 1}).
+		Sort("hostname").
 		For(&res, func() error {
 		res.Apps = filter_apps(val, res.Apps, usePath)
 		context = append(context, *res)

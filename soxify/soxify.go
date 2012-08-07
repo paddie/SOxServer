@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 	"fmt"
-	"launchpad.net/mgo"
-	"launchpad.net/mgo/bson"
+	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
 	"net/http"
 	"html/template"
 	"path/filepath"
@@ -63,6 +63,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+	} else {
+		fmt.Printf("Connected to MongoDB on '%v'\n", ip)
 	}
 
 	NewHandleFunc("/searchexact/", searchExact)
@@ -82,6 +84,7 @@ func main() {
 	NewHandleFunc("/blacklist/", blacklist)
 	NewHandleFunc("/addblacklist/", addBlacklist)
 	NewHandleFunc("/removeblacklist/", removeBlacklist)
+	NewHandleFunc("/updateMachine/", updateMachine)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(source))))
 
 	err = http.ListenAndServe(":6060", nil)

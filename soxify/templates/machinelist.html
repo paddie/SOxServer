@@ -16,7 +16,7 @@
         {{range .Machines}}
           <tr {{if .SoxIssues}} bgcolor=#FF0000 {{end}}>
             <td><font size="2">{{.Cnt}}</font></td>
-            <td><a href="{{.Url}}"><font size="2">{{.Hostname}}</font></a></td>
+            <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
             <td><font size="2">{{.Ip}}</font></td>
             <td><font size="2">{{.Osx}}</font></td>
             {{if .Recon}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
@@ -25,7 +25,7 @@
             <td><font size="2">{{.Date}}</font></td>
             <td><font size="2">{{.Model}}</font></td>
             <td><font size="2">{{.Memory}}</font></td>
-            <td><a href="/del/{{.Id}}"><font size="2">Delete</font></a></td>
+            <td><a href="/del/{{.Serial}}"><font size="2">Delete</font></a></td>
           </tr>
         {{end}}
       </tbody>

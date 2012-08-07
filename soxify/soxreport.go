@@ -6,8 +6,7 @@ import (
 	// "path"
 	"fmt"
 	"net/http"
-	// "launchpad.net/gobson/bson"
-	"launchpad.net/mgo"
+	"labix.org/v2/mgo"
 	// "reflect"
 	// "time"
 	// old "old/template"
@@ -44,7 +43,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 		fmt.Fprintf(w, "%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v,%v (%v),%v,,%v,%v\n",
 			i+1,
 			doc.Hostname,
-			doc.Id, // doc["hostname"], 
+			doc.Serial, // doc["hostname"], 
 			doc.Ip, //doc["ip"],
 			doc.Osx,
 			doc.Recon,

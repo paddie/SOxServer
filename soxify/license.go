@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"launchpad.net/mgo"
-	"launchpad.net/mgo/bson"
+	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
 	"net/http"
 	// "reflect"
 	// "time"
@@ -87,7 +87,7 @@ func (l *license) Valid() bool {
 func licenselist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	var results []license
 
-	err := db.C("license").Find(nil).Sort(bson.M{"name": 1}).All(&results)
+	err := db.C("license").Find(nil).Sort("name").All(&results)
 
 	if err != nil {
 		fmt.Println(err)
