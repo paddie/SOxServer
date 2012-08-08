@@ -220,8 +220,8 @@ def postMachineSpecs(ip, doc):
     # urllib2.urlopen("localhost:6060/updateMachine", jdata)
 
 def main():
-    server_ip = "152.146.38.56:6060" # static IP for the mini-server 
-    # server_ip = "localhost:6060"
+    # server_ip = "152.146.38.56:6060" # static IP for the mini-server 
+    server_ip = "localhost:6060"
     # main_db = "sox" # db name
     # collection = "machines" # collection name
     
