@@ -1,32 +1,4 @@
 #!/usr/bin/env bash
 
-# Author: Patrick-Ranjit D. Madsen
-# Company: AdPeople
-# if [[ `whoami` != "root" ]]; then
-#   echo "This script must be run as root; use sudo"
-#   exit
-# fi
-
-# script location
-
-# echo "Installing client script for SOx/sophos and registering with launchctl..";
-
-# Create directory for client script and copy it there
-# sudo -S mkdir -p /Library/Scripts/sox_sophos/
-# cd `dirname $0` && pwd
-# sudo cp sox_sophos.py /Library/Scripts/sox_sophos/.
-
-# COPY PLIST IND INSTALL IT
-# sudo cp com.adpeople.sox.plist /Library/LaunchAgents/.
-
-# install pymongo for python - requires new version of setup-tools
-# differs from std. installed version
-# sudo easy_install -U setuptools
-# sudo python -m easy_install pymongo
-
-# set 
-# sudo chown root:wheel /Library/LaunchAgents/com.adpeople.sox.plist
 launchctl load /Library/LaunchAgents/com.adpeople.sox.plist
 launchctl start com.adpeople.sox
-
-echo "Success!";

@@ -7,8 +7,8 @@
 <div class="container-fluid">
     <div class="hero-unit">
         <h1>{{.Hostname}} <small>{{.Id}}</small></h1></br>
-        <div class="row">
-            <div class="span3">
+        <div class="row-fluid">
+            <div class="span4">
                 <h2>Machine</h2>
                 <dl>
                     <dt>IP</dt><dd>{{.Ip}}</dd>
@@ -17,7 +17,7 @@
                     <dt>Model</dt><dd>{{.Model}}</dd>
                 </dl>
             </div>
-            <div class="span3">
+            <div class="span4">
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
@@ -26,7 +26,7 @@
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>
             </div>
-            <div class="span3">
+            <div class="span4">
                 <h2>SOx</h2>
                 <dl>
                     <dt>Recon</dt>
@@ -46,7 +46,7 @@
             </div>
 
         </div>
-        <div class="row">
+        <div class="row-fluid">
         <div class="span12">
             <div {{if .IsOld}} class="alert alert-warning" {{else}} class="alert alert-success" {{end}}>
             <h3 class="alert-heading" >Last Updated: {{.Date}} </h3>

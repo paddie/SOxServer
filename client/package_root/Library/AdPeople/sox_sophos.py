@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import os, plistlib, time, sys, socket
 from datetime import datetime, date
 from pymongo.connection import Connection
@@ -15,10 +18,10 @@ import json
 #     format='%(asctime)s %(levelname)s: %(message)s',
 #     datefmt='%d/%m/%Y %I:%M:%S')
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4)
 
-debug = False
+# debug = False
 
 # sophos antivirus log is in binary format => convert to xml1
 def plistFromPath(plist_path):
@@ -212,20 +215,22 @@ def postMachineSpecs(ip, doc):
     params = json.dumps(doc)
     headers = {"Content-type": "application/x-www-form-urlencoded",
             "Accept": "text/plain"}
-    conn = httplib.HTTPConnection("localhost:6060")
+    conn = httplib.HTTPConnection(ip)
     conn.request("POST", "/updateMachine/", params, headers)
     # urllib2.urlopen("localhost:6060/updateMachine", jdata)
 
 def main():
-    # server_ip = "152.146.38.56" # static IP for the mini-server 
-    server_ip = "localhost:6060"
+    server_ip = "152.146.38.56:6060" # static IP for the mini-server 
+    # server_ip = "localhost:6060"
     # main_db = "sox" # db name
     # collection = "machines" # collection name
     
     # db = mongo_conn(server_ip,db=main_db)
-    today = datetime.today()
+    today = datetime.now()
     doc = {
-        'date': datetime.now().isoformat(),
+        'date': today.strftime("%d/%m/%y"),
+        'datetime':time.time().__int__(), # iso 1970
+        'time':today.strftime("%H:%M:%S"),
         'users':users(),
     }
     machine_dict(doc)
@@ -235,9 +240,8 @@ def main():
     recon_dict(doc)
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
-    print doc['apps'][0]
     postMachineSpecs(server_ip, doc)
-    print "done"
+    print "SOX script: Done!"
 
 if __name__ == '__main__':
 	main()

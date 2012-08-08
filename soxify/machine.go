@@ -56,9 +56,11 @@ type machine struct {
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
 	Date           string //"date"
+	Time			string
 	Users          []string  //"users"
 	Cnt            int
 	Serial			string
+	Datetime		int64
 	// Ignore_firewall bool
 }
 
@@ -290,6 +292,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 		fmt.Println(err)
 	}
 	m.Id = m.Serial
+
 	_, err = db.C("machines").UpsertId(m.Id, m)
 	if err != nil {
 		fmt.Println(err)

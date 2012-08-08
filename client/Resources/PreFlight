@@ -1,21 +1,4 @@
 #!/usr/bin/env bash
 
-easy_install -U setuptools
-python -m easy_install pymongo
-
-# launchctl stop com.adpeople.sox
-# launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
-
-
-# cd `dirname $0` && pwd
-# sudo cp sox_sophos.py /Library/Scripts/sox_sophos/.
-
-# COPY PLIST IND INSTALL IT
-# sudo cp com.adpeople.sox.plist /Library/LaunchAgents/.
-# sudo chown root:wheel /Library/LaunchAgents/com.adpeople.sox.plist
-# sudo launchctl stop com.adpeople.sox
-# sudo launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
-# sudo launchctl load /Library/LaunchAgents/com.adpeople.sox.plist
-# sudo launchctl start com.adpeople.sox
-
-# echo "Success!";
+launchctl stop com.adpeople.sox
+launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
