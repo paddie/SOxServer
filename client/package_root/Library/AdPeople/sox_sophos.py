@@ -213,10 +213,15 @@ def mongo_conn(ip,db='sox'):
 
 def postMachineSpecs(ip, doc):
     params = json.dumps(doc)
-    headers = {"Content-type": "application/x-www-form-urlencoded",
-            "Accept": "text/plain"}
-    conn = httplib.HTTPConnection(ip)
-    conn.request("POST", "/updateMachine/", params, headers)
+    try:
+        headers = {"Content-type": "application/x-www-form-urlencoded",
+                "Accept": "text/plain"}
+        conn = httplib.HTTPConnection(ip)
+        conn.request("POST", "/updateMachine/", params, headers)
+        print "SOX script: Success!"
+    except Exception:
+        print "Couldn't connect to webserver on ip: ", ip
+        print "Retrying in an hour.."
     # urllib2.urlopen("localhost:6060/updateMachine", jdata)
 
 def main():
@@ -241,7 +246,6 @@ def main():
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
     postMachineSpecs(server_ip, doc)
-    print "SOX script: Done!"
 
 if __name__ == '__main__':
 	main()
