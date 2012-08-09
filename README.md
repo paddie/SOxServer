@@ -20,7 +20,7 @@ SOx Server
     2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
         
             $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents &&\
-            launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+            launchctl load -w /Library/LaunchAgents/homebrew.mxcl.mongodb.plist
             
         Make sure that the `.plist` was registered correctly with `launchctl` by running the following:
 
