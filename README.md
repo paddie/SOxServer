@@ -7,12 +7,10 @@ SOx Server
 2. Install HomeBrew (package manager):
     1. Copy-Paste the following into Terminal.app:
 
-            $ ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go)
+            $ ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go) &&\
+            brew doctor
 
-        This installs the `brew` command-line tool to `usr/local/bin/brew` (which should be in the path)
-    2. Call the doctor to fix permissions etc.:
-
-            $ brew doctor
+        This installs the `brew` command-line tool to `usr/local/bin/brew` (which should be in the path) and call the `doctor` to fix permissions etc.
 
 3. Use `brew` to install MongoDB
     1. Run the following in Terminal.app:
@@ -21,30 +19,31 @@ SOx Server
 
     2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
         
-            $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents
-            $ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+            $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents &&\
+            launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+            
         Make sure that the `.plist` was registered correctly with `launchctl` by running the following:
 
             $ launchctl list | grep mongo
-        The result should look something like this:
-
-            $ launchctl list | grep mongo
             141    -    homebrew.mxcl.mongod
+
         This means the database will run whenever the machine is turned on.
-4. Install the WebServer:
+4. Install the ```soxify``` webserver:
     1. Make sure that Git is installed by checking which version you have:
 
             $ git --version
             git version 1.7.4.2
+
         If it turns out you don't have Git, install it using brew:
 
             $ brew install git
+
     2. Next, we need to clone the reposiory from github into a local folder and launch it:
 
-            $ mkdir ~/Desktop/webserver
-            $ cd ~/Desktop/webserver
-            $ git clone https://github.com/paddie/SOxServer.git
-            $ cd SOxServer/soxify
-            $ ./applications
-        The webserver should now be running and is accessible via the address:
-            http://localhost:6060
+            $ mkdir ~/Desktop/webserver &&\
+            cd ~/Desktop/webserver &&\
+            git clone https://github.com/paddie/SOxServer.git &&\
+            cd SOxServer/soxify &&\
+            ./applications
+
+        The webserver should now be running and accessible via the address [http://localhost:6060](http://localhost:6060)
