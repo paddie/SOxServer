@@ -6,7 +6,7 @@ SOx Server
 1. Install Xcode and update to latest version (important!). Make sure that the Xcode command-line tools are installed
 2. Install HomeBrew (package manager):
     1. Copy-Paste the following into Terminal.app:
-                $ ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go)
+            $ ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go)
         This installs the `brew` command-line tool to `usr/local/bin/brew` (which should be in the path)
     2. Call the doctor to fix permissions etc.:
                 $ brew doctor
@@ -24,8 +24,8 @@ SOx Server
         This means the database will run whenever the machine is turned on.
 4. Install the WebServer:
     1. Make sure that Git is installed by checking which version you have:
-            $ git --version
-            git version 1.7.4.2
+        $ git --version
+        git version 1.7.4.2
         If it turns out you don't have Git, install it using brew:
             $ brew install git
     2. Next, we need to clone the reposiory from github into a local folder and launch it:
