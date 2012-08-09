@@ -14,13 +14,13 @@ SOx Server
     1. Run the following in Terminal.app:
                 $ brew install mongodb
     2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
-                $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents
-                $ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+        $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents
+        $ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
         Make sure that the `.plist` was registered correctly with `launchctl` by running the following:
-                $ launchctl list | grep mongo
+        $ launchctl list | grep mongo
         The result should look something like this:
-                $ launchctl list | grep mongo
-                141    -    homebrew.mxcl.mongo
+        $ launchctl list | grep mongo
+        141    -    homebrew.mxcl.mongo
         This means the database will run whenever the machine is turned on.
 4. Install the WebServer:
     1. Make sure that Git is installed by checking which version you have:
