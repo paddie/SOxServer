@@ -21,7 +21,7 @@ SOx Server
         
             $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents &&\
             launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
-
+            
         Make sure that the `.plist` was registered correctly with `launchctl` by running the following:
 
             $ launchctl list | grep mongo
