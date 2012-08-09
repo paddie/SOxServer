@@ -47,7 +47,33 @@ Install Soxify webserver
         git clone https://github.com/paddie/SOxServer.git &&\
         cd SOxServer/soxify &&\
         ./applications
+        Connected to MongoDB on 'localhost'
+        09/08/12 11:21:21: Connection from cph41madsenp - ip: 152.146.38.141
+        09/08/12 11:21:39: Connection from cph41freelance_creative - ip: 152.146.210.77
+        09/08/12 11:27:52: Connection from cph41mollera - ip: 152.146.210.86
+        09/08/12 11:32:42: Connection from cph41taylorj - ip: 152.146.210.95
+        09/08/12 11:32:56: Connection from cph41braginskym - ip: 152.146.38.117
+        09/08/12 11:37:24: Connection from cph41lacoura - ip: 152.146.38.138
+        09/08/12 11:53:15: Connection from cph41olsenm - ip: 152.146.210.97
+        09/08/12 11:54:59: Connection from cph41jensens - ip: 152.146.210.82
+        09/08/12 11:59:32: Connection from cph41valbjornu - ip: 152.146.210.68
+        09/08/12 12:00:28: Connection from cph41gronegaardl - ip: 127.0.0.1
+        09/08/12 12:04:21: Connection from cph41thomsenf - ip: 152.146.38.140
+        09/08/12 12:04:51: Connection from cph41ornom - ip: 152.146.210.96
+        09/08/12 12:08:52: Connection from cph41freelance_studio1 - ip: 152.146.210.98
+        09/08/12 12:11:39: Connection from cph41borupn - ip: 152.146.38.122
+        09/08/12 12:15:10: Connection from cph41poulsenm - ip: 152.146.210.89
+        09/08/12 12:21:33: Connection from cph41loftrx  - ip: 152.146.38.153
+        09/08/12 12:35:06: Connection from cph41mini - ip: 152.146.38.56
+        09/08/12 12:44:25: Connection from cph41bendixa - ip: 152.146.38.130
 
-    The webserver should now be running and accessible via the address
+    As is obvious from above, this is the output from clients connecting and updating their information.
 
-    [http://localhost:6060](http://localhost:6060)
+    The website is availabe from any machine on our intranet at ip: [http://152.146.38.56:6060](http://152.146.38.56:6060).
+
+Install Client scripts
+======================
+To install the client scripts simply use *Apple Remote Desktop* to distribute the installer package in
+
+    SOxServer/client/SOx.json.Client.pkg
+
