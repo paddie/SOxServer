@@ -292,8 +292,8 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 		fmt.Println(err)
 	}
 	m.Id = m.Serial
-
-	fmt.Printf("Connection from %v - ip: %v\n", m.Hostname, m.Ip)
+	
+	fmt.Printf("%v %v: Connection from %v - ip: %v\n", m.Date, m.Time, m.Hostname, m.Ip)
 
 	_, err = db.C("machines").UpsertId(m.Id, m)
 	if err != nil {
