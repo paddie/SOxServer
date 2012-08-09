@@ -15,7 +15,7 @@ SOx Server
 3. Use `brew` to install MongoDB
     1. Run the following in Terminal.app:
 
-        $ brew install mongodb
+            $ brew install mongodb
 
     2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
         
