@@ -29,7 +29,7 @@ SOx Server
 
         This means the database will run whenever the machine is turned on.
 
-Install Soxify webserver
+2. Install Soxify webserver
 ------------------------
 1. Make sure that Git is installed by checking which version you have:
 
@@ -71,7 +71,7 @@ Install Soxify webserver
 
     The website is availabe from any machine on our intranet at ip: [http://152.146.38.56:6060](http://152.146.38.56:6060).
 
-Install Client scripts
+3. Install Client scripts
 ======================
 To install the client scripts simply use *Apple Remote Desktop* to distribute the installer package in
 
