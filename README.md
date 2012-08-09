@@ -6,13 +6,19 @@ SOx Server
 1. Install Xcode and update to latest version (important!). Make sure that the Xcode command-line tools are installed
 2. Install HomeBrew (package manager):
     1. Copy-Paste the following into Terminal.app:
+
             ```$ ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go)```
+
         This installs the `brew` command-line tool to `usr/local/bin/brew` (which should be in the path)
     2. Call the doctor to fix permissions etc.:
+
             ```$ brew doctor```
+
 3. Use `brew` to install MongoDB
     1. Run the following in Terminal.app:
+
         ```$ brew install mongodb```
+        
     2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
         ```$ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents
         $ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist```
