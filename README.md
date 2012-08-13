@@ -1,7 +1,15 @@
 SOx Server
 =======================================
 
-1. Install and setup MongoDB
+1. Setup a static IP on the Mac Mini
+------------------------------------
+The clients all try and connect to the server on IP
+
+    152.146.38.56
+
+Therefore, the server must have that IP statically defined in its network settings.
+
+2. Install and setup MongoDB
 ----------------------------
 1. Install Xcode and update to latest version (important!). Make sure that the Xcode command-line tools are installed
 2. Install HomeBrew (package manager):
@@ -29,7 +37,7 @@ SOx Server
 
         This means the database will run whenever the machine is turned on.
 
-2. Install Soxify webserver
+3. Install Soxify webserver
 ------------------------
 1. Make sure that Git is installed by checking which version you have:
 
@@ -47,6 +55,9 @@ SOx Server
         git clone https://github.com/paddie/SOxServer.git &&\
         cd SOxServer/soxify &&\
         ./applications
+
+    This launches the server which tries to connect to the mongodb database on ```localhost``` and starts accepting connections from clients:
+
         Connected to MongoDB on 'localhost'
         09/08/12 11:21:21: Connection from cph41madsenp - ip: 152.146.38.141
         09/08/12 11:21:39: Connection from cph41freelance_creative - ip: 152.146.210.77
@@ -71,7 +82,7 @@ SOx Server
 
     The website is availabe from any machine on our intranet at ip: [http://152.146.38.56:6060](http://152.146.38.56:6060).
 
-3. Install Client scripts
+4. Install Client scripts
 ======================
 To install the client scripts simply use *Apple Remote Desktop* to distribute the installer package in
 
