@@ -234,7 +234,7 @@ def main():
     today = datetime.now()
     doc = {
         'date': today.strftime("%d/%m/%y"),
-        'datetime':time.time().__int__(), # iso 1970
+        'datetime':int(time.time()), # iso 1970
         'time':today.strftime("%H:%M:%S"),
         'users':users(),
     }

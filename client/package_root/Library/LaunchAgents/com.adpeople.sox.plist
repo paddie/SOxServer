@@ -4,17 +4,13 @@
 <dict>
 	<key>RunAtLoad</key>
 	<true/>
-	<key>WaitForDebugger</key>
-	<false/>
 	<key>Label</key>
 	<string>com.adpeople.sox</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/Library/AdPeople/sox_sophos.py</string>
 	</array>
-	<key>LowPriorityIO</key>
-	<false/>
 	<key>StartInterval</key>
-	<integer>7200</integer>
+	<integer>14400</integer>
 </dict>
 </plist>

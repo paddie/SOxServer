@@ -5,7 +5,7 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"net/http"
-	// "time"
+	"time"
 	"strings"
 	"encoding/json"
 	"io/ioutil"
@@ -71,13 +71,14 @@ func (m *machine) TimeOfUpdate() string {
 }
 
 func (m *machine) Seconds() int {
-	return 2
+	return int(m.Datetime)
 }
 
 // calculates the number of days from the last update, to the current date.
 func (m *machine) DaysSinceLastUpdate() int {
+	// if it's been more than 2 weeks since the machine responded
 	// seconds in a day: 60^2 * 24 = 86400
-	return 2
+	return (time.Now().Second() - m.Seconds()) / 86400
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -98,13 +99,7 @@ func (m *machine) MacbookFirewallCheck() bool {
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-	// if m.IsOld() {
-	// 	return true
-	// }
-	if !m.Recon {
-		return true
-	}
-	if !m.MacbookFirewallCheck() {
+	if m.IsOld() || !m.Recon || !m.MacbookFirewallCheck() {
 		return true
 	}
 	return false
@@ -292,7 +287,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 		fmt.Println(err)
 	}
 	m.Id = m.Serial
-	
+
 	fmt.Printf("%v %v: Connection from %v - ip: %v\n", m.Date, m.Time, m.Hostname, m.Ip)
 
 	_, err = db.C("machines").UpsertId(m.Id, m)

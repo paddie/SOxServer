@@ -55,6 +55,7 @@ func main() {
 	// server: 152.146.38.56
 	// var ip string
 	var ip = *flag.String("ip", "localhost", "IP for the MongoDB database eg. '127.0.0.1'")
+	fmt.Println("Trying to connect to ", ip)
 	session, err = mgo.Dial(ip)
 	if err != nil {
 		fmt.Println(err)
