@@ -19,6 +19,7 @@
             <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
             <td><font size="2">{{.Ip}}</font></td>
             <td><font size="2">{{.Osx}}</font></td>
+            {{if .Softwareupdate}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
             {{if .Recon}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
             {{if .Firewall}}<td><font size="2">On</font></td>{{else}}<td><font size="2">Off</font></td>{{end}}
             <td><font size="2">{{.Virus_version}} ({{.Virus_def}})</font></td>

@@ -3,25 +3,12 @@
 
 import os, plistlib, time, sys, socket
 from datetime import datetime, date
-from pymongo.connection import Connection
-from pymongo.database import Database
 from uuid import getnode as get_mac
 import platform
 import subprocess
 import tempfile
 import httplib
 import json
-
-# import logging
-# logging.basicConfig(filename=os.path.join(sys.path[0], "sox.log"),
-#     level=logging.DEBUG,
-#     format='%(asctime)s %(levelname)s: %(message)s',
-#     datefmt='%d/%m/%Y %I:%M:%S')
-
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4)
-
-# debug = False
 
 # sophos antivirus log is in binary format => convert to xml1
 def plistFromPath(plist_path):
@@ -49,6 +36,25 @@ def convertToXML(path):
 	plist = plistlib.readPlist(tmp_path)
 	subprocess.call(['rm', tmp_path])
 	return plist
+
+def runProcess(exe):    
+    p = subprocess.Popen(exe, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while(True):
+        retcode = p.poll() #returns None while subprocess is running
+        line = p.stdout.readline()
+        yield line
+        if(retcode is not None):
+            break
+
+def softwareupdate(doc):
+    # subprocess.check_output(*popenargs, **kwargs)
+    for l in runProcess(["softwareupdate", "-l"]):
+        if "No new software available" in l:
+            doc.update({"softwareupdate":False})
+            return
+
+    doc.update({"softwareupdate":True})
+     # = subprocess.Popen(["softwareupdate", "-l"],).split("\n")
 
 
 def plist_version(path):
@@ -243,6 +249,9 @@ def main():
     security_dict(doc)
     installed_apps(doc)
     recon_dict(doc)
+    softwareupdate(doc)
+
+    # print "softwareupdate: ", doc["softwareupdate"]
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
     postMachineSpecs(server_ip, doc)

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"os"
+	"flag"
 	"fmt"
+	"html/template"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"net/http"
-	"html/template"
+	"os"
 	"path/filepath"
-	"flag"
 )
 
 func ignorefw(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -54,18 +54,25 @@ func main() {
 	set = template.Must(template.ParseGlob(pattern))
 	// server: 152.146.38.56
 	// var ip string
-	var ip = *flag.String("ip", "localhost", "IP for the MongoDB database eg. '127.0.0.1'")
+	var ip = *flag.String("ip", "152.146.38.56:27017", "IP for the MongoDB database eg. '127.0.0.1'")
 	fmt.Println("Trying to connect to ", ip)
 	session, err = mgo.Dial(ip)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Trying to connect to localhost")
+		fmt.Println("Error: ", err)
+		// fmt.Printf("Failed to connect to MongoDB on '%v'\n", ip)
+		fmt.Println("Trying to connect to 'localhost'")
 		session, err = mgo.Dial("localhost")
 		if err != nil {
 			panic(err)
 		}
+		fmt.Printf("Connected to MongoDB on 'localhost'\n")
 	} else {
 		fmt.Printf("Connected to MongoDB on '%v'\n", ip)
+	}
+
+	err = session.DB("sox").C("machine").EnsureIndexKey("hostname", "time", "date")
+	if err != nil {
+		panic(err)
 	}
 
 	NewHandleFunc("/searchexact/", searchExact)

@@ -1,14 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"net/http"
-	"time"
 	"strings"
-	"encoding/json"
-	"io/ioutil"
+	"time"
 )
 
 type app struct {
@@ -42,25 +42,26 @@ type machines struct {
 }
 
 type machine struct {
-	Firewall       bool      //"firewall"
-	Virus_version  string    //"virus_version"
-	Memory         string    //"memory"
-	Virus_last_run string    // "virus_last_run"
-	Hostname       string    //"hostname"
-	Model          string    // "model"
-	Recon          bool      //"recon"
-	Ip             string    //"ip"
-	Virus_def      string    //"virus_def"
-	Id             string    "_id"
-	Cpu            string    //"cpu"
-	Osx            string    //"osx"
-	Apps           []app     //"apps"
+	Firewall       bool   //"firewall"
+	Virus_version  string //"virus_version"
+	Memory         string //"memory"
+	Virus_last_run string // "virus_last_run"
+	Hostname       string //"hostname"
+	Model          string // "model"
+	Recon          bool   //"recon"
+	Ip             string //"ip"
+	Virus_def      string //"virus_def"
+	Id             string "_id"
+	Cpu            string //"cpu"
+	Osx            string //"osx"
+	Apps           []app  //"apps"
 	Date           string //"date"
-	Time			string
-	Users          []string  //"users"
+	Time           string
+	Users          []string //"users"
 	Cnt            int
-	Serial			string
-	Datetime		int64
+	Serial         string
+	Datetime       int64
+	Softwareupdate bool
 	// Ignore_firewall bool
 }
 
@@ -211,6 +212,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 		{"Hostname", "hostname"},
 		{"IP", "ip"},
 		{"System", "osx"},
+		{"Softwareupdates", "softwareupdates"},
 		{"Recon", "recon"},
 		{"Firewall", "firewall"},
 		{"Sophos Antivirus", ""},
@@ -223,7 +225,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 
 	var arr *machine
 	i := 1
-	err := c.Find(nil). //Sort(&map[string]int{sortKey: 1}).
+	err := c.Find(nil).Sort(sortKey).
 		For(&arr, func() error {
 		arr.Cnt = i
 		i++
@@ -280,7 +282,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 	if r.Method != "POST" {
 		http.Error(w, "onle accepts POST requests", 405)
 	}
-	body, err := ioutil.ReadAll(r.Body)	
+	body, err := ioutil.ReadAll(r.Body)
 	var m machine
 	err = json.Unmarshal(body, &m)
 	if err != nil {
