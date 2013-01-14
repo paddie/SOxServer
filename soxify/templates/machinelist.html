@@ -14,13 +14,13 @@
       </thead>
       <tbody>
         {{range .Machines}}
-          <tr {{if .SoxIssues}} bgcolor=#FF0000 {{end}}>
+          <tr>
             <td><font size="2">{{.Cnt}}</font></td>
             <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
             <td><font size="2">{{.Ip}}</font></td>
             <td><font size="2">{{.Osx}}</font></td>
-            {{if .Softwareupdate}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
-            {{if .Recon}}<td><font size="2">True</font></td>{{else}}<td><font size="2">False</font></td>{{end}}
+            {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
+            {{if .Recon}}<td><font size="2">Installed</font></td>{{else}}<td><font size="2"><span class="label label-important">Missing</span></font></td>{{end}}
             {{if .Firewall}}<td><font size="2">On</font></td>{{else}}<td><font size="2">Off</font></td>{{end}}
             <td><font size="2">{{.Virus_version}} ({{.Virus_def}})</font></td>
             <td><font size="2">{{.Date}}</font></td>

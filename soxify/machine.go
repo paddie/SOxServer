@@ -212,7 +212,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 		{"Hostname", "hostname"},
 		{"IP", "ip"},
 		{"System", "osx"},
-		{"Softwareupdates", "softwareupdates"},
+		{"Softwareupdates", "softwareupdate"},
 		{"Recon", "recon"},
 		{"Firewall", "firewall"},
 		{"Sophos Antivirus", ""},

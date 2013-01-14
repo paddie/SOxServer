@@ -22,7 +22,8 @@
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
                     <dt>Software Updates</dt>
-                        <dd>{{.Softwareupdate}}</dd>
+                        <dd>{{if .Softwareupdate}}<span class="label label-warning">Pending Updates</span>{{else}}False{{end}}
+                        </dd>
                     <dt>Hostname</dt><dd>{{.Hostname}}</dd>
                     <dt>Users</dt>
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
@@ -32,7 +33,7 @@
                 <h2>SOx</h2>
                 <dl>
                     <dt>Recon</dt>
-                        <dd>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-warning">Missing</span>{{end}}
+                        <dd>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-important">Missing</span>{{end}}
                         </dd>
                     <dt>Firewall</dt>
                         <dd>{{if .MacbookFirewallCheck}}<span class="label label-success">{{.Firewall}} - no issue</span>
