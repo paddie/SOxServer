@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+launchctl stop com.adpeople.sox
+launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
+
+rm -f /Library/LaunchAgents/com.adpeople.sox.plist
