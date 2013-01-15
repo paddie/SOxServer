@@ -90,6 +90,13 @@ func (m *machine) IsOld() bool {
 	return false
 }
 
+func (m *machine) IsAncient() bool {
+	if m.DaysSinceLastUpdate() > 90 {
+		return true
+	}
+	return false
+}
+
 // if the machine is a macbook and the firewall is "OFF", we return true
 func (m *machine) MacbookFirewallCheck() bool {
 	if strings.HasPrefix(m.Model, "MacBook") && !m.Firewall {
