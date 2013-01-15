@@ -46,14 +46,36 @@ def runProcess(exe):
         if(retcode is not None):
             break
 
+"""
+Software Update Tool
+Copyright 2002-2009 Apple
+
+Software Update found the following new or updated software:
+   * iTunesX-11.0.1
+    iTunes (11.0.1), 193391K [recommended]
+"""
 def softwareupdate(doc):
     # subprocess.check_output(*popenargs, **kwargs)
+    collect_info = False
+    pending_updates = ""
     for l in runProcess(["softwareupdate", "-l"]):
+        print l
         if "No new software available" in l:
             doc.update({"softwareupdate":False})
             return
 
-    doc.update({"softwareupdate":True})
+        if collect_info is False and "Software Update found" in l:
+            collect_info = True
+
+        if collect_info:
+            pending_updates += l
+
+    print "pending updates: ", pending_updates
+
+    doc.update({
+        "softwareupdate":True,
+        "softwareoutput":pending_updates
+        })
      # = subprocess.Popen(["softwareupdate", "-l"],).split("\n")
 
 
