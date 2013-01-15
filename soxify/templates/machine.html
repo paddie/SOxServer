@@ -21,9 +21,6 @@
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
-                    <dt>Software Updates</dt>
-                        <dd>{{if .Softwareupdate}}<span class="label label-warning">Pending Updates</span>{{else}}None{{end}}
-                        </dd>
                     <dt>Hostname</dt><dd>{{.Hostname}}</dd>
                     <dt>Users</dt>
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
@@ -56,7 +53,15 @@
             
             </div>
         </div>
+        {{if .Softwareupdate}}
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="alert alert-warning">
+                    <h3 class="alert-heading" > {{.Softwareoutput}}</h3>            
+                </div>
+            </div>
         </div>
+        {{end}}
     </div> <!-- hero -->
 
 <section id="tables">

@@ -62,6 +62,7 @@ type machine struct {
 	Cnt            int
 	Serial         string
 	Softwareupdate bool
+	Softwareoutput string
 	// Ignore_firewall bool
 }
 
