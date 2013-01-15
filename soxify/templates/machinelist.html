@@ -14,16 +14,37 @@
       </thead>
       <tbody>
         {{range .Machines}}
-          <tr {{ if .IsAncient }} class="error" {{else}} {{if .IsOld}} class="warning" {{end}} {{end}}>
+          <tr {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
             <td><font size="2">{{.Cnt}}</font></td>
             <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
             <td><font size="2">{{.Ip}}</font></td>
             <td><font size="2">{{.Osx}}</font></td>
             {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
             {{if .Recon}}<td><font size="2">Installed</font></td>{{else}}<td><font size="2"><span class="label label-important">Missing</span></font></td>{{end}}
-            {{if .Firewall}}<td><font size="2">On</font></td>{{else}}<td><font size="2">Off</font></td>{{end}}
-            <td><font size="2">{{.Virus_version}} ({{.Virus_def}})</font></td>
-            <td><font size="2">{{.Date}}</font></td>
+            {{if .Firewall}}
+              <td><font size="2">On</font></td>
+            {{else}}
+              {{if .FirewallIssue}}
+                <td><font size="2"><span class="label label-important">Off</span></font></td>
+              {{else}}
+                <td><font size="2">Off</font></td>
+              {{end}}
+            {{end}}
+              {{if .AntivirusIssue}}
+                <td><font size="2"><span class="label label-important">Missing</span></font></td>
+              {{else}}
+                <td><font size="2"> {{.Virus_version}} ({{.Virus_def}})</font></td>
+              {{end}}
+            <td><font size="2">
+                {{if .IsAncient}}
+                <span class="label label-important"> {{.Date}} </span></font></td>
+                {{else}}
+                  {{if .IsOld}} 
+                    <span class="label label-warning"> {{.Date}} </span></font></td>
+                  {{else}}
+                    {{.Date}}
+                  {{end}}
+                {{end}}</font></td>
             <td><font size="2">{{.Model}}</font></td>
             <td><font size="2">{{.Memory}}</font></td>
             <td><a href="/del/{{.Serial}}"><font size="2">Delete</font></a></td>

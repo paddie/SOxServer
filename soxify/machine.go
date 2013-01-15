@@ -98,19 +98,34 @@ func (m *machine) IsAncient() bool {
 }
 
 // if the machine is a macbook and the firewall is "OFF", we return true
-func (m *machine) MacbookFirewallCheck() bool {
+func (m *machine) FirewallIssue() bool {
 	if strings.HasPrefix(m.Model, "MacBook") && !m.Firewall {
-		return false
+		return true
 	}
-	return true
+	return false
 }
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-	if m.IsOld() || !m.Recon || !m.MacbookFirewallCheck() {
+	if m.IsAncient() || !m.Recon || m.FirewallIssue() || m.Virus_version == "N/A" {
 		return true
 	}
 	return false
+}
+
+func (m *machine) AntivirusIssue() bool {
+	if m.Virus_version == "N/A" {
+		return true
+	}
+	return false
+}
+
+func (m *machine) SoxWarning() bool {
+	if m.IsOld() || m.Softwareupdate {
+		return true
+	}
+	return false
+
 }
 
 // temp url to the specific machine in our system
