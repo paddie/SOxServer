@@ -57,10 +57,10 @@ type machine struct {
 	Apps           []app  //"apps"
 	Date           string //"date"
 	Time           string
+	Datetime       int64
 	Users          []string //"users"
 	Cnt            int
 	Serial         string
-	Datetime       int64
 	Softwareupdate bool
 	// Ignore_firewall bool
 }
@@ -71,15 +71,15 @@ func (m *machine) TimeOfUpdate() string {
 	return m.Date
 }
 
-func (m *machine) Seconds() int {
-	return int(m.Datetime)
-}
+// func (m *machine) Seconds() int {
+// 	return int(m.Datetime)
+// }
 
-// calculates the number of days from the last update, to the current date.
-func (m *machine) DaysSinceLastUpdate() int {
+// calculates the number of days from last machine update to now
+func (m *machine) DaysSinceLastUpdate() int64 {
 	// if it's been more than 2 weeks since the machine responded
 	// seconds in a day: 60^2 * 24 = 86400
-	return (time.Now().Second() - m.Seconds()) / 86400
+	return (time.Now().Unix() - m.Datetime) / 86400
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -130,6 +130,8 @@ func machineView(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 	var mach *machine
 	err := c.Find(bson.M{"_id": key}).
 		One(&mach)
+
+	mach.DaysSinceLastUpdate()
 
 	if err != nil {
 		fmt.Println(key, err)
