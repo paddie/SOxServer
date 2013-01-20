@@ -1,6 +1,7 @@
 SOx Server
 =======================================
 
+
 1. Setup a static IP on the Mac Mini
 ------------------------------------
 The clients all try and connect to the server on IP
@@ -25,9 +26,9 @@ Therefore, the server must have that IP statically defined in its network settin
 
             $ brew install mongodb
 
-    2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar:
+    2. To make sure that MongoDB launches after reboot, we need to register it with `launchctl`. This is done using a `.plist`-file which is located in homebrew's Cellar (this assumes MongoDB v. 1.8.0-x86_64 is installed, given a different version, the path would obviously be different):
         
-            $ cp /usr/local/Cellar/mongodb/<version>-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents &&\
+            $ cp /usr/local/Cellar/mongodb/1.8.0-x86_64/homebrew.mxcl.mongodb.plist /Library/LaunchAgents &&\
             launchctl load -w /Library/LaunchAgents/homebrew.mxcl.mongodb.plist
             
         Make sure that the `.plist` was registered correctly with `launchctl` by running the following:
@@ -83,8 +84,50 @@ Therefore, the server must have that IP statically defined in its network settin
     The website is availabe from any machine on our intranet at ip: [http://152.146.38.56:6060](http://152.146.38.56:6060).
 
 4. Install Client scripts
-======================
+-------------------------
 To install the client scripts simply use *Apple Remote Desktop* to distribute the installer package in
 
     SOxServer/client/SOx.json.Client.pkg
 
+5. Edit Client Installer
+========================
+If you ever need to edit the client scripts or where/how the scripts are installed, you need to create a new installation package. Launch ```PackageManager.app``` and follow the below guide:
+
+1. Fill out the prompt as illustrated below and click OK:
+
+    ![Create new installation package](http://imgur.com/fIX93.png)
+
+2. Choose the ```Configuration```:
+
+    ![Make sure 'Installation Destination' is set to 'System Volume' and that you use 'Easy Install Only'](http://imgur.com/tWb4P.png)
+
+3. Drag the ```SOxServer/client/package_root/Library/AdPeople/sox_sophos.py``` onto the open application
+
+4. Fill out the 'Configuration' as seen below:
+    
+    ![Make sure the field 'Allow Custom Location' is not checked](http://imgur.com/agzBF.png)
+
+5. And edit the files permissions in 'Contend':
+    
+    !['Wheel' is the launchd schedular's group](http://i.imgur.com/8xbvR.png)
+
+6. Now drag the the ```SOxServer/client/package_root/Library/LaunchAgents/com.adpeople.sox.plist``` onto the open application and edit the 'Configuration' to match the below picture:
+    
+    ![Restart action needs to be 'None' for all files.](http://i.imgur.com/E62nt.png)
+
+7. Now edit the 'Contend':
+    
+    ![Only let the owner/admin edit the file. No one needs permission to execute it.](http://i.imgur.com/WsyP7.png)
+
+8. Lastly, to unload the old scripts from the schedular and register and replace them with the new ones; open the 'Scripts' menu and drag the files ```SOxServer/client/Resources/PostFlight``` and ```SOxServer/client/Resources/PreFlight``` to their respective fields:
+    
+    !['PreFlight' to preinstall, 'PostFlight' to postinstall](http://i.imgur.com/73T0t.png)
+
+9. Now hit 'Build and Run' and watch for any compilation errors
+    * ignore any errors wrt. permissions on the two files (but do go back and make sure you've set the correct ones on each of the files the time around)
+
+10. If the installation was a success, check the output from the server console to see if the machine successfully posted its data to the Soxify server:
+    
+    ![compare time-stamps to see that the client reached the server](http://i.imgur.com/WQr3Z.png)
+
+11. Go make yourself a cup of coffee, you've earned it!
