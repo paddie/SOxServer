@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 func ignorefw(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -45,13 +46,40 @@ var session *mgo.Session
 
 // var port = flag.String("port", "", "Port on the mongodb server")
 
+func eq(args ...interface{}) bool {
+	if len(args) == 0 {
+		return false
+	}
+	x := args[0]
+	switch x := x.(type) {
+	case string, int, int64, byte, float32, float64:
+		for _, y := range args[1:] {
+			if x == y {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, y := range args[1:] {
+		if reflect.DeepEqual(x, y) {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	// load template files, add new templates to this list
 	// - remember to {{define "unique_template_name"}} <html> {{end}}
 	wd, err := os.Getwd()
+
 	source := filepath.Join(wd, "bootstrap")
 	pattern := filepath.Join(wd, "templates", "*.html")
 	set = template.Must(template.ParseGlob(pattern))
+
+	set.Funcs(template.FuncMap{"eq": eq})
+
 	// server: 152.146.38.56
 	// var ip string
 	var ip = *flag.String("ip", "152.146.38.56:27017", "IP for the MongoDB database eg. '127.0.0.1'")
