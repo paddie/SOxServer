@@ -33,9 +33,10 @@
                         <dd>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-important">Missing</span>{{end}}
                         </dd>
                     <dt>Firewall</dt>
-                        <dd>{{if .FirewallIssue}}<span class="label label-success">{{.Firewall}} - no issue</span>
-                            {{else}}<span class="label label-warning">{{.Firewall}} - issue</span>
-                            <a href="javascript:document.fwform.submit();"><i class="icon-ok"></i></a>
+                        <dd>
+                            {{if .FirewallIssue}}<span class="label label-important">
+                                {{if .Firewall}}ON{{else}}Off{{end}}</span>
+                            {{else}}<span class="label label-success">{{if .Firewall}}ON{{else}}Off{{end}}</span>
                             {{end}}
                         </dd>
                     <dt>Antivirus</dt>
