@@ -7,9 +7,39 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"net/http"
+	// "strconv"
 	"strings"
 	"time"
 )
+
+var SophVersionArr []int
+var SophVersionString string
+
+// func compareVersionString(version string) []int {
+// 	v_arr := strings.Split(version, ".")
+
+// 	var max int
+
+// 	if len(SophVersionArr) == len(v_arr) {
+// 		max = len(SophVersionArr)
+// 	} else {
+// 		if len(SophVersionArr) > len(v_arr) {
+// 			max = len(v_arr)
+// 		} else {
+// 			max = len(SophVersionArr)
+// 		}
+// 	}
+
+// 	tmp_arr := make([]int, 0, len(v_arr))
+// 	for i := 0; i < max; i++ {
+// 		n, err := strconv.Atoi(v_arr[i])
+// 		if err != nil {
+// 			return nil
+// 		}
+
+// 	}
+
+// }
 
 type app struct {
 	Path    string //"path"
