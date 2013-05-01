@@ -85,9 +85,9 @@ func (m *machine) DaysSinceLastUpdate() int64 {
 
 // returns true if it is more than 14 days since the machine called home
 func (m *machine) IsOld() bool {
-	if m.DaysSinceLastUpdate() > 14 {
-		return true
-	}
+	// if m.DaysSinceLastUpdate() > 14 {
+	// 	return true
+	// }
 	return false
 }
 
