@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-launchctl load /Library/LaunchAgents/com.adpeople.sox.plist
-launchctl start com.adpeople.sox
