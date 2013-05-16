@@ -16,7 +16,9 @@
 
 include /usr/local/share/luggage/luggage.make
 
-TITLE=OSX_SOPHOS_CLIENT_INSTALL
+PACKAGE_VERSION=1.0
+
+TITLE=AdPeople_SOX
 REVERSE_DOMAIN=com.adpeople.sox
 PAYLOAD=\
 	prepare-files\
