@@ -26,7 +26,7 @@ PAYLOAD=\
 	copy-files\
 	postflight\
 
-prepare-files: l_Library_LaunchAgents l_Library_LaunchDaemons
+prepare-files: l_Library_LaunchDaemons
 
 preflight:
 	# unload script from launchctl
@@ -36,6 +36,8 @@ preflight:
 	/bin/launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist || true
 	@sudo /bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist || true
 	/bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist || true
+	/bin/launchctl stop com.adpeople.sox || true
+	@sudo /bin/launchctl stop com.adpeople.sox || true
 	# cleanup old plist files from launchdaemons and launchagents
 	@sudo rm -f /Library/LaunchAgents/com.adpeople.sox.plist
 	@sudo rm -f /Library/LaunchDaemons/com.adpeople.sox.plist
@@ -43,18 +45,18 @@ preflight:
 	@sudo rm -rf /Library/AdPeople
 
 copy-files:
-	@sudo ${CP} com.adpeople.sox.plist /Library/LaunchDaemons/com.adpeople.sox.plist
-	@sudo chown root:wheel /Library/LaunchDaemons/com.adpeople.sox.plist
-	@sudo chmod 644 /Library/LaunchDaemons/com.adpeople.sox.plist
+	@sudo ${CP} com.adpeople.sox.plist ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
+	@sudo chown root:wheel ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
+	@sudo chmod 644 ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
 	# create adpeople dir
-	@sudo mkdir /Library/AdPeople
-	@sudo chown root:wheel /Library/AdPeople
+	@sudo mkdir ${WORK_D}/Library/AdPeople
+	@sudo chown root:wheel ${WORK_D}/Library/AdPeople
 	# copy script and make it executable
-	@sudo ${CP} sox_sophos.py /Library/AdPeople/sox_sophos.py
-	@sudo chown root:wheel /Library/AdPeople
-	@sudo chmod a+x /Library/AdPeople/sox_sophos.py
+	@sudo ${CP} sox_sophos.py ${WORK_D}/Library/AdPeople/sox_sophos.py
+	@sudo chown root:wheel ${WORK_D}/Library/AdPeople
+	@sudo chmod a+x ${WORK_D}/Library/AdPeople/sox_sophos.py
 
 
 postflight:
-	@sudo /bin/launchctl load /Library/LaunchDaemons/com.adpeople.sox.plist
-	@sudo /bin/launchctl start com.adpeople.sox
+	@sudo /bin/launchctl load ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
+	# @sudo /bin/launchctl start com.adpeople.sox
