@@ -5,6 +5,13 @@ CLIENT Installer
 2. **Makefile**: Creates required directories (/Library/AdPeople) and copies scripts
 3. **Postinstall**: Fixes permissions, ownership and registers scripts with launchctl
 
+## Create .pkg file
+To create a new .pkg file, switch to the folder where the make-file is in, and run:
+```Bash
+> make pkg
+```
+And the .pkg is written to the directory.
+
 ## Preinstall
 ```bash
 # unload script
