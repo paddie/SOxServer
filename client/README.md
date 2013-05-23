@@ -5,7 +5,7 @@ CLIENT Installer
 2. **Makefile**: Creates required directories (/Library/AdPeople) and copies scripts
 3. **Postinstall**: Fixes permissions, ownership and registers scripts with launchctl
 
-# Preinstall
+## Preinstall
 ```bash
 # unload script
 /bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist
@@ -26,9 +26,9 @@ fi
 if [ -d "/Library/AdPeople" ]; then
 	rm -rf "/Library/AdPeople"
 fi
-´´´
+```
 
-# Makefile
+## Makefile
 ```Bash
 include luggage.make
 
@@ -58,7 +58,7 @@ pack-adpeople: prepare-files l_Library_LaunchDaemons
 	@sudo chown root:wheel ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
 	@sudo chmod 755 ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
 ```
-# Postinstall
+## Postinstall
 ```bash
 /bin/launchctl load -w /Library/LaunchDaemons/com.adpeople.sox.plist
 ```
