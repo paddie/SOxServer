@@ -14,49 +14,30 @@
 #   limitations under the License.
 #
 
-include /usr/local/share/luggage/luggage.make
+include luggage.make
 
 PACKAGE_VERSION=1.0
 
 TITLE=AdPeople_SOX
 REVERSE_DOMAIN=com.adpeople.sox
 PAYLOAD=\
-	prepare-files\
-	preflight\
-	copy-files\
-	postflight\
+	pack-script-preinstall\
+	pack-script-postinstall\
+	pack-adpeople\
 
-prepare-files: l_Library_LaunchDaemons
+prepare-files: l_Library
+	# create /Library/AdPeople directory
+	@sudo mkdir -p "${WORK_D}/Library/AdPeople"
+	# copying sox_adpeople.py
+	@sudo ${CP} sox_sophos.py ${WORK_D}/Library/AdPeople/
 
-preflight:
-	# unload script from launchctl
-	# @sudo /bin/launchctl stop com.adpeople.sox
-	# /bin/launchctl stop com.adpeople.sox
-	@sudo /bin/launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist || true
-	/bin/launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist || true
-	@sudo /bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist || true
-	/bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist || true
-	/bin/launchctl stop com.adpeople.sox || true
-	@sudo /bin/launchctl stop com.adpeople.sox || true
-	# cleanup old plist files from launchdaemons and launchagents
-	@sudo rm -f /Library/LaunchAgents/com.adpeople.sox.plist
-	@sudo rm -f /Library/LaunchDaemons/com.adpeople.sox.plist
-	# remove adpeople parent dir
-	@sudo rm -rf /Library/AdPeople
-
-copy-files:
-	@sudo ${CP} com.adpeople.sox.plist ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
-	@sudo chown root:wheel ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
-	@sudo chmod 644 ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
-	# create adpeople dir
-	@sudo mkdir ${WORK_D}/Library/AdPeople
-	@sudo chown root:wheel ${WORK_D}/Library/AdPeople
-	# copy script and make it executable
-	@sudo ${CP} sox_sophos.py ${WORK_D}/Library/AdPeople/sox_sophos.py
-	@sudo chown root:wheel ${WORK_D}/Library/AdPeople
+pack-adpeople: prepare-files l_Library_LaunchDaemons
+	# fix permissions on /Library/AdPeople
+	@sudo chown -R root:wheel ${WORK_D}/Library/AdPeople
+	@sudo chmod -R 755 ${WORK_D}/Library/AdPeople
 	@sudo chmod a+x ${WORK_D}/Library/AdPeople/sox_sophos.py
 
-
-postflight:
-	@sudo /bin/launchctl load ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
-	# @sudo /bin/launchctl start com.adpeople.sox
+	# install daemon, fix permissions and load
+	@sudo ${CP} com.adpeople.sox.plist ${WORK_D}/Library/LaunchDaemons
+	@sudo chown root:wheel ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
+	@sudo chmod 755 ${WORK_D}/Library/LaunchDaemons/com.adpeople.sox.plist
