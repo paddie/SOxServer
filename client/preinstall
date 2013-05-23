@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# unload script
+/bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist
+@sudo /bin/launchctl unload /Library/LaunchDaemons/com.adpeople.sox.plist
+/bin/launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
+@sudo /bin/launchctl unload /Library/LaunchAgents/com.adpeople.sox.plist
+
+# delete old plist-file
+if [ "/Library/LaunchDaemons/com.adpeople.sox.plist" ]; then 
+	rm -rf "/Library/LaunchDaemons/com.adpeople.sox.plist"
+fi
+
+if [ "/Library/LaunchAgents/com.adpeople.sox.plist" ]; then 
+	rm -rf "/Library/LaunchAgents/com.adpeople.sox.plist"
+fi
+
+# delete old adpeople script folder
+if [ -d "/Library/AdPeople" ]; then
+	rm -rf "/Library/AdPeople"
+fi
