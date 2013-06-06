@@ -99,10 +99,13 @@ def filevault(doc):
     # mountain lion
     if version[1] == "8":
         output, err = subprocess.Popen(["fdesetup","status"],
-         stdout=subprocess.PIPE).communicate()
+         stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
-        if err != None:
+        if not err is None:
             print err
+            return
+
+        if len(output) == 0:
             return
 
         tmp_status, tmp_mk = output.split("\n")[0:2]
@@ -120,7 +123,7 @@ def filevault(doc):
         # "No CoreStorage logical volume groups found"
 
         output, err = subprocess.Popen(["diskutil", "cs", "list"], 
-            stdout=subprocess.PIPE).communicate()
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
         if err != None:
             print err
@@ -161,6 +164,32 @@ def filevault(doc):
         "encrypted_users" : encrypted_users
     }})
     
+def loginSettings(doc):
+
+    lockscreen_active = False
+    timeout = 0
+    for user in USERS:
+        path = os.path.join("Users", user, "Library/Preferences/com.apple.screensaver.plist")
+        print path
+        if os.path.exists(path):
+            output, err = subprocess.Popen(["defaults", "read", path, "askForPasswordDelay"],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+
+            if err is False:
+                lockscreen_active = True
+                try:
+                    timeout = int(output)
+                except Exception:
+                    pass
+
+            print lockscreen_active, timeout
+        else:
+            print "No existo.."
+            
+    
+    print lockscreen_active, timeout
+
+    return lockscreen_active, timeout
 
 def plist_version(path):
 	plist = "N/A"
@@ -216,7 +245,7 @@ def log_information(path='/Library/Logs/Sophos Anti-Virus.log'):
                 vers = lines
         mtime = time.strftime("%d/%m/%y",time.localtime(os.path.getmtime(path)))
         log.close()
-        
+        print vers
         return vers.split(": ")[1].split(",")[0], mtime
         # return vers[31:-15], mtime
     else:
@@ -335,6 +364,9 @@ def postMachineSpecs(ip, doc):
         print "Retrying in an hour.."
     # urllib2.urlopen("localhost:6060/updateMachine", jdata)
 
+USERS = [ name for name in os.listdir("/Users/") if os.path.isdir(os.path.join("/Users/", name)) and name not in ["Shared", "xadmin"] and "." not in name]
+
+
 def main():
     server_ip = "152.146.38.56:6060" # static IP for the mini-server 
     # server_ip = "localhost:6060"
@@ -352,15 +384,16 @@ def main():
     machine_dict(doc)
     filevault(doc)
     sophos_dict(doc)
-    security_dict(doc)
+    loginSettings(loginSettings)
+    # security_dict(doc)
     # installed_apps(doc)
-    recon_dict(doc)
-    softwareupdate(doc)
+    # recon_dict(doc)
+    # softwareupdate(doc)
 
     # print "softwareupdate: ", doc["softwareupdate"]
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
-    postMachineSpecs(server_ip, doc)
+    # postMachineSpecs(server_ip, doc)
 
 if __name__ == '__main__':
 	main()
