@@ -93,7 +93,7 @@ type machine struct {
 	Cnt            int
 	Serial         string
 	Softwareupdate bool
-	Softwareoutput string
+	Softwareoutput template.HTML
 	// Ignore_firewall bool
 }
 
