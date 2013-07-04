@@ -98,7 +98,7 @@ type machine struct {
 }
 
 func (m *machine) SecurityUpdate() bool {
-	if strings.Contains(m.Softwareoutput, "Security Update") {
+	if strings.Contains(string(m.Softwareoutput), "Security Update") {
 		return true
 	}
 	return false
@@ -353,7 +353,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 	}
 	m.Id = m.Serial
 
-	m.Softwareoutput = template.HTML(strings.Replace(m.Softwareoutput, "\n", "<br>", -1))
+	m.Softwareoutput = template.HTML(strings.Replace(string(m.Softwareoutput), "\n", "<br>", -1))
 
 	fmt.Printf("%v %v: Connection from %v - ip: %v\n", m.Date, m.Time, m.Hostname, m.Ip)
 
