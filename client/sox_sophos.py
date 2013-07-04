@@ -261,7 +261,7 @@ def main():
     # db = mongo_conn(server_ip,db=main_db)
     today = datetime.now()
     doc = {
-        'date': today.strftime("%d/%m/%y"),
+        'date': today.strftime("%m/%d/%y"),
         'datetime':int(time.time()), # iso 1970
         'time':today.strftime("%H:%M:%S"),
         'users':users(),
