@@ -19,7 +19,7 @@
             <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
             <td><font size="2">{{.Ip}}</font></td>
             <td><font size="2">{{.Osx}}</font></td>
-            {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
+            {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
             {{if .Recon}}<td><font size="2">Installed</font></td>{{else}}<td><font size="2"><span class="label label-important">Missing</span></font></td>{{end}}
             {{if .Firewall}}
               <td><font size="2">On</font></td>

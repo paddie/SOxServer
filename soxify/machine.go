@@ -96,6 +96,13 @@ type machine struct {
 	// Ignore_firewall bool
 }
 
+func (m *machine) SecurityUpdate() bool {
+	if strings.Contains(m.Softwareoutput, "Security Update") {
+		return true
+	}
+	return false
+}
+
 // helper function to calculate the days since the last update
 // - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
 func (m *machine) TimeOfUpdate() string {
