@@ -16,32 +16,6 @@ import (
 var SophVersionArr []int
 var SophVersionString string
 
-// func compareVersionString(version string) []int {
-// 	v_arr := strings.Split(version, ".")
-
-// 	var max int
-
-// 	if len(SophVersionArr) == len(v_arr) {
-// 		max = len(SophVersionArr)
-// 	} else {
-// 		if len(SophVersionArr) > len(v_arr) {
-// 			max = len(v_arr)
-// 		} else {
-// 			max = len(SophVersionArr)
-// 		}
-// 	}
-
-// 	tmp_arr := make([]int, 0, len(v_arr))
-// 	for i := 0; i < max; i++ {
-// 		n, err := strconv.Atoi(v_arr[i])
-// 		if err != nil {
-// 			return nil
-// 		}
-
-// 	}
-
-// }
-
 type app struct {
 	Path    string //"path"
 	Version string //"version"
@@ -94,7 +68,28 @@ type machine struct {
 	Serial         string
 	Softwareupdate bool
 	Softwareoutput template.HTML
+	Script_v       string
+	Script_d       string
 	// Ignore_firewall bool
+}
+
+func MachineListHeaders() []header {
+	return []header{
+		{"#", ""},
+		{"Hostname", "hostname"},
+		{"IP", "ip"},
+		{"System", "osx"},
+		{"Softwareupdates", "softwareupdate"},
+		{"Recon", "recon"},
+		{"Firewall", "firewall"},
+		{"Sophos Antivirus", ""},
+		{"Date", "date"},
+		{"Model", "model"},
+		{"Memory", "memory"},
+		{"Script_v", "script_v"},
+		{"Delete", ""},
+	}
+
 }
 
 func (m *machine) SecurityUpdate() bool {
@@ -270,19 +265,7 @@ func machineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 	}
 
 	m := new(machines)
-	m.Headers = []header{
-		{"#", ""},
-		{"Hostname", "hostname"},
-		{"IP", "ip"},
-		{"System", "osx"},
-		{"Softwareupdates", "softwareupdate"},
-		{"Recon", "recon"},
-		{"Firewall", "firewall"},
-		{"Sophos Antivirus", ""},
-		{"Date", "date"},
-		{"Model", "model"},
-		{"Memory", "memory"},
-		{"Delete", ""}}
+	m.Headers = MachineListHeaders()
 
 	c := db.C("machines")
 
