@@ -169,7 +169,11 @@ def security_dict(doc):
 
 # Simple check for the Recon LaunchAgent
 def recon_dict(doc):
-    doc.update({'recon':os.path.isfile("/Library/LaunchDaemons/com.wpp.recon.plist")})
+    old = "/Library/Application Support/JAMF/scripts/submitInventory.sh"
+    new = "/Library/Application Support/WPP/Inventory/scripts/submitInventory.sh"
+
+    doc.update({'recon':os.path.isfile(new)})
+    
 
 def machine_dict(doc):
     # machine specific info
@@ -265,18 +269,21 @@ def main():
         'datetime':int(time.time()), # iso 1970
         'time':today.strftime("%H:%M:%S"),
         'users':users(),
+        "script_v" :  subprocess.Popen(["/usr/bin/git","describe"],stdout=subprocess.PIPE).communicate()[0][:-1],
+        "script_d" : "Updated Recon Revision",
     }
     machine_dict(doc)
     sophos_dict(doc)
     security_dict(doc)
-    installed_apps(doc)
+    # installed_apps(doc)
     recon_dict(doc)
-    softwareupdate(doc)
+    # softwareupdate(doc)
+    print doc
 
     # print "softwareupdate: ", doc["softwareupdate"]
     # print "debug: Successfully registered machine data"
     # pp.pprint(doc)
-    postMachineSpecs(server_ip, doc)
+    # postMachineSpecs(server_ip, doc)
 
 if __name__ == '__main__':
 	main()
