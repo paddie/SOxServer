@@ -324,15 +324,22 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 	set.ExecuteTemplate(w, "machinelist_old", m)
 }
 
+// this method responds to client updates
+// the json data is part of the post request body, we parse
+//   it and...
+//   1. set the id to the serial
+//   2. convert the softwareoutput to html using template.html
+//   3. upsert the data into the database
 func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	if r.Method != "POST" {
-		http.Error(w, "onle accepts POST requests", 405)
+		http.Error(w, "only accepts POST requests", 405)
 	}
 	body, err := ioutil.ReadAll(r.Body)
 	var m machine
 	err = json.Unmarshal(body, &m)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	m.Id = m.Serial
 

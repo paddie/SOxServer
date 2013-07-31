@@ -82,21 +82,15 @@ func main() {
 
 	// server: 152.146.38.56
 	// var ip string
-	var ip = *flag.String("ip", "152.146.38.56:27017", "IP for the MongoDB database eg. '127.0.0.1'")
+	ip := *flag.String("ip", "localhost", "IP for the MongoDB database eg. 'localhost'")
 	fmt.Println("Trying to connect to ", ip)
 	session, err = mgo.Dial(ip)
+	defer session.Close()
 	if err != nil {
-		fmt.Println("Error: ", err)
+		panic(err)
 		// fmt.Printf("Failed to connect to MongoDB on '%v'\n", ip)
-		fmt.Println("Trying to connect to 'localhost'")
-		session, err = mgo.Dial("localhost")
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("Connected to MongoDB on 'localhost'\n")
-	} else {
-		fmt.Printf("Connected to MongoDB on '%v'\n", ip)
 	}
+	fmt.Printf("Connected to MongoDB on '%v'\n", ip)
 
 	err = session.DB("sox").C("machine").EnsureIndexKey("hostname", "time", "date")
 	if err != nil {
