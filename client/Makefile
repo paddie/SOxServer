@@ -29,13 +29,13 @@ prepare-files: l_Library
 	# create /Library/AdPeople directory
 	@sudo mkdir -p "${WORK_D}/Library/AdPeople"
 	# copying sox_adpeople.py
-	@sudo ${CP} sox_sophos.py ${WORK_D}/Library/AdPeople/
+	@sudo ${CP} update ${WORK_D}/Library/AdPeople/
 
 pack-adpeople: prepare-files l_Library_LaunchDaemons
 	# fix permissions on /Library/AdPeople
 	@sudo chown -R root:wheel ${WORK_D}/Library/AdPeople
 	@sudo chmod -R 755 ${WORK_D}/Library/AdPeople
-	@sudo chmod a+x ${WORK_D}/Library/AdPeople/sox_sophos.py
+	@sudo chmod a+x ${WORK_D}/Library/AdPeople/update
 
 	# install daemon, fix permissions and load
 	@sudo ${CP} com.adpeople.sox.plist ${WORK_D}/Library/LaunchDaemons

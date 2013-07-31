@@ -1,3 +1,5 @@
 #!/bin/bash
 
+/usr/local/git/bin/git clone https://github.com/paddie/SOxClient.git /Library/AdPeople/SOxClient
+
 /bin/launchctl load -w /Library/LaunchDaemons/com.adpeople.sox.plist

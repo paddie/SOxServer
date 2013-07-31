@@ -8,8 +8,7 @@
 	<string>com.adpeople.sox</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/bin/python</string>
-		<string>/Library/AdPeople/sox_sophos.py</string>
+		<string>/Library/AdPeople/update</string>
 	</array>
 	<key>StartInterval</key>
 	<integer>14400</integer>
