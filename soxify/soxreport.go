@@ -48,7 +48,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 			doc.Osx,
 			doc.Recon,
 			doc.Firewall, //["firewall"],
-			doc.DateTime, // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
+			doc.Now,      // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
 			strings.Replace(doc.Model, ",", ".", -1),
 			doc.Cpu,
 			doc.Memory,

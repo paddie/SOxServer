@@ -60,7 +60,7 @@ type machine struct {
 	Cpu            string    //"cpu"
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
-	DateTime       time.Time //"date"
+	Now            time.Time //"date"
 	// Time           string
 	// Datetime       int64
 	Users          []string //"users"
@@ -101,7 +101,7 @@ func (m *machine) SecurityUpdate() bool {
 // helper function to calculate the days since the last update
 // - mongo saves time in milliseconds and time.Time operates in either seconds or nanoseconds. Because of this, we divide m.date (int64) with 1000 to convert it into seconds before initialising the time.Time
 func (m *machine) TimeOfUpdate() time.Time {
-	return m.DateTime
+	return m.Now
 }
 
 // func (m *machine) Seconds() int {
@@ -112,7 +112,7 @@ func (m *machine) TimeOfUpdate() time.Time {
 func (m *machine) DaysSinceLastUpdate() int64 {
 	// if it's been more than 2 weeks since the machine responded
 	// seconds in a day: 60^2 * 24 = 86400
-	return int64(time.Now().Sub(m.DateTime).Seconds() / 86400)
+	return int64(time.Now().Sub(m.Now).Seconds() / 86400)
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -131,7 +131,7 @@ func (m *machine) IsAncient() bool {
 }
 
 func (m *machine) Date() string {
-	return m.DateTime.Format("01/02/06")
+	return m.Now.Format("01/02/06")
 }
 
 // if the machine is a macbook and the firewall is "OFF", we return true
@@ -350,10 +350,10 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 	// m.Id = m.Serial
 	// something is off about theses dates and the bloody timezones..
 	// TODO: fix it
-	m.DateTime = time.Now()
+	m.Now = time.Now()
 	m.Softwareoutput = template.HTML(strings.Replace(string(m.Softwareoutput), "\n", "<br>", -1))
 
-	fmt.Printf("%v: Connection from %v - ip: %v\n", m.DateTime, m.Hostname, m.Ip)
+	fmt.Printf("%v: Connection from %v - ip: %v\n", m.Now, m.Hostname, m.Ip)
 
 	_, err = db.C("machines").UpsertId(m.Id, m)
 	if err != nil {

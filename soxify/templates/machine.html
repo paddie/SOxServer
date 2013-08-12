@@ -50,7 +50,7 @@
         <div class="row-fluid">
         <div class="span12">
             <div {{if .IsOld}} class="alert alert-warning" {{else}} class="alert alert-success" {{end}}>
-                <h3 class="alert-heading" >Last Updated: <date>{{.DateTime}}</date> </h3>
+                <h3 class="alert-heading" >Last Updated: <date>{{.Now}}</date> </h3>
             </div>
         </div>
         {{if .Softwareupdate}}
