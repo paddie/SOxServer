@@ -354,7 +354,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 
 	// fmt.Println("TimeZone:", time.Now().Location())
 
-	m.Id = m.Serial
+	// m.Id = m.Serial
 	// something is off about theses dates and the bloody timezones..
 	// TODO: fix it
 	m.Now = time.Now()
