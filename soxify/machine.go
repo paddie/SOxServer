@@ -112,6 +112,10 @@ func (m *machine) TimeOfUpdate() time.Time {
 func (m *machine) DaysSinceLastUpdate() int64 {
 	// if it's been more than 2 weeks since the machine responded
 	// seconds in a day: 60^2 * 24 = 86400
+	if m.Now.IsZero() {
+		return int64(90)
+	}
+
 	return int64(time.Now().Sub(m.Now).Seconds() / 86400)
 }
 
