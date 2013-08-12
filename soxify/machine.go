@@ -56,7 +56,7 @@ type machine struct {
 	Recon          bool      //"recon"
 	Ip             string    //"ip"
 	Virus_def      string    //"virus_def"
-	Id             string    `json:"_id"`
+	Id             string    "_id"
 	Cpu            string    //"cpu"
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
@@ -240,6 +240,7 @@ func deleteMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 
 	if err != nil {
 		fmt.Print(err)
+		return
 	}
 
 	_, err = db.C("old_machines").Upsert(bson.M{"hostname": m.Hostname}, m)
