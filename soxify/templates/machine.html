@@ -36,7 +36,8 @@
                         <dd>
                             {{if .FirewallIssue}}<span class="label label-important">
                                 {{if .Firewall}}ON{{else}}Off{{end}}</span>
-                            {{else}}<span class="label label-success">{{if .Firewall}}ON{{else}}Off{{end}}</span>
+                            {{else}}<span class="label label-success">{{if <span class=""></span>
+                                Firewall}}ON{{else}}Off{{end}}</span>
                             {{end}}
                         </dd>
                     <dt>Antivirus</dt>
@@ -50,8 +51,7 @@
         <div class="row-fluid">
         <div class="span12">
             <div {{if .IsOld}} class="alert alert-warning" {{else}} class="alert alert-success" {{end}}>
-            <h3 class="alert-heading" >Last Updated: {{.Time}} - <date>{{.Date}}</date> </h3>
-            
+                <h3 class="alert-heading" >Last Updated: <date>{{.DateTime}}</date> </h3>
             </div>
         </div>
         {{if .Softwareupdate}}
@@ -66,8 +66,6 @@
     </div> <!-- hero -->
 
 <section id="tables">
-<!-- <div class="row"> -->
-<!-- <div class="colspan"> -->
     <table class="table table-bordered table-striped">
     <thead>
         <tr>
@@ -88,8 +86,6 @@
     {{end}}
     </tbody> <!-- tbody -->
     </table>
-<!-- </div> --> <!-- span -->
-<!-- </div> --> <!-- row -->
 </section> <!-- table -->
 </div> <!-- container -->
 {{template "base_bottom"}}

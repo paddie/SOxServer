@@ -5,8 +5,8 @@ import (
 	// "bytes"
 	// "path"
 	"fmt"
-	"net/http"
 	"labix.org/v2/mgo"
+	"net/http"
 	// "reflect"
 	// "time"
 	// old "old/template"
@@ -30,7 +30,7 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 	// var results []map[string]interface{}
 	var results []machine
 	err := c.Find(nil). //Sort(&map[string]int{SortKey: 1}).
-		All(&results)
+				All(&results)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -44,11 +44,11 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 			i+1,
 			doc.Hostname,
 			doc.Serial, // doc["hostname"], 
-			doc.Ip, //doc["ip"],
+			doc.Ip,     //doc["ip"],
 			doc.Osx,
 			doc.Recon,
 			doc.Firewall, //["firewall"],
-			doc.Date,     // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
+			doc.DateTime, // time.NanosecondsToUTC(int64(doc["date"].(bson.Timestamp))),
 			strings.Replace(doc.Model, ",", ".", -1),
 			doc.Cpu,
 			doc.Memory,
