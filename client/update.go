@@ -6,15 +6,17 @@ import (
 	"os/exec"
 )
 
+var git_path string
+
 func UpdateRepo(path string) ([]byte, error) {
 
-	cmd := exec.Command("/usr/local/git/bin/git", "pull")
+	cmd := exec.Command(git_path, "pull")
 	fmt.Println(cmd.Args)
 	return cmd.Output()
 }
 
 func Version(path string) {
-	cmd := exec.Command("/usr/local/git/bin/git", path, "describe")
+	cmd := exec.Command(git_path, path, "describe")
 	v, err := cmd.Output()
 
 	fmt.Printf("version: %s - err: %s\n", v, err)
@@ -27,8 +29,15 @@ func ExecuteSOxScripts(path string) ([]byte, error) {
 }
 
 func main() {
+	var err error
+	cmd := exec.Command("which", "git")
+	git_path, err = cmd.Output()
+
+	fmt.Printf("%s", git_path)
+
 	// wd, err := os.Getwd()
 	os.Chdir("/Library/AdPeople/SOxClient")
+
 	out, err := UpdateRepo("/Library/AdPeople/SOxClient/")
 	if err != nil {
 		fmt.Println("could not pull:", err)
