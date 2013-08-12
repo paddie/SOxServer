@@ -116,7 +116,9 @@ func (m *machine) DaysSinceLastUpdate() int64 {
 		return int64(90)
 	}
 
-	return int64(time.Now().Sub(m.Now).Seconds() / 86400)
+	return 10
+
+	// return int64(time.Now().Sub(m.Now).Seconds() / 86400)
 }
 
 // returns true if it is more than 14 days since the machine called home
@@ -352,7 +354,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 
 	// fmt.Println("TimeZone:", time.Now().Location())
 
-	// m.Id = m.Serial
+	m.Id = m.Serial
 	// something is off about theses dates and the bloody timezones..
 	// TODO: fix it
 	m.Now = time.Now()
