@@ -56,7 +56,7 @@ type machine struct {
 	Recon          bool      //"recon"
 	Ip             string    //"ip"
 	Virus_def      string    //"virus_def"
-	Id             string    "_id"
+	Id             string    `json:"_id" bson:"_id"`
 	Cpu            string    //"cpu"
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
