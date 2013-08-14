@@ -83,7 +83,7 @@ func MachineListHeaders() []header {
 		{"Recon", "recon"},
 		{"Firewall", "firewall"},
 		{"Sophos Antivirus", ""},
-		{"Date", "date"},
+		{"Date", "now"},
 		{"Model", "model"},
 		{"Memory", "memory"},
 		{"Script_v", "script_v"},
