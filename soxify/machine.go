@@ -310,7 +310,7 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		{"Recon", "recon"},
 		{"Firewall", "firewall"},
 		{"Sophos Antivirus", ""},
-		{"Date", "date"},
+		{"Date", "now"},
 		{"Model", "model"},
 		{"Memory", "memory"}}
 
@@ -344,6 +344,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 	if r.Method != "POST" {
 		http.Error(w, "only accepts POST requests", 405)
 	}
+
 	body, err := ioutil.ReadAll(r.Body)
 	var m machine
 	err = json.Unmarshal(body, &m)
@@ -352,11 +353,6 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 		return
 	}
 
-	// fmt.Println("TimeZone:", time.Now().Location())
-
-	// m.Id = m.Serial
-	// something is off about theses dates and the bloody timezones..
-	// TODO: fix it
 	m.Now = time.Now()
 	m.Softwareoutput = template.HTML(strings.Replace(string(m.Softwareoutput), "\n", "<br>", -1))
 
