@@ -116,7 +116,7 @@ func (m *machine) DaysSinceLastUpdate() int64 {
 		return int64(90)
 	}
 
-	return 10
+	return int64(time.Now().Sub(m.Now).Hours() / 24)
 
 	// return int64(time.Now().Sub(m.Now).Seconds() / 86400)
 }
