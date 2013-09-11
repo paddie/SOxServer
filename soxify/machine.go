@@ -85,7 +85,7 @@ func MachineListHeaders() []header {
 		{"Sophos Antivirus", ""},
 		{"Date", "now"},
 		{"Model", "model"},
-		{"Memory", "memory"},
+		{"Memory (GB)", "memory"},
 		{"Script_v", "script_v"},
 		{"Delete", ""},
 	}
