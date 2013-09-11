@@ -312,7 +312,7 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		{"Sophos Antivirus", ""},
 		{"Date", "now"},
 		{"Model", "model"},
-		{"Memory", "memory"}}
+		{"Memory (GB)", "memory"}}
 
 	c := db.C("old_machines")
 
