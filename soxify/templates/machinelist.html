@@ -15,7 +15,7 @@
       <tbody>
         {{range .Machines}}
           <tr onclick="window.document.location='/machine/{{.Id}}';" {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
-            <td><font size="2">{{.Cnt}}</font></td>
+            <td>{{.Cnt}}</td>
             <td>
               {{ if .NameLengthIssue }} 
               <span class="label label-important">
@@ -27,36 +27,40 @@
             </td>
             <td>{{.Ip}}</td>
             <td>{{.Osx}}</td>
-            {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
-            {{if .Recon}}<td><font size="2">Installed</font></td>{{else}}<td><font size="2"><span class="label label-important">Missing</span></font></td>{{end}}
+            {{if .Softwareupdate}}
+              <td><span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span></td>
+            {{else}}
+              <td>None</td>
+            {{end}}
+            {{if .Recon}}<td>Installed</td>{{else}}<td><span class="label label-important">Missing</span></td>{{end}}
             {{if .Firewall}}
-              <td><font size="2">On</font></td>
+              <td>On</td>
             {{else}}
               {{if .FirewallIssue}}
-                <td><font size="2"><span class="label label-important">Off</span></font></td>
+                <td><span class="label label-important">Off</span></td>
               {{else}}
-                <td><font size="2">Off</font></td>
+                <td>Off</td>
               {{end}}
             {{end}}
               {{if .AntivirusIssue}}
-                <td><font size="2"><span class="label label-important">Missing</span></font></td>
+                <td><span class="label label-important">Missing</span></td>
               {{else}}
-                <td><font size="2"> {{.Virus_version}} ({{.Virus_def}})</font></td>
+                <td> {{.Virus_version}} ({{.Virus_def}})</td>
               {{end}}
-            <td><font size="2">
+            <td>
                 {{if .IsAncient}}
-                <span class="label label-important"> {{.Date}} </span></font></td>
+                <span class="label label-important"> {{.Date}} </span></td>
                 {{else}}
                   {{if .IsOld}} 
-                    <span class="label label-warning"> {{.Date}} </span></font></td>
+                    <span class="label label-warning"> {{.Date}} </span></td>
                   {{else}}
                     {{.Date}}
                   {{end}}
-                {{end}}</font></td>
-            <td><font size="2">{{.Model}}</font></td>
-            <td><font size="2">{{.Memory}}</font></td>
-            <td><font size="2">{{.Script_v}}</font></td>
-            <td><a href="/del/{{.Id}}"><font size="2">Delete</font></a></td>
+                {{end}}</td>
+            <td>{{.Model}}</td>
+            <td>{{.Memory}}</td>
+            <td>{{.Script_v}}</td>
+            <td><a href="/del/{{.Id}}">Delete</a></td>
           </tr>
         {{end}}
       </tbody>
