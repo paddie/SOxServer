@@ -18,45 +18,56 @@
             <td>{{.Cnt}}</td>
             <td>
               {{ if .NameLengthIssue }} 
-              <span class="label label-important">
-                {{.Hostname}}
-              </span>
+              <span class="label label-important">{{.Hostname}}</span>
               {{else}}
                 {{.Hostname}}
               {{end}}
             </td>
             <td>{{.Ip}}</td>
             <td>{{.Osx}}</td>
-            {{if .Softwareupdate}}
-              <td><span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span></td>
-            {{else}}
-              <td>None</td>
-            {{end}}
-            {{if .Recon}}<td>Installed</td>{{else}}<td><span class="label label-important">Missing</span></td>{{end}}
+            <td>
+              {{if .Softwareupdate}}
+                <span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span>
+              {{else}}
+                None
+              {{end}}
+            </td>
+            <td>
+              {{if .Recon}}
+                Installed
+              {{else}}
+                <span class="label label-important">Missing</span>
+              {{end}}
+            </td>
+            <td>
             {{if .Firewall}}
-              <td>On</td>
+              On
             {{else}}
               {{if .FirewallIssue}}
-                <td><span class="label label-important">Off</span></td>
+                <span class="label label-important">Off</span>
               {{else}}
-                <td>Off</td>
+                Off
               {{end}}
             {{end}}
-              {{if .AntivirusIssue}}
-                <td><span class="label label-important">Missing</span></td>
-              {{else}}
-                <td> {{.Virus_version}} ({{.Virus_def}})</td>
-              {{end}}
+            </td>
             <td>
-                {{if .IsAncient}}
-                <span class="label label-important"> {{.Date}} </span></td>
+              {{if .AntivirusIssue}}
+                <span class="label label-important">Missing</span>
+              {{else}}
+                {{.Virus_version}} ({{.Virus_def}})
+              {{end}}
+            </td>
+            <td>
+              {{if .IsAncient}}
+                <span class="label label-important"> {{.Date}} </span>
+              {{else}}
+                {{if .IsOld}} 
+                  <span class="label label-warning"> {{.Date}} </span>
                 {{else}}
-                  {{if .IsOld}} 
-                    <span class="label label-warning"> {{.Date}} </span></td>
-                  {{else}}
-                    {{.Date}}
-                  {{end}}
-                {{end}}</td>
+                  {{.Date}}
+                {{end}}
+              {{end}}
+            </td>
             <td>{{.Model}}</td>
             <td>{{.Memory}}</td>
             <td>{{.Script_v}}</td>
