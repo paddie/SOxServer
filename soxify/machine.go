@@ -130,7 +130,7 @@ func (m *machine) IsOld() bool {
 }
 
 func (m *machine) IsAncient() bool {
-	if m.DaysSinceLastUpdate() > 90 {
+	if m.DaysSinceLastUpdate() > 60 {
 		return true
 	}
 	return false
@@ -148,9 +148,18 @@ func (m *machine) FirewallIssue() bool {
 	return false
 }
 
+// If length of OSX machine name exceeds 15 characters
+// the name will be corrupted on: [url](antivirus.yrbrands.com/sox.aspx)
+func (m *machine) NameLengthIssue() bool {
+	if len(m.Hostname) > 15 {
+		return true
+	}
+	return false
+}
+
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-	if m.IsAncient() || !m.Recon || m.FirewallIssue() || m.Virus_version == "N/A" {
+	if m.IsAncient() || !m.Recon || m.FirewallIssue() || m.Virus_version == "N/A" || m.NameLengthIssue() {
 		return true
 	}
 	return false
@@ -168,7 +177,6 @@ func (m *machine) SoxWarning() bool {
 		return true
 	}
 	return false
-
 }
 
 // temp url to the specific machine in our system
