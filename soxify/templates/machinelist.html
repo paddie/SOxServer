@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         {{range .Machines}}
-          <tr onclick="window.document.location='"/machine/{{.Id}}"';" {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
+          <tr onclick="window.document.location='/machine/{{.Id}}';" {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
             <td><font size="2">{{.Cnt}}</font></td>
             <td>
               {{ if .NameLengthIssue }} 
