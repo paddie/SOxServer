@@ -14,15 +14,16 @@
       </thead>
       <tbody>
         {{range .Machines}}
+          <a href="/machine/{{.Id}}">
           <tr {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
             <td><font size="2">{{.Cnt}}</font></td>
             <td>
               {{ if .NameLengthIssue }} 
               <span class="label label-important">
-                <a href="/machine/{{.Id}}">{{.Hostname}}</a>  
+                {{.Hostname}}
               </span>
-              {{else }}
-                <a href="/machine/{{.Id}}">{{.Hostname}}</a>
+              {{else}}
+                {{.Hostname}}
               {{end}}
             </td>
             <td>{{.Ip}}</td>
@@ -58,6 +59,7 @@
             <td><font size="2">{{.Script_v}}</font></td>
             <td><a href="/del/{{.Id}}"><font size="2">Delete</font></a></td>
           </tr>
+          </a>
         {{end}}
       </tbody>
     </table>
