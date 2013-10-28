@@ -16,9 +16,17 @@
         {{range .Machines}}
           <tr {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
             <td><font size="2">{{.Cnt}}</font></td>
-            <td><a href="/machine/{{.Id}}"><font size="2">{{.Hostname}}</font></a></td>
-            <td><font size="2">{{.Ip}}</font></td>
-            <td><font size="2">{{.Osx}}</font></td>
+            <td>
+              {{ if .NameLengthIssue }} 
+              <span class="label label-important">
+                <a href="/machine/{{.Id}}">{{.Hostname}}</a>  
+              </span>
+              {{else }}
+                <a href="/machine/{{.Id}}">{{.Hostname}}</a>
+              {{end}}
+            </td>
+            <td>{{.Ip}}</td>
+            <td>{{.Osx}}</td>
             {{if .Softwareupdate}}<td><font size="2"><span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span></font></td>{{else}}<td><font size="2">None</font></td>{{end}}
             {{if .Recon}}<td><font size="2">Installed</font></td>{{else}}<td><font size="2"><span class="label label-important">Missing</span></font></td>{{end}}
             {{if .Firewall}}
