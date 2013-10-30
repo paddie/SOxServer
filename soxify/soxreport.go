@@ -37,10 +37,10 @@ func soxlist(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos in
 	}
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 
-	fmt.Fprintf(w, "#,Hostname,Serial,Ip,OS (Build),Recon,Firewall,Date,Model,MHz,Ram,Virus (Definitions),Last Virus Scan,Sophos Issue,Outdated,SOxIssues,Comment\n")
+	fmt.Fprintf(w, "#\tHostname\tSerial\tIp\tOS (Build)\tRecon\tFirewall\tDate\tModel\tMHz\tRam\tVirus (Definitions)\tLast Virus Scan\tSophos Issue\tOutdated\tSOxIssues\tComment\n")
 
 	for i, doc := range results {
-		fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v (%v)\t%v,\t%v\t%v\n",
+		fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v (%v)\t%v\t%v\t%v\n",
 			i+1,
 			doc.Hostname,
 			doc.Serial, // doc["hostname"], 
