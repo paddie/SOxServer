@@ -92,9 +92,15 @@ func MachineListHeaders() []header {
 }
 
 func (m *machine) SecurityUpdate() bool {
+	// Make sure security updates are registered as critical
 	if strings.Contains(string(m.Softwareoutput), "Security Update") {
 		return true
 	}
+	// make sure that Java updates are registered as critical
+	if strings.Contains(string(m.Softwareoutput), "Java") {
+		return true
+	}
+
 	return false
 }
 
