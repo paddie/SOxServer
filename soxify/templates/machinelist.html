@@ -27,7 +27,7 @@
             <td>{{.Osx}}</td>
             <td>
               {{if .Softwareupdate}}
-                <span class="label label-warning">Pending updates {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span>
+                <span class="label label-warning"><i class="icon-plus"></i> {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span>
               {{else}}
                 <i class="icon-ok"></i>
               {{end}}
