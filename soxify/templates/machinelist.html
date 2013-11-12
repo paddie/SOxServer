@@ -41,12 +41,12 @@
             </td>
             <td>
             {{if .Firewall}}
-              On
+              <i class="icon-ok"></i>
             {{else}}
               {{if .FirewallIssue}}
-                <span class="label label-important">Off</span>
+                <span class="label label-important"><i class="icon-exclamation-sign"></i></span>
               {{else}}
-                Off
+                <i class="icon-exclamation-sign">
               {{end}}
             {{end}}
             </td>
