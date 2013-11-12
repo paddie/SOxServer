@@ -27,12 +27,12 @@
             <td>{{.Osx}}</td>
             <td>
               {{ if .SecurityUpdate }}
-              <span class="label label-warning"><i class="icon-warning-sign"></i> Pending Security Updates</span>
+              <span class="label label-warning"><i class="icon-warning-sign"></i> Critical Updates</span>
               {{else }}
                 {{if .Softwareupdate}}
-                  <i class="icon-plus"> Pending Non-Critical Updates
+                  <i class="icon-plus"> Non-Critical Updates
                 {{else}}
-                <i class="icon-ok"></i> No Pending Updates
+                <i class="icon-ok"></i>
                 {{end}}
               {{end}}
             </td>
