@@ -165,7 +165,7 @@ func (m *machine) NameLengthIssue() bool {
 
 // abstracted into its owm method, since it could prove usefull later. Helper for method 'updateStatus()'
 func (m *machine) SoxIssues() bool {
-	if m.IsAncient() || !m.Recon || m.FirewallIssue() || m.Virus_version == "N/A" || m.NameLengthIssue() {
+	if m.IsAncient() || !m.Recon || m.FirewallIssue() || m.Virus_version == "N/A" || m.NameLengthIssue() || m.SecurityUpdate() {
 		return true
 	}
 	return false
