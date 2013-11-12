@@ -26,10 +26,14 @@
             <td>{{.Ip}}</td>
             <td>{{.Osx}}</td>
             <td>
-              {{if .Softwareupdate}}
-                <span class="label label-warning"><i class="icon-plus"></i> {{if .SecurityUpdate}} <i class="icon-warning-sign"></i>{{end}}</span>
-              {{else}}
+              {{ if .SecurityUpdate }}
+              <i class="icon-warning-sign"></i>
+              {{else }}
+                {{if .Softwareupdate}}
+                  <i class="icon-plus">
+                {{else}}
                 <i class="icon-ok"></i>
+                {{end}}
               {{end}}
             </td>
             <td>
