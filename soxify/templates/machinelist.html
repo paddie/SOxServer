@@ -27,10 +27,10 @@
             <td>{{.Osx}}</td>
             <td>
               {{ if .SecurityUpdate }}
-              <span class="label label-important"><i class="icon-warning-sign"></i> Critical Updates</span>
+              <span class="label label-important"><i class="icon-warning-sign icon-white"></i> Critical Updates</span>
               {{else }}
                 {{if .Softwareupdate}}
-                  <span class="label label-warning"><i class="icon-plus"></i> Pending Updates</span>                  
+                  <span class="label label-warning"><i class="icon-plus icon-white"></i> Pending Updates</span>                  
                 {{else}}
                 <i class="icon-ok"></i>
                 {{end}}
@@ -40,12 +40,13 @@
               {{if .Recon}}
                 <i class="icon-ok"></i>
               {{else}}
-                <span class="label label-important"> <i class="icon-exclamation-sign"></i> </span>
+                <span class="label label-important"><i class="icon-exclamation-sign icon-white"></i> </span>
               {{end}}
             </td>
             <td>
               {{if .FirewallIssue }}
-                <i class="icon-warning-sign"></i>
+                <span class="label label-important"><i class="icon-warning-sign icon-white"></i></span>
+                
               {{else}}
                 {{if .Firewall}}
                   <i class="icon-ok"></i>
@@ -56,7 +57,7 @@
             </td>
             <td>
               {{if .AntivirusIssue}}
-                <span class="label label-important">Missing</span>
+                <span class="label label-important"><i class="icon-warning-sign icon-white"></i> Missing</span>
               {{else}}
                 {{.Virus_version}} ({{.Virus_def}})
               {{end}}
