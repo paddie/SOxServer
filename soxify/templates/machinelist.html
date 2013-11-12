@@ -44,15 +44,15 @@
               {{end}}
             </td>
             <td>
-            {{if .Firewall}}
-              <i class="icon-ok"></i>
-            {{else}}
-              {{if .FirewallIssue}}
-                <span class="label label-important"><i class="icon-remove"></i></span>
+              {{if .FirewallIssue }}
+                <i class="icon-warning-sign"></i>
               {{else}}
-                <i class="icon-remove">
+                {{if .Firewall}}
+                  <i class="icon-ok"></i>
+                {{else}}
+                  <i class="icon-remove"></i>
+                {{end}}
               {{end}}
-            {{end}}
             </td>
             <td>
               {{if .AntivirusIssue}}
