@@ -54,6 +54,7 @@ type machine struct {
 	Hostname       string    //"hostname"
 	Model          string    // "model"
 	Recon          bool      //"recon"
+	Recon_version  string    // "recon_version"
 	Ip             string    //"ip"
 	Virus_def      string    //"virus_def"
 	Id             string    `json:"_id" bson:"_id"`
