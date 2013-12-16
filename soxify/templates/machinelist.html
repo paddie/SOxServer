@@ -18,7 +18,7 @@
             <td>{{.Cnt}}</td>
             <td>
               {{if or .NameLengthIssue .InvalidNetBIOSName}} 
-              <span class="label label-important">{{.Hostname}}</span>
+              <span class="label label-important">{{.Hostname}} <i class="icon-warning-sign icon-white"></i></span>
               {{else}}
                 {{.Hostname}}
               {{end}}
