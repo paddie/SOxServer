@@ -17,7 +17,7 @@
           <tr onclick="window.document.location='/machine/{{.Id}}';" {{ if .SoxIssues }} class="error" {{else}} {{if .SoxWarning}} class="warning" {{end}} {{end}}>
             <td>{{.Cnt}}</td>
             <td>
-              {{or .NameLengthIssue .InvalidNetBIOSName}} 
+              {{if or .NameLengthIssue .InvalidNetBIOSName}} 
               <span class="label label-important">{{.Hostname}}</span>
               {{else}}
                 {{.Hostname}}
