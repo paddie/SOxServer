@@ -41,19 +41,19 @@
                         <td>{{.Osx}}</td>
                     </tr>    
                     <tr>
-                        <td><strong>ComputerName:</strong> </td>
+                        <td><strong>ComputerName</strong> </td>
                         <td>{{.Device_names.Computername}}</td>
                     </tr>    
                     <tr>
-                        <td><strong>HostName: </strong></td>
+                        <td><strong>HostName </strong></td>
                         <td>{{.Device_names.Hostname}}</td>
                     </tr>
                     <tr>
-                        <td><strong>LocalHostName: </strong></td>
+                        <td><strong>LocalHostName </strong></td>
                         <td>{{.Device_names.Localhostname}}</td>
                     </tr>
                     <tr>
-                        <td><strong>NetBIOS: </strong></td>
+                        <td><strong>NetBIOS </strong></td>
                         <td>{{.Device_names.Netbiosname}}</td>
                     </tr>
                     <tr>
@@ -93,12 +93,12 @@
                     <tr>
                     <td><strong>Antivirus</strong></td>
                         <td>
-                            SAV:    {{.Virus_version}} <br>
-                            Engine: {{.Virus_def}}
+                            {{.Virus_version}} SAV<br>
+                            {{.Virus_def}} Engine
                         </td>    
                     </tr>
                     <tr>
-                        <td>Last Virus Scan</td>
+                        <td><strong>Last Virus Scan</strong> </td>
                         <td>{{.Virus_last_run}}</td>
                     </tr>          
                     </body>
@@ -126,26 +126,29 @@
 <section id="tables">
 <!-- <div class="row"> -->
 <!-- <div class="colspan"> -->
-    <table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th><h3>Application</h3></th>
-            <th><h3>Version</h3></th>
-            <th><h3>Path</h3></th>
-        </tr>
-    </thead><!-- thead -->
-    <tbody>
-        {{range .Apps}}
-        <tr>
-            <td><a href="/searchexact/?key=apps.path&val={{.Path}}"><font size="2">{{.Name}}</font></a></td>
-            <td><font size="2">{{.ShortVersion}}</font></td>
-            <td><font size="2">{{.ShortPath}}</font></td>
-            <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >License</a></td>
-            <td><a class="label" href="/addblacklist/?name={{.Name}}&path={{.Path}}" >blacklist</a></td>
-        </tr>
+    {{if .Apps}}
+        <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th><h3>Application</h3></th>
+                <th><h3>Version</h3></th>
+                <th><h3>Path</h3></th>
+            </tr>
+        </thead><!-- thead -->
+        <tbody>
+            {{range .Apps}}
+            <tr>
+                <td><a href="/searchexact/?key=apps.path&val={{.Path}}"><font size="2">{{.Name}}</font></a></td>
+                <td><font size="2">{{.ShortVersion}}</font></td>
+                <td><font size="2">{{.ShortPath}}</font></td>
+                <td><a class="label notice" href="/newlicense/?app={{.Name}}&path={{.Path}}" >License</a></td>
+                <td><a class="label" href="/addblacklist/?name={{.Name}}&path={{.Path}}" >blacklist</a></td>
+            </tr>
+        {{end}}
+        </tbody> <!-- tbody -->
+        </table>
     {{end}}
-    </tbody> <!-- tbody -->
-    </table>
+    
 <!-- </div> --> <!-- span -->
 <!-- </div> --> <!-- row -->
 </section> <!-- table -->
