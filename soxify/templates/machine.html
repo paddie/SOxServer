@@ -99,10 +99,14 @@
                         </td>    
                     </tr>
                     <tr>
-                    <td><strong>Antivirus</strong></td>
+                        <td><strong>Antivirus</strong></td>
                         <td>
-                            {{.Virus_version}} SAV<br>
-                            {{.Virus_def}} Engine
+                            {{if .AntivirusIssue}}
+                                <span class="label label-important">Missing <i class="icon-warning-sign icon-white"></span>
+                            {{else}}
+                                {{.Virus_version}} SAV<br>
+                                {{.Virus_def}} Engine
+                            {{end}}
                         </td>    
                     </tr>
                     <tr>
