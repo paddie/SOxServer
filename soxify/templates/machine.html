@@ -1,3 +1,4 @@
+
 {{define "machine"}}
 {{template "base_top"}}
 {{template "topbar"}}
@@ -21,7 +22,11 @@
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
-                    <dt>Hostname</dt><dd>{{.Hostname}}</dd>
+                    <dt>Hostname</dt>
+                        <dd>ComputerName: {{.Device_names.Computername}}</dd>
+                        <dd>HostName: {{.Device_names.Hostname}}</dd>
+                        <dd>LocalHostName: {{.Device_names.Localhostname}}</dd>
+                        <dd>NetBIOS: {{.Device_names.Netbiosname}}</dd>
                     <dt>Users</dt>
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>

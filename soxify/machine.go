@@ -46,6 +46,19 @@ type machines struct {
 	Headers  []header
 }
 
+// 'device_names': {
+//             'computername':computername.split(".")[0],
+//             'hostname':hostname.split(".")[0],
+//             'localhostname':localhostname.split(".")[0],
+//             'netbiosname':netbios_name.lower(),    
+//         },   
+type device_names struct {
+	Computername  string
+	Hostname      string
+	Localhostname string
+	Netbiosname   string
+}
+
 type machine struct {
 	Firewall       bool      //"firewall"
 	Virus_version  string    //"virus_version"
@@ -62,6 +75,7 @@ type machine struct {
 	Osx            string    //"osx"
 	Apps           []app     //"apps"
 	Now            time.Time //"date"
+	Device_names   device_names
 	// Time           string
 	// Datetime       int64
 	Users          []string //"users"
@@ -162,6 +176,16 @@ func (m *machine) NameLengthIssue() bool {
 		return true
 	}
 	return false
+}
+
+func (m *machine) InvalidNetBIOSName() bool {
+	if strings.HasPrefix(m.Device_names.netbiosname, "cph41") ||
+		strings.HasPrefix(m.Device_names.netbiosname, "CPH41") ||
+		len(m.Device_names.netbiosname) == 0 { //ignore if field isn't set
+		return false
+	}
+
+	return true
 }
 
 func (m *machine) AntivirusIssue() bool {
