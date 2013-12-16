@@ -11,22 +11,22 @@
         <div class="row-fluid">
             <div class="span4">
                 <h2>Machine</h2>
-                <table>
+                <table cellspacing="1" cellpadding="1">
                     <body>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>IP</strong></td>
+                            <td><strong>IP</strong></td>
                             <td>{{.Ip}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></td>
+                            <td><strong>CPU</strong></td>
                             <td>{{.Cpu}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>RAM</strong></td>
+                            <td><strong>RAM</strong></td>
                             <td>{{.Memory}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>Model</strong></td>
+                            <td><strong>Model</strong></td>
                             <td>{{.Model}}</td>
                         </tr>
                     </body>
@@ -34,30 +34,30 @@
             </div>
             <div class="span4">
                 <h2>System</h2>
-                <table>
+                <table cellspacing="1" cellpadding="1">
                 <body>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>OS</strong></td>
+                        <td><strong>OS</strong></td>
                         <td>{{.Osx}}</td>
                     </tr>    
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>ComputerName:</strong> </td>
+                        <td><strong>ComputerName:</strong> </td>
                         <td>{{.Device_names.Computername}}</td>
                     </tr>    
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>HostName: </strong></td>
+                        <td><strong>HostName: </strong></td>
                         <td>{{.Device_names.Hostname}}</td>
                     </tr>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>LocalHostName: </strong></td>
+                        <td><strong>LocalHostName: </strong></td>
                         <td>{{.Device_names.Localhostname}}</td>
                     </tr>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>NetBIOS: </strong></td>
+                        <td><strong>NetBIOS: </strong></td>
                         <td>{{.Device_names.Netbiosname}}</td>
                     </tr>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>Users</strong></td>
+                        <td><strong>Users</strong></td>
                         <td>{{range .Users}}{{.}}<br>{{end}}</td>
                     </tr>
                 </body>
@@ -65,10 +65,10 @@
             </div>
             <div class="span4">
                 <h2>SOx</h2>
-                <table>
+                <table cellspacing="1" cellpadding="1">
                     <body>
                     <tr>
-                        <td>Recon</td>
+                        <td><strong>Recon</strong></td>
                         <td>
                             {{if .Recon}}
                                 <span class="label label-success">Installed</span>
@@ -78,7 +78,7 @@
                         </td>        
                     </tr>
                     <tr>
-                        <td>Firewall</td>
+                        <td><strong>Firewall</strong></td>
                         <td>
                             {{if .FirewallIssue}}<span class="label label-important">
                                 {{if .Firewall}}
@@ -91,7 +91,7 @@
                         </td>    
                     </tr>
                     <tr>
-                    <td>Antivirus</td>
+                    <td><strong>Antivirus</strong></td>
                         <td>
                             SAV:    {{.Virus_version}} <br>
                             Engine: {{.Virus_def}}
