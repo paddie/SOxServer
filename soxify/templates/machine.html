@@ -23,10 +23,26 @@
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
                     <dt>Hostname</dt>
-                        <dd>ComputerName: {{.Device_names.Computername}}</dd>
-                        <dd>HostName: {{.Device_names.Hostname}}</dd>
-                        <dd>LocalHostName: {{.Device_names.Localhostname}}</dd>
-                        <dd>NetBIOS: {{.Device_names.Netbiosname}}</dd>
+                        <table>
+                            <body>
+                                <tr>
+                                    <td>ComputerName</td>
+                                    <td>{{.Device_names.Computername}}</td>
+                                </tr>    
+                                <tr>
+                                    <td>HostName: </td>
+                                    <td>{{.Device_names.Hostname}}</td>
+                                </tr>
+                                <tr>
+                                    <td>LocalHostName:</td>
+                                    <td>{{.Device_names.Localhostname}}</td>
+                                </tr>
+                                <tr>
+                                    <td>NetBIOS:</td>
+                                    <td>{{.Device_names.Netbiosname}}</td>
+                                </tr>    
+                            </body>
+                        </table> 
                     <dt>Users</dt>
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>
