@@ -37,22 +37,23 @@
                     </tr>    
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
-                            <td>{{.Device_names.Computername}}</td>
+                            <td>l {{.Device_names.Computername}}</td>
                         </tr>    
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>HostName: </strong></td>
-                        <td>{{.Device_names.Hostname}}</td>
+                        <td>l{{.Device_names.Hostname}}</td>
                     </tr>
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>LocalHostName: </strong></td>
-                        <td>{{.Device_names.Localhostname}}</td>
+                        <td>l{{.Device_names.Localhostname}}</td>
                     </tr>
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>NetBIOS: </strong></td>
-                        <td>{{.Device_names.Netbiosname}}</td>
+                        <td>l{{.Device_names.Netbiosname}}</td>
                     </tr>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>Users</strong></td><td>{{range .Users}}{{.}}<br>{{end}}</td>
+                        <td style="padding:0 10px 0 10px;"><strong>Users</strong></td>
+                        <td>{{range .Users}}{{.}}<br>{{end}}</td>
                     </tr>
                 </body>
                 </table>
