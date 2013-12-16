@@ -55,9 +55,12 @@
                     <tr>
                         <td><strong>NetBIOS </strong></td>
                         <td>
-                            {{.Device_names.Netbiosname}}
                             {{if .InvalidNetBIOSName}}
-                                <span class="label label-important"><i class="icon-warning-sign icon-white"></span>
+                                <span class="label label-important">
+                                    {{.Device_names.Netbiosname}} <i class="icon-warning-sign icon-white">
+                                </span>
+                            {{else}}
+                                {{.Device_names.Netbiosname}}
                             {{end}}
                         </td>
                     </tr>
