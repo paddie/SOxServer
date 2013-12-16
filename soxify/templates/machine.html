@@ -71,7 +71,7 @@
                         <td><strong>Recon</strong></td>
                         <td>
                             {{if .Recon}}
-                                <span class="label label-success">Installed</span>
+                                {{.Recon_version}}
                             {{else}}
                                 <span class="label label-important">Missing</span>
                             {{end}}
