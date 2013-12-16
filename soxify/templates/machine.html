@@ -54,7 +54,12 @@
                     </tr>
                     <tr>
                         <td><strong>NetBIOS </strong></td>
-                        <td>{{.Device_names.Netbiosname}}</td>
+                        <td>
+                            {{.Device_names.Netbiosname}}
+                            {{if .InvalidNetBIOSName}}
+                                <span class="label label-important"><i class="icon-warning-sign icon-white"></span>
+                            {{end}}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Users</strong></td>
@@ -71,7 +76,7 @@
                         <td><strong>Recon</strong></td>
                         <td>
                             {{if .Recon}}
-                                {{.Recon_version}}
+                                {{.Recon_version}} 
                             {{else}}
                                 <span class="label label-important">Missing</span>
                             {{end}}
