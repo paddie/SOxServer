@@ -17,7 +17,7 @@
                             <td style="padding:0 10px 0 10px;"><strong>IP</strong></td><td>{{.Ip}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></dt><td>{{.Cpu}}</td>
+                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></td><td>{{.Cpu}}</td>
                         </tr>
                         <tr>
                             <td style="padding:0 10px 0 10px;"><strong>RAM</strong></td><td>{{.Memory}}</td>
@@ -33,23 +33,24 @@
                 <table>
                 <body>
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>OS</strong></dt><td>{{.Osx}}</td>    
+                        <td style="padding:0 10px 0 10px;"><strong>OS</strong></td>
+                        <td>{{.Osx}}</td>
                     </tr>    
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
-                            <td>l {{.Device_names.Computername}}</td>
-                        </tr>    
+                        <td>{{.Device_names.Computername}}</td>
+                    </tr>    
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>HostName: </strong></td>
-                        <td>l{{.Device_names.Hostname}}</td>
+                        <td>{{.Device_names.Hostname}}</td>
                     </tr>
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>LocalHostName: </strong></td>
-                        <td>l{{.Device_names.Localhostname}}</td>
+                        <td>{{.Device_names.Localhostname}}</td>
                     </tr>
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>NetBIOS: </strong></td>
-                        <td>l{{.Device_names.Netbiosname}}</td>
+                        <td>{{.Device_names.Netbiosname}}</td>
                     </tr>
                     <tr>
                         <td style="padding:0 10px 0 10px;"><strong>Users</strong></td>
