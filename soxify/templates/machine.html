@@ -22,8 +22,7 @@
                 <h2>System</h2>
                 <dl>
                     <dt>OS</dt><dd>{{.Osx}}</dd>
-                    <dt>Device Names</dt>
-                        <table>
+                    <dt><table>
                             <body>
                                 <tr>
                                     <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
@@ -43,6 +42,8 @@
                                 </tr>
                             </body>
                         </table> 
+                    </dt>
+                        
                     <dt>Users</dt>
                         {{range .Users}}<dd>{{.}}</dd>{{end}}
                 </dl>
