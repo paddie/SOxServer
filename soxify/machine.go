@@ -179,9 +179,9 @@ func (m *machine) NameLengthIssue() bool {
 }
 
 func (m *machine) InvalidNetBIOSName() bool {
-	if strings.HasPrefix(m.Device_names.netbiosname, "cph41") ||
-		strings.HasPrefix(m.Device_names.netbiosname, "CPH41") ||
-		len(m.Device_names.netbiosname) == 0 { //ignore if field isn't set
+	if strings.HasPrefix(m.Device_names.Netbiosname, "cph41") ||
+		strings.HasPrefix(m.Device_names.Netbiosname, "CPH41") ||
+		len(m.Device_names.Netbiosname) == 0 { //ignore if field isn't set
 		return false
 	}
 
