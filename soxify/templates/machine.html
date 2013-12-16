@@ -11,60 +11,69 @@
         <div class="row-fluid">
             <div class="span4">
                 <h2>Machine</h2>
-                <dl>
-                    <dt>IP</dt><dd>{{.Ip}}</dd>
-                    <dt>CPU</dt><dd>{{.Cpu}}</dd>
-                    <dt>RAM</dt><dd>{{.Memory}}</dd>
-                    <dt>Model</dt><dd>{{.Model}}</dd>
-                </dl>
+                <table>
+                    <body>
+                        <tr>
+                            <td style="padding:0 10px 0 10px;"><strong>IP</strong></td><td>{{.Ip}}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></dt><td>{{.Cpu}}</td>
+                        </tr>
+                        <tr>
+                            <dt style="padding:0 10px 0 10px;"><strong>RAM</strong></dt><td>{{.Memory}}</td>
+                        </tr>
+                        <tr>
+                            <dt style="padding:0 10px 0 10px;"><strong>Model</strong></dt><td>{{.Model}}</td>    
+                        </tr>
+                    </body>
+                </table>
             </div>
             <div class="span4">
                 <h2>System</h2>
-                <dl>
-                    <dt>OS</dt><dd>{{.Osx}}</dd>
-                    <dt><table>
-                            <body>
-                                <tr>
-                                    <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
-                                    <td>{{.Device_names.Computername}}</td>
-                                </tr>    
-                                <tr>
-                                    <td style="padding:0 10px 0 10px;"><strong>HostName: </strong></td>
-                                    <td>{{.Device_names.Hostname}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:0 10px 0 10px;"><strong>LocalHostName: </strong></td>
-                                    <td>{{.Device_names.Localhostname}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:0 10px 0 10px;"><strong>NetBIOS: </strong></td>
-                                    <td>{{.Device_names.Netbiosname}}</td>
-                                </tr>
-                            </body>
-                        </table> 
-                    </dt>
-                        
-                    <dt>Users</dt>
-                        {{range .Users}}<dd>{{.}}</dd>{{end}}
-                </dl>
+                <table>
+                <body>
+                    <tr>
+                        <dt style="padding:0 10px 0 10px;"><strong>OS</strong></dt><td>{{.Osx}}</td>    
+                    </tr>    
+                    <tr>
+                        <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
+                            <td>{{.Device_names.Computername}}</td>
+                        </tr>    
+                    <tr>
+                        <td style="padding:0 10px 0 10px;"><strong>HostName: </strong></td>
+                        <td>{{.Device_names.Hostname}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 10px 0 10px;"><strong>LocalHostName: </strong></td>
+                        <td>{{.Device_names.Localhostname}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 10px 0 10px;"><strong>NetBIOS: </strong></td>
+                        <td>{{.Device_names.Netbiosname}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 10px 0 10px;"><strong>Users</strong></td><td>{{range .Users}}{{.}}<br>{{end}}</td>
+                    </tr>
+                </body>
+                </table>
             </div>
             <div class="span4">
                 <h2>SOx</h2>
                 <dl>
                     <dt>Recon</dt>
-                        <dd>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-important">Missing</span>{{end}}
-                        </dd>
+                        <td>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-important">Missing</span>{{end}}
+                        </td>
                     <dt>Firewall</dt>
-                        <dd>
+                        <td>
                             {{if .FirewallIssue}}<span class="label label-important">
                                 {{if .Firewall}}ON{{else}}Off{{end}}</span>
                             {{else}}<span class="label label-success">{{if .Firewall}}ON{{else}}Off{{end}}</span>
                             {{end}}
-                        </dd>
+                        </td>
                     <dt>Antivirus</dt>
-                        <dd>Application: {{.Virus_version}}</dd>
-                        <dd>Definitions: {{.Virus_def}}</dd>
-                    <dt>Last Virus Scan</dt> <dd>{{.Virus_last_run}}</dd>
+                        <td>Application: {{.Virus_version}}</td>
+                        <td>Definitions: {{.Virus_def}}</td>
+                    <dt>Last Virus Scan</dt> <td>{{.Virus_last_run}}</td>
                 </dl>
             </div>
 
