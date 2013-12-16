@@ -14,16 +14,20 @@
                 <table>
                     <body>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>IP</strong></td><td>{{.Ip}}</td>
+                            <td style="padding:0 10px 0 10px;"><strong>IP</strong></td>
+                            <td>{{.Ip}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></td><td>{{.Cpu}}</td>
+                            <td style="padding:0 10px 0 10px;"><strong>CPU</strong></td>
+                            <td>{{.Cpu}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>RAM</strong></td><td>{{.Memory}}</td>
+                            <td style="padding:0 10px 0 10px;"><strong>RAM</strong></td>
+                            <td>{{.Memory}}</td>
                         </tr>
                         <tr>
-                            <td style="padding:0 10px 0 10px;"><strong>Model</strong></td><td>{{.Model}}</td>    
+                            <td style="padding:0 10px 0 10px;"><strong>Model</strong></td>
+                            <td>{{.Model}}</td>
                         </tr>
                     </body>
                 </table>
@@ -37,7 +41,7 @@
                         <td>{{.Osx}}</td>
                     </tr>    
                     <tr>
-                        <td style="padding:0 10px 0 10px;"><strong>ComputerName: </strong></td>
+                        <td style="padding:0 10px 0 10px;"><strong>ComputerName:</strong> </td>
                         <td>{{.Device_names.Computername}}</td>
                     </tr>    
                     <tr>
@@ -61,22 +65,44 @@
             </div>
             <div class="span4">
                 <h2>SOx</h2>
-                <dl>
-                    <dt>Recon</dt>
-                        <td>{{if .Recon}}<span class="label label-success">Installed</span>{{else}}<span class="label label-important">Missing</span>{{end}}
-                        </td>
-                    <dt>Firewall</dt>
+                <table>
+                    <body>
+                    <tr>
+                        <td>Recon</td>
+                        <td>
+                            {{if .Recon}}
+                                <span class="label label-success">Installed</span>
+                            {{else}}
+                                <span class="label label-important">Missing</span>
+                            {{end}}
+                        </td>        
+                    </tr>
+                    <tr>
+                        <td>Firewall</td>
                         <td>
                             {{if .FirewallIssue}}<span class="label label-important">
-                                {{if .Firewall}}ON{{else}}Off{{end}}</span>
+                                {{if .Firewall}}
+                                    ON
+                                {{else}}
+                                    Off
+                                {{end}}</span>
                             {{else}}<span class="label label-success">{{if .Firewall}}ON{{else}}Off{{end}}</span>
                             {{end}}
-                        </td>
-                    <dt>Antivirus</dt>
-                        <td>Application: {{.Virus_version}}</td>
-                        <td>Definitions: {{.Virus_def}}</td>
-                    <dt>Last Virus Scan</dt> <td>{{.Virus_last_run}}</td>
-                </dl>
+                        </td>    
+                    </tr>
+                    <tr>
+                    <td>Antivirus</td>
+                        <td>
+                            SAV:    {{.Virus_version}} <br>
+                            Engine: {{.Virus_def}}
+                        </td>    
+                    </tr>
+                    <tr>
+                        <td>Last Virus Scan</td>
+                        <td>{{.Virus_last_run}}</td>
+                    </tr>          
+                    </body>
+                </table>
             </div>
 
         </div>
