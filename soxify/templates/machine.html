@@ -89,8 +89,7 @@
                         <td><strong>Firewall</strong></td>
                         <td>
                             <table>
-                            <body>
-                                <tr>
+                                <tr {{if .FirewallIssue}} class="warning" {{end}} >
                                     <td><strong>Globalstate</strong></td>
                                     <td>
                                         {{if .FirewallIssue}}
@@ -111,11 +110,10 @@
                                         {{if .Fw_logging}} ON {{else}} OFF {{end}}
                                     </td>
                                 </tr>
-                            </body>
                             </table>
                         </td>
                     </tr>
-                    <tr>
+                    <tr {{if .AntivirusIssue}} class="warning" {{end}}>
                         <td><strong>Antivirus</strong></td>
                         <td>
                             {{if .AntivirusIssue}}
