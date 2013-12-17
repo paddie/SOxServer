@@ -85,11 +85,11 @@
                             {{end}}
                         </td>        
                     </tr>
-                    <tr>
+                    <tr {{if .FirewallIssue}} class="warning" {{end}}>
                         <td><strong>Firewall</strong></td>
                         <td>
                             <table>
-                                <tr {{if .FirewallIssue}} class="warning" {{end}} >
+                                <tr>
                                     <td><strong>State</strong></td>
                                     <td>
                                         {{if .FirewallIssue}}
