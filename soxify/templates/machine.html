@@ -90,11 +90,12 @@
                         <td>
                             <table>
                                 <tr {{if .FirewallIssue}} class="warning" {{end}} >
-                                    <td><strong>Globalstate</strong></td>
+                                    <td><strong>State</strong></td>
                                     <td>
                                         {{if .FirewallIssue}}
                                             <span class="label label-important">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
-                                        {{else}}<span class="label label-success">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
+                                        {{else}}
+                                            {{if .Firewall}} ON {{else}} OFF {{end}}
                                         {{end}}
                                     </td>
                                 </tr>
@@ -128,14 +129,14 @@
                                         <td><strong>Engine</strong></td>
                                         <td>{{.Virus_def}}</td>
                                     </tr>
+                                    <tr>
+                                        <td><strong>Last Virus Scan</strong> </td>
+                                        <td>{{.Virus_last_run}}</td>
+                                    </tr>     
                                 </table>
                             {{end}}
                         </td>    
                     </tr>
-                    <tr>
-                        <td><strong>Last Virus Scan</strong> </td>
-                        <td>{{.Virus_last_run}}</td>
-                    </tr>          
                     </body>
                 </table>
             </div>
