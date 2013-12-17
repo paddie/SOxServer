@@ -121,8 +121,18 @@
                             {{if .AntivirusIssue}}
                                 <span class="label label-important">Missing <i class="icon-warning-sign icon-white"></span>
                             {{else}}
-                                {{.Virus_version}} SAV<br>
-                                {{.Virus_def}} Engine
+                                <table>
+                                <body>
+                                    <tr>
+                                        <td><strong>SAV</strong></td>
+                                        <td>{{.Virus_version}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Engine</strong></td>
+                                        <td>{{.Virus_def}}</td>
+                                    </tr>
+                                </body>
+                                </table>
                             {{end}}
                         </td>    
                     </tr>
