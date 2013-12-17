@@ -60,7 +60,9 @@ type device_names struct {
 }
 
 type machine struct {
-	Firewall       bool      //"firewall"
+	Firewall       bool //"firewall"
+	Fw_stealth     bool
+	Fw_logging     bool
 	Virus_version  string    //"virus_version"
 	Memory         string    //"memory"
 	Virus_last_run string    // "virus_last_run"

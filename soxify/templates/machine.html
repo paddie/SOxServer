@@ -88,15 +88,28 @@
                     <tr>
                         <td><strong>Firewall</strong></td>
                         <td>
-                            {{if .FirewallIssue}}<span class="label label-important">
-                                {{if .Firewall}}
-                                    ON
-                                {{else}}
-                                    Off
-                                {{end}}</span>
-                            {{else}}<span class="label label-success">{{if .Firewall}}ON{{else}}Off{{end}}</span>
-                            {{end}}
-                        </td>    
+                            <table class="table">
+                            <body>
+                                <tr>
+                                    <td><strong>Globalstate</strong></td>
+                                    <td>
+                                        {{if .FirewallIssue}}
+                                            <span class="label label-important">{{if .Firewall}} ON {{else}} Off {{end}}</span>
+                                        {{else}}<span class="label label-success">{{if .Firewall}} ON {{else}} Off {{end}}</span>
+                                        {{end}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stealth</strong></td>
+                                    <td>{{.Fw_stealth}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Logging</strong></td>
+                                    <td>{{.Fw_logging}}</td>
+                                </tr>
+                            </body>
+                            </table>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Antivirus</strong></td>
