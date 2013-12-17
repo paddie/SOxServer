@@ -88,24 +88,28 @@
                     <tr>
                         <td><strong>Firewall</strong></td>
                         <td>
-                            <table class="table">
+                            <table class="table table-condenced">
                             <body>
                                 <tr>
                                     <td><strong>Globalstate</strong></td>
                                     <td>
                                         {{if .FirewallIssue}}
-                                            <span class="label label-important">{{if .Firewall}} ON {{else}} Off {{end}}</span>
-                                        {{else}}<span class="label label-success">{{if .Firewall}} ON {{else}} Off {{end}}</span>
+                                            <span class="label label-important">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
+                                        {{else}}<span class="label label-success">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
                                         {{end}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Stealth</strong></td>
-                                    <td>{{.Fw_stealth}}</td>
+                                    <td>
+                                        {{if .Fw_stealth}} ON {{else}} OFF {{end}}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Logging</strong></td>
-                                    <td>{{.Fw_logging}}</td>
+                                    <td>
+                                        {{if .Fw_logging}} ON {{else}} OFF {{end}}
+                                    </td>
                                 </tr>
                             </body>
                             </table>
