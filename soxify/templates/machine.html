@@ -96,13 +96,7 @@
                                             <span class="label label-important">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
                                         {{else}}
                                             {{if .Firewall}}
-                                                {{if eq .Fw_mode 1}}
-                                                    ON (Specified Services)
-                                                {{else if .Fw_mode 2}}
-                                                    ON (Essential Services)
-                                                {{else}}
-                                                    ON
-                                                {{end}}
+                                                {{.Fw_mode}}
                                             {{else}}
                                                 OFF
                                             {{end}}
