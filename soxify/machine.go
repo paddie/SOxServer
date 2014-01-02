@@ -379,7 +379,10 @@ func oldmachineList(w http.ResponseWriter, r *http.Request, db *mgo.Database, ar
 		http.NotFound(w, r)
 		return
 	}
-	set.ExecuteTemplate(w, "machinelist_old", m)
+	err = set.ExecuteTemplate(w, "machinelist_old", m)
+
+	fmt.Println(err)
+
 }
 
 // this method responds to client updates
