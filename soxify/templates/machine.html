@@ -90,16 +90,16 @@
                         <td>
                             <table>
                                 <tr>
-                                    <td><strong>State</strong></td>
+                                    <td><strong>Mode</strong></td>
                                     <td>
                                         {{if .FirewallIssue}}
                                             <span class="label label-important">{{if .Firewall}} ON {{else}} OFF {{end}}</span>
                                         {{else}}
                                             {{if .Firewall}}
                                                 {{if eq .Fw_mode 1}}
-                                                    ON (Specified Services)
+                                                    1 - Specified Services
                                                 {{else if eq .Fw_mode 2}}
-                                                    ON (Essential Services)
+                                                    2 - Essential Services
                                                 {{else}}
                                                     ON
                                                 {{end}}
