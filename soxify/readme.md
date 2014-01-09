@@ -37,7 +37,7 @@
       $ cd <directory where go1.2-linux-amd64.tar.gz is located>
       $ sudo tar -C /usr/local -xzf go1.1.2.linux-amd64.tar.gz
 
-  Next we need to make sure that the `go` binary is in the system `$PATH` by appending these two lines to the  ~/.bashrc ($HOME/.bashrc) file:
+  Next we need to make sure that the `go` binary is in the system `$PATH` by appending these two lines to the  `~/.bashrc` file:
 
       export GOPATH="$HOME/golang/"
       export PATH=$PATH:/usr/local/go/bin
