@@ -244,8 +244,6 @@ func machineView(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPo
 	err := c.Find(bson.M{"_id": key}).
 		One(&mach)
 
-	mach.DaysSinceLastUpdate()
-
 	if err != nil {
 		fmt.Println(key, err)
 		http.NotFound(w, r)
