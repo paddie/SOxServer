@@ -100,6 +100,7 @@ func main() {
 	// NewHandleFunc("/searchexact/", searchExact)
 	// NewHandleFunc("/ignorefw/", ignorefw)
 	// NewHandleFunc("/searchfuzzy/", searchAppSubstring)
+	NewHandleFunc("/reportWirelessScan", wirelessScan)
 	NewHandleFunc("/sox/", soxlist)
 	NewHandleFunc("/machine/", machineView)
 	// NewHandleFunc("/newlicense/", newLicense)
@@ -115,7 +116,7 @@ func main() {
 	// NewHandleFunc("/addblacklist/", addBlacklist)
 	// NewHandleFunc("/removeblacklist/", removeBlacklist)
 	NewHandleFunc("/updateMachine/", updateMachine)
-	NewHandleFunc("/reportWirelessScan", wirelessScan)
+
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir(source))))
 
 	err = http.ListenAndServe(":6060", nil)
