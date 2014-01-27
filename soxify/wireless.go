@@ -37,7 +37,9 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
-	fmt.Printf("Networks!")
+	for _, network := range n {
+		fmt.Println(network)
+	}
 
 	// _, err = db.C("wireless").UpsertId(m.Id, m)
 	// if err != nil {
