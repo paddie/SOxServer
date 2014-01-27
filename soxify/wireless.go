@@ -30,14 +30,14 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 	body, err := ioutil.ReadAll(r.Body)
 	var ns []Network
-	err = json.Unmarshal(body, &n)
+	err = json.Unmarshal(body, &ns)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "only accepts POST requests", 405)
 		return
 	}
 
-	for _, n := range n {
+	for _, n := range ns {
 		_, err = db.C("wireless").UpsertId(n.ID, n)
 		if err != nil {
 			fmt.Println(err)
