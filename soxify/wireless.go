@@ -15,9 +15,9 @@ import (
 
 type Network struct {
 	SSID        string
-	BSSID       string
 	Sec         []string
 	Noise, RSSI int
+	ID          string `json:"bssid" bson:"_id"`
 }
 
 func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -38,13 +38,9 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 	}
 
 	for _, network := range n {
-		fmt.Println(network)
+		_, err = db.C("wireless").UpsertId()
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-
-	// _, err = db.C("wireless").UpsertId(m.Id, m)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// return
 }
