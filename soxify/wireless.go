@@ -26,8 +26,6 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
-	fmt.Println("wireless scan received..")
-
 	body, err := ioutil.ReadAll(r.Body)
 	var ns []Network
 	err = json.Unmarshal(body, &ns)
@@ -37,10 +35,15 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
+	fmt.Printf("Received information on %d accesspoints. Inserting..", len(ns))
+
 	for _, n := range ns {
 		_, err = db.C("wireless").UpsertId(n.ID, n)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
+
+	fmt.Println("Done")
+
 }
