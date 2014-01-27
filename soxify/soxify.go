@@ -100,7 +100,7 @@ func main() {
 	// NewHandleFunc("/searchexact/", searchExact)
 	// NewHandleFunc("/ignorefw/", ignorefw)
 	// NewHandleFunc("/searchfuzzy/", searchAppSubstring)
-	NewHandleFunc("/reportWirelessScan", wirelessScan)
+	NewHandleFunc("/reportWirelessScan/", wirelessScan)
 	NewHandleFunc("/sox/", soxlist)
 	NewHandleFunc("/machine/", machineView)
 	// NewHandleFunc("/newlicense/", newLicense)
