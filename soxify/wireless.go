@@ -25,6 +25,8 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		http.Error(w, "only accepts POST requests", 405)
 	}
 
+	fmt.Println("wireless scan received..")
+
 	body, err := ioutil.ReadAll(r.Body)
 	var n []Network
 	err = json.Unmarshal(body, &n)
