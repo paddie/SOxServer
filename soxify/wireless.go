@@ -14,10 +14,10 @@ import (
 )
 
 type Network struct {
-	SSID        string
-	Sec         []string
-	Noise, RSSI int
-	ID          string `json:"bssid" bson:"_id"`
+	SSID string
+	Sec  []string
+	// Noise, RSSI int
+	ID string `json:"bssid" bson:"_id"`
 }
 
 func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
