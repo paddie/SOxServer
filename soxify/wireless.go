@@ -25,9 +25,9 @@ func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 	c := db.C("wireless")
 
 	var networks []Network
-	network := new(Network)
 
-	err := c.Find(nil).For(&network, func() error {
+	var network *Network
+	err := c.Find(nil).For(network, func() error {
 		networks = append(networks, *network)
 		return nil
 	})
