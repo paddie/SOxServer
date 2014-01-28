@@ -37,6 +37,8 @@ func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
+	fmt.Println(networks)
+
 	set.ExecuteTemplate(w, "wireless", networks)
 }
 
