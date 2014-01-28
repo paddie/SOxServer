@@ -10,14 +10,14 @@ import (
 	// "strconv"
 	// "html/template"
 	// "strings"
-	// "time"
+	"time"
 )
 
 type Network struct {
-	SSID string
-	Sec  []string
-	// Noise, RSSI int
-	ID string `json:"bssid" bson:"_id"`
+	SSID     string
+	Sec      []string
+	LastSeen time.Time
+	ID       string `json:"bssid" bson:"_id"`
 }
 
 func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -38,6 +38,7 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 	fmt.Printf("Received information on %d accesspoints. Inserting..", len(ns))
 
 	for _, n := range ns {
+		n.LastSeen = time.Now()
 		_, err = db.C("wireless").UpsertId(n.ID, n)
 		if err != nil {
 			fmt.Println(err)
