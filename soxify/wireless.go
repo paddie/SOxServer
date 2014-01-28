@@ -39,7 +39,10 @@ func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 	fmt.Println(networks)
 
-	set.ExecuteTemplate(w, "wireless", networks)
+	err = set.ExecuteTemplate(w, "wireless", networks)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
