@@ -37,10 +37,7 @@ func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
-	// fmt.Println(networks)
-
-	err = set.ExecuteTemplate(w, "wireless", networks)
-	if err != nil {
+	if err = set.ExecuteTemplate(w, "wireless", networks); err != nil {
 		fmt.Println(err)
 	}
 }
