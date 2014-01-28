@@ -101,6 +101,8 @@ func main() {
 	// NewHandleFunc("/ignorefw/", ignorefw)
 	// NewHandleFunc("/searchfuzzy/", searchAppSubstring)
 	NewHandleFunc("/reportWirelessScan/", wirelessScan)
+	NewHandleFunc("/wireless/", listWireless)
+
 	NewHandleFunc("/sox/", soxlist)
 	NewHandleFunc("/machine/", machineView)
 	// NewHandleFunc("/newlicense/", newLicense)

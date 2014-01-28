@@ -20,6 +20,26 @@ type Network struct {
 	ID       string `json:"bssid" bson:"_id"`
 }
 
+func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
+
+	c := db.C("wireless")
+
+	var networks []Network
+	network := new(Network)
+
+	err := c.Find(nil).For(&network, func() error {
+		networks = append(networks, *network)
+		return nil
+	})
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, fmt.Sprintf("mgo: error %v", err), 405)
+		return
+	}
+
+	set.ExecuteTemplate(w, "wireless", networks)
+}
+
 func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
 	if r.Method != "POST" {
 		http.Error(w, "only accepts POST requests", 405)

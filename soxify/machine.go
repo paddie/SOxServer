@@ -46,12 +46,6 @@ type machines struct {
 	Headers  []header
 }
 
-// 'device_names': {
-//             'computername':computername.split(".")[0],
-//             'hostname':hostname.split(".")[0],
-//             'localhostname':localhostname.split(".")[0],
-//             'netbiosname':netbios_name.lower(),    
-//         },   
 type device_names struct {
 	Computername  string
 	Hostname      string
@@ -395,6 +389,7 @@ func updateMachine(w http.ResponseWriter, r *http.Request, db *mgo.Database, arg
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	var m machine
 	err = json.Unmarshal(body, &m)
 	if err != nil {
