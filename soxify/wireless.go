@@ -17,7 +17,7 @@ type Network struct {
 	Hostname string
 	Ip       string
 	Ssid     string
-	Rssi     string
+	Rssi     int
 	Sec      []string
 	LastSeen time.Time
 	ID       string `json:"bssid" bson:"_id"`
