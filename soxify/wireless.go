@@ -14,6 +14,8 @@ import (
 )
 
 type Network struct {
+	Hostname string
+	Ip       string
 	SSID     string
 	Sec      []string
 	LastSeen time.Time
