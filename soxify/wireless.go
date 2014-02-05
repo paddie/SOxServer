@@ -16,7 +16,8 @@ import (
 type Network struct {
 	Hostname string
 	Ip       string
-	SSID     string
+	Ssid     string
+	Rssi     string
 	Sec      []string
 	LastSeen time.Time
 	ID       string `json:"bssid" bson:"_id"`
