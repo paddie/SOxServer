@@ -12,10 +12,11 @@
           <th>SSID</th>
           <th>BSSID</th>
           <th>Security</th>
-          <th>RSSI</th>
+          <th>Avg. RSSI</th>
           <th>Date</th>
           <th>Hostname</th>
           <th>IP</th>
+          <th>RSSIS</th>
         </tr>
       </thead>
       <tbody>
@@ -24,10 +25,11 @@
             <td>{{.Ssid}}</td>
             <td>{{.ID}}</td>
             <td>{{.Sec}}</td>
-            <td>{{.Rssi}}</td>
+            <td>{{.AvgRSSI}}</td>
             <td>{{.LastSeen}}</td>
             <td>{{.Hostname}}</td>
             <td>{{.Ip}}</td>
+            <td>{{.Rssis}}</td>
           </tr>
         {{end}}
       </tbody>

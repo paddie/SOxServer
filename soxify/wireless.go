@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"labix.org/v2/mgo"
-	// "labix.org/v2/mgo/bson"
+	"labix.org/v2/mgo/bson"
 	"net/http"
 	// "strconv"
 	// "html/template"
@@ -13,14 +13,34 @@ import (
 	"time"
 )
 
+type RSSI struct {
+	Hostname string
+	RSSI     int
+}
+
 type Network struct {
 	Hostname string
 	Ip       string
 	Ssid     string
-	Rssi     int
+	Rssi     int `bson:"-"`
+	Rssis    []RSSI
 	Sec      []string
 	LastSeen time.Time
 	ID       string `json:"bssid" bson:"_id"`
+}
+
+func (n *Network) AvgRSSI() float64 {
+	cnt, sum := 0, 0
+	for _, rssi := range n.Rssis {
+		sum += rssi.RSSI
+		cnt++
+	}
+
+	if cnt == 0 {
+		return 0.0
+	}
+
+	return float64(sum) / float64(cnt)
 }
 
 func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argPos int) {
@@ -60,16 +80,17 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		return
 	}
 
-	fmt.Printf("Received information on %d accesspoints. Inserting..", len(ns))
-
 	for _, n := range ns {
 		n.LastSeen = time.Now()
-		_, err = db.C("wireless").UpsertId(n.ID, n)
-		if err != nil {
+		if _, err = db.C("wireless").UpsertId(n.ID, n); err != nil {
+			fmt.Println(err)
+		}
+
+		if err = db.C("wireless").Update(
+			bson.M{"_id": n.ID, "rssids." + n.Hostname: bson.M{"$exists": true}},
+			bson.M{"$push": bson.M{"rssids": RSSI{n.Hostname, n.Rssi}}}); err != nil {
 			fmt.Println(err)
 		}
 	}
-
-	fmt.Println("Done")
-
+	fmt.Printf("%d accesspoints were upserted\n", len(ns))
 }
