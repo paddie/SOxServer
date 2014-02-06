@@ -97,13 +97,22 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 		n.Rssis = []RSSI{rssi}
 
-		if _, err = db.C("wireless").Upsert(n.ID, bson.M{
-			"$setOnInsert": n,
-			"$set": bson.M{
-				"hostname": n.Hostname,
-				"lastseen": n.LastSeen,
+		if _, err = db.C("wireless").Upsert(
+			bson.M{
+				"_id": n.ID,
 			},
-		}); err != nil {
+			bson.M{
+				"$setOnInsert": bson.M{
+					"hostname": n.Hostname,
+					"lastseen": n.LastSeen,
+					"sec":      n.Sec,
+					"ssid":     n.Ssid,
+				},
+				"$set": bson.M{
+					"hostname": n.Hostname,
+					"lastseen": n.LastSeen,
+				},
+			}); err != nil {
 			fmt.Println(err)
 		}
 
