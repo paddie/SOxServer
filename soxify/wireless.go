@@ -101,12 +101,12 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 			"$setOnInsert": n,
 			"$set": bson.M{
 				"hostname": n.Hostname,
-				"$addToSet": bson.M{
-					"rssis": rssi},
+				"lastseen": n.LastSeen,
 			},
 		}); err != nil {
 			fmt.Println(err)
 		}
+
 	}
 	fmt.Printf("%d accesspoints were upserted\n", len(ns))
 }
