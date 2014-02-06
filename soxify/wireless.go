@@ -14,21 +14,21 @@ import (
 )
 
 type RSSI struct {
-	Hostname string
+	Hostname string `bson:"_id"`
 	RSSI     int
 }
 
-type ReceiveScan struct {
-	Hostname string
-	Ip       string
-	Ssid     string
-	Rssi     int
-	Sec      []string
-	LastSeen time.Time
-	ID       string `json:"bssid" bson:"_id"`
-}
+// type ReceiveScan struct {
+// 	Hostname string
+// 	Ip       string
+// 	Ssid     string
+// 	Rssi     int
+// 	Sec      []string
+// 	LastSeen time.Time
+// 	ID       string `json:"bssid" bson:"_id"`
+// }
 
-type ViewScan struct {
+type Network struct {
 	Hostname string
 	Ip       string
 	Ssid     string
@@ -39,7 +39,7 @@ type ViewScan struct {
 	ID       string `json:"bssid" bson:"_id"`
 }
 
-func (n *ViewScan) AvgRSSI() float64 {
+func (n *Network) AvgRSSI() float64 {
 	cnt, sum := 0, 0
 	for _, rssi := range n.Rssis {
 		sum += rssi.RSSI
@@ -57,9 +57,9 @@ func listWireless(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 	c := db.C("wireless")
 
-	var networks []ViewScan
+	var networks []Network
 
-	var network *ViewScan
+	var network *Network
 	err := c.Find(nil).Sort("ssid").For(&network, func() error {
 		networks = append(networks, *network)
 		return nil
@@ -82,7 +82,7 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
-	var ns []ReceiveScan
+	var ns []Network
 	err = json.Unmarshal(body, &ns)
 	if err != nil {
 		fmt.Println(err)
@@ -93,7 +93,18 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 	for _, n := range ns {
 		n.LastSeen = time.Now()
 
-		if _, err = db.C("wireless").UpsertId(n.ID, bson.M{"$set": n}); err != nil {
+		rssi := RSSI{n.Hostname, n.Rssi}
+
+		n.Rssis = []RSSI{rssi}
+
+		if _, err = db.C("wireless").Upsert(n.ID, bson.M{
+			"$setOnInsert": n,
+			"$set": bson.M{
+				"hostname": n.Hostname,
+				"$addToSet": bson.M{
+					"rssis": rssi},
+			},
+		}); err != nil {
 			fmt.Println(err)
 		}
 		//  db.wireless.update(
