@@ -87,7 +87,7 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 			fmt.Println(err)
 		}
 
-		if err = db.C("wireless").Update(
+		if err = db.C("wireless").Upsert(
 			bson.M{"_id": n.ID},
 			bson.M{"$addToSet": bson.M{"rssis": RSSI{n.Hostname, n.Rssi}}}); err != nil {
 			fmt.Println(err)
