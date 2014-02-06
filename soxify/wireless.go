@@ -87,8 +87,8 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		}
 
 		if err = db.C("wireless").Update(
-			bson.M{"_id": n.ID, "rssids." + n.Hostname: bson.M{"$exists": true}},
-			bson.M{"$push": bson.M{"rssids": RSSI{n.Hostname, n.Rssi}}}); err != nil {
+			bson.M{"_id": n.ID},
+			bson.M{"$addToSet": bson.M{"rssids": RSSI{n.Hostname, n.Rssi}}}); err != nil {
 			fmt.Println(err)
 		}
 	}
