@@ -100,7 +100,7 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 		//		{ "_id" : "0:24:51:5:e2:93"},
 		//		{$addToSet: {"rssis":{ "hostname" : "cph41smidtht", "rssi" : -79 }}} )
 		_, err = db.C("wireless").Upsert(
-			bson.M{"_id": n.ID},
+			bson.M{"_id": n.ID, "rssis.hostname": n.Hostname},
 			bson.M{"$addToSet": bson.M{
 				"rssis": RSSI{n.Hostname, n.Rssi}},
 			})
