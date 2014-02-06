@@ -82,13 +82,14 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 	for _, n := range ns {
 		n.LastSeen = time.Now()
+
 		if _, err = db.C("wireless").UpsertId(n.ID, n); err != nil {
 			fmt.Println(err)
 		}
 
 		if err = db.C("wireless").Update(
 			bson.M{"_id": n.ID},
-			bson.M{"$addToSet": bson.M{"rssids": RSSI{n.Hostname, n.Rssi}}}); err != nil {
+			bson.M{"$addToSet": bson.M{"rssis": RSSI{n.Hostname, n.Rssi}}}); err != nil {
 			fmt.Println(err)
 		}
 	}
