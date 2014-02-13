@@ -13,20 +13,31 @@ import (
 	"time"
 )
 
+var adpeople_owned []string
+var approved_insecure []string
+
+func init() {
+
+	approved_insecure = []string{
+		"harmony_guest",
+		"Surftown Public",
+		"101",
+	}
+
+	adpeople_owned = []string{
+		"symphony_corp",
+		"testssid",
+		"harmony_guest",
+		"nycmadap01",
+		"AdPeople Mansion",
+		"AdPeople Teepee Ranch",
+	}
+}
+
 type RSSI struct {
 	Hostname string `bson:"_id"`
 	RSSI     int
 }
-
-// type ReceiveScan struct {
-// 	Hostname string
-// 	Ip       string
-// 	Ssid     string
-// 	Rssi     int
-// 	Sec      []string
-// 	LastSeen time.Time
-// 	ID       string `json:"bssid" bson:"_id"`
-// }
 
 type Network struct {
 	Hostname string
@@ -37,6 +48,45 @@ type Network struct {
 	Sec      []string
 	LastSeen time.Time
 	ID       string `json:"bssid" bson:"_id"`
+}
+
+func (n *Network) Secure() bool {
+	if len(n.Sec) == 0 {
+		return false
+	}
+
+	return true
+}
+
+// Issue returns true if the network is open, but not in the either of the two lists of approved items:
+// - adpeople_owned and approved_insecure
+func (n *Network) Issue() bool {
+	if !n.Secure() && !n.AdPeopleOwned() && !n.ApprovedInsecure() {
+		return true
+	}
+
+	return false
+}
+
+// ApprovedInsecure returns true if the ssid is in the approved_insecure []string
+func (n *Network) ApprovedInsecure() bool {
+
+	for _, ssid := range approved_insecure {
+		if n.Ssid == ssid {
+			return true
+		}
+	}
+	return false
+}
+
+// AdPeopleOwned returns true if the ssid is in the adpeople_owned []string
+func (n *Network) AdPeopleOwned() bool {
+	for _, ssid := range adpeople_owned {
+		if n.Ssid == ssid {
+			return true
+		}
+	}
+	return false
 }
 
 func (n *Network) AvgRSSI() float64 {
@@ -97,25 +147,31 @@ func wirelessScan(w http.ResponseWriter, r *http.Request, db *mgo.Database, argP
 
 		n.Rssis = []RSSI{rssi}
 
-		if _, err = db.C("wireless").Upsert(
+		if _, err := db.C("wireless").Upsert(
 			bson.M{
 				"_id": n.ID,
 			},
 			bson.M{
-				"$setOnInsert": bson.M{
+				"$set": bson.M{
+					"ssid":     n.Ssid,
 					"hostname": n.Hostname,
 					"lastseen": n.LastSeen,
 					"sec":      n.Sec,
-					"ssid":     n.Ssid,
-				},
-				"$set": bson.M{
-					"hostname": n.Hostname,
-					"lastseen": n.LastSeen,
+					"rssi":     n.Rssi,
+					"ip":       n.Ip,
 				},
 			}); err != nil {
 			fmt.Println(err)
 		}
 
+		err := db.C("wireless").Update(
+			bson.M{"_id": n.ID},
+			bson.M{
+				"$addToSet": bson.M{"rssis": rssi},
+			})
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	fmt.Printf("%d accesspoints were upserted\n", len(ns))
 }
